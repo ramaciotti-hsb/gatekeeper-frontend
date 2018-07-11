@@ -7,11 +7,14 @@
   "author": "Nic Barker",
   "license": "MIT",
   "scripts": {
-    "start": "ls node_modules && ls node_modules/.bin && node_modules/.bin/webpack-dev-server --open --config webpack.dev.js"
+    "start": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --config webpack.dev.js"
   },
   "dependencies": {
     "d3": "^5.5.0",
+    "distance-to-polygon": "^2.0.2",
     "lodash": "^4.17.10",
+    "point-in-polygon": "^1.0.1",
+    "polygon-overlap": "^1.0.5",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-onclickoutside": "^6.7.1",

@@ -5,7 +5,6 @@ import path from 'path'
 import * as d3 from "d3"
 import Dropdown from '../../lib/dropdown-inline.jsx'
 import '../../scss/sample-view.scss'
-import fs from 'fs'
 import uuidv4 from 'uuid/v4'
 import polygonsIntersect from 'polygon-overlap'
 import pointInsidePolygon from 'point-in-polygon'

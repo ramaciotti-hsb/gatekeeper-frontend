@@ -12,9 +12,6 @@ import gateTemplateGroupReducer from './gate-template-group-reducer'
 import gatingErrorReducer from './gating-error-reducer'
 import _ from 'lodash'
 import uuidv4 from 'uuid/v4'
-import path from 'path'
-import { remote } from 'electron'
-import fs from 'fs'
 
 let initialState = {
     FCSFiles: FCSFileReducer(),

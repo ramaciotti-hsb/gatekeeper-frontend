@@ -1,9 +1,6 @@
 import React from 'react'
 import { Component } from 'react'
 import _ from 'lodash'
-import { remote } from 'electron'
-import path from 'path'
-const { dialog, Menu, MenuSample } = remote
 import Workspace from '../containers/workspace-container.jsx'
 import HomologyModal from '../containers/homology-modal-container.jsx'
 import GatingErrorModal from '../containers/gating-error-modal-container.jsx'
@@ -12,115 +9,7 @@ export default class Application extends Component {
 
     constructor (props) {
         super(props)
-
-        const template = [
-            {
-                label: 'File',
-                submenu: [
-                    {label: 'New Workspace', accelerator: 'Cmd+Shift+N', click: this.newWorkspace.bind(this) },
-                    {label: 'Save Workspace', accelerator: 'Cmd+S' },//, click: this.showSaveWorkspaceAsDialogBox.bind(this) },
-                    {label: 'Open FCS File(s)', accelerator: 'Cmd+Shift+O', click: this.showOpenFCSFileDialog.bind(this) },
-                    {label: 'Open Workspace(s)',  accelerator: 'Cmd+O' }//, click: this.showOpenWorkspacesDialog.bind(this) }
-                ]
-            },
-            {
-                label: 'Edit',
-                submenu: [
-                    {role: 'undo'},
-                    {role: 'redo'},
-                    {type: 'separator'},
-                    {role: 'cut'},
-                    {role: 'copy'},
-                    {role: 'paste'},
-                    {role: 'pasteandmatchstyle'},
-                    {role: 'delete'},
-                    {role: 'selectall'}
-                ]
-            },
-            {
-                label: 'Auto Gating',
-                submenu: [
-                    {
-                        label: 'Recursive Gating',
-                        submenu: [
-                            { label: 'Persistant Homology' }
-                        ]
-                    }
-                ]
-            },
-            {
-                label: 'View',
-                submenu: [
-                    {role: 'reload'},
-                    {role: 'forcereload'},
-                    {role: 'toggledevtools'},
-                    {type: 'separator'},
-                    {role: 'resetzoom'},
-                    {role: 'zoomin'},
-                    {role: 'zoomout'},
-                    {type: 'separator'},
-                    {role: 'togglefullscreen'}
-                ]
-            },
-            {
-                role: 'window',
-                submenu: [
-                    {role: 'minimize'},
-                    {role: 'close'}
-                ]
-            },
-            {
-                role: 'help',
-                submenu: [
-                    {
-                        label: 'Learn More'
-                    }
-                ]
-            }
-        ]
-
-        if (process.platform === 'darwin') {
-            template.unshift({
-                label: remote.app.getName(),
-                submenu: [
-                    {role: 'about'},
-                    {type: 'separator'},
-                    {role: 'services', submenu: []},
-                    {type: 'separator'},
-                    {role: 'hide'},
-                    {role: 'hideothers'},
-                    {role: 'unhide'},
-                    {type: 'separator'},
-                    {role: 'quit'}
-                ]
-            })
-
-            // Edit menu
-            template[2].submenu.push(
-                {type: 'separator'},
-                {
-                    label: 'Speech',
-                    submenu: [
-                        {role: 'startspeaking'},
-                        {role: 'stopspeaking'}
-                    ]
-                }
-            )
-
-            // Windows menu
-            template[5].submenu = [
-                {role: 'close'},
-                {role: 'minimize'},
-                {role: 'zoom'},
-                {type: 'separator'},
-                {role: 'front'}
-            ]
-        }
-
-        // Create the file menu with open, etc
-        const menu = Menu.buildFromTemplate(template)
-        Menu.setApplicationMenu(menu)
-
+        
         this.state = {
             editingWorkspaceTitleId: null,
             editingWorkspaceTitleText: null
@@ -145,15 +34,15 @@ export default class Application extends Component {
     }
 
     onDropFile (event) {
-        event.preventDefault();
+        // event.preventDefault();
 
-        for (let file of event.dataTransfer.files) {
-            if (file.path.match(/\.fcs/)) {
-                this.addNewFCSFilesToWorkspace([file.path])
-            }
-        }
+        // for (let file of event.dataTransfer.files) {
+        //     if (file.path.match(/\.fcs/)) {
+        //         this.addNewFCSFilesToWorkspace([file.path])
+        //     }
+        // }
         
-        return false;
+        // return false;
     }
 
     addNewFCSFilesToWorkspace (filePaths) {
@@ -239,10 +128,10 @@ export default class Application extends Component {
     // }
 
     showOpenFCSFileDialog () {
-        let workspace = _.find(this.props.workspaces, workspace => workspace.id === this.props.selectedWorkspaceId)
-        dialog.showOpenDialog({ title: `Open Sample File`, filters: [{ name: 'FCS Files', extensions: ['fcs']}], message: `Open Sample File`, properties: ['openFile', 'multiSelections'] }, (filePaths) => {
-            this.addNewFCSFilesToWorkspace(filePaths)
-        })
+        // let workspace = _.find(this.props.workspaces, workspace => workspace.id === this.props.selectedWorkspaceId)
+        // dialog.showOpenDialog({ title: `Open Sample File`, filters: [{ name: 'FCS Files', extensions: ['fcs']}], message: `Open Sample File`, properties: ['openFile', 'multiSelections'] }, (filePaths) => {
+        //     this.addNewFCSFilesToWorkspace(filePaths)
+        // })
     }
 
     render () {

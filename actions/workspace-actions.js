@@ -4,7 +4,6 @@
 
 import uuidv4 from 'uuid/v4'
 import { sampleLoadingFinished } from './sample-actions.js'
-import fs from 'fs'
 
 export const selectWorkspace = id => {
     return {
