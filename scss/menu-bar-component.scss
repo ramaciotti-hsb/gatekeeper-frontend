@@ -1,0 +1,52 @@
+// -------------------------------------------------------------
+// This file contains styles for the main login screen.
+// -------------------------------------------------------------
+
+@import 'mixins';
+
+.menu-bar {
+    align-items: flex-start;
+    background: #fff;
+    border-bottom: 2px solid #ccc;
+
+    .logo {
+        padding: 8px 15px;
+        font: 600 15px 'Open Sans';
+        color: #555;
+    }
+
+    .button.dropdown {
+        font: 200 15px 'Open Sans';
+
+        .inner {
+
+            .text {
+                padding: 8px 15px;
+                cursor: pointer;
+                @include backgroundHover(#fff);
+                @include backgroundClick(#fff);
+            }
+
+            .menu {
+                font: 200 13px 'Open Sans';
+                width: 200px;
+
+                .menu-inner {
+                    flex-direction: column;
+                    
+                    .item {
+                        padding: 12px;
+                    }
+                }
+            } // .menu
+        } // .inner
+
+        &.active {
+
+            .inner .text {
+                background: #666;
+                color: #fff;
+            }
+        }
+    } // .button.dropdown
+} // .menu-bar

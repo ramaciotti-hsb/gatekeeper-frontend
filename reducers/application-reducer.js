@@ -34,6 +34,7 @@ let initialState = {
     plotDisplayWidth: 380,
     plotDisplayHeight: 380,
     sessionBroken: false,
+    authenticatedUser: null,
     api: {}
 }
 
@@ -57,6 +58,7 @@ const applicationReducer = (state = initialState, action) => {
         plotDisplayHeight: state.plotDisplayHeight,
         sessionBroken: state.sessionBroken,
         gatingModal: _.clone(state.gatingModal) || {},
+        authenticatedUser: state.authenticatedUser,
         api: state.api
     }
 
@@ -94,6 +96,7 @@ const applicationReducer = (state = initialState, action) => {
         newState.plotDisplayWidth = action.payload.plotDisplayWidth || newState.plotDisplayWidth
         newState.plotDisplayHeight = action.payload.plotDisplayHeight || newState.plotDisplayHeight
         newState.showDisabledParameters = action.payload.showDisabledParameters
+        console.log(newState)
     }
     // --------------------------------------------------
     // Selects which "API" object to use. This changes from
@@ -108,6 +111,12 @@ const applicationReducer = (state = initialState, action) => {
     // --------------------------------------------------
     else if (action.type === 'SET_SESSION_LOADING') {
         newState.sessionLoading = action.payload.sessionLoading
+    }
+    // --------------------------------------------------
+    // Sets the logged in user
+    // --------------------------------------------------
+    else if (action.type === 'SET_AUTHENTICATED_USER') {
+        newState.authenticatedUser = action.payload.authenticatedUser
     }
     // --------------------------------------------------
     // Show a gating modal for a particular sample and

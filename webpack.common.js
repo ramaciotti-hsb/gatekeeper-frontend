@@ -1,5 +1,6 @@
 const path  = require('path')
 const fs    = require('fs')
+const webpack = require('webpack')
 
 let nodeModules = fs.readdirSync('./node_modules')
     .filter((module) => {
@@ -31,5 +32,13 @@ module.exports = {
     },
     watchOptions: {
         poll: 1000
-    }
+    },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+                'API_URL': JSON.stringify(process.env.API_URL)
+            }
+        }),
+    ]
 }

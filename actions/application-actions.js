@@ -2,6 +2,13 @@
 // Redux actions for interacting with the global application state.
 // -------------------------------------------------------------
 
+export const setAuthenticatedUser = (authenticatedUser) => {
+    return {
+        type: 'SET_AUTHENTICATED_USER',
+        payload: { authenticatedUser }
+    }
+}
+
 export const showGatingModal = (sampleId, selectedXParameterIndex, selectedYParameterIndex) => {
     return {
         type: 'SHOW_GATING_MODAL',

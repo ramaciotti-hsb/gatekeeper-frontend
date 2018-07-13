@@ -16,6 +16,10 @@ $row-height: 30px;
         right: 0;
         flex-direction: column;
         z-index: 1;
+
+        &.right {
+            left: 0;
+        }
     } // .menu
 
     &.right .menu {
@@ -116,5 +120,9 @@ $row-height: 30px;
                 } // .menu-inner
             } // & > .menu
         } // .inner
-    } // &.light
+    } // &.dark
+
+    &.right .inner > .menu:after {
+        left: 20px;
+    }
 } // .dropdown

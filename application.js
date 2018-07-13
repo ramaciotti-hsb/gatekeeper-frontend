@@ -17,12 +17,12 @@ const store = createStore(applicationReducer)
 
 window.store = store
 
-// setStore(store)
+setStore(store)
 
 document.addEventListener("DOMContentLoaded", async () => {
     ReactDOM.render(<Provider store={store}><Application /></Provider>, document.getElementById('container-outer'))
-    // store.dispatch({ type: 'SET_API', payload: { api } })
-    // await api.getSession()
+    store.dispatch({ type: 'SET_API', payload: { api } })
+    await api.getSession()
     initialize()
 })
 

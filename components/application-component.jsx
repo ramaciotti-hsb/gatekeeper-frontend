@@ -4,6 +4,8 @@ import _ from 'lodash'
 import Workspace from '../containers/workspace-container.jsx'
 import HomologyModal from '../containers/homology-modal-container.jsx'
 import GatingErrorModal from '../containers/gating-error-modal-container.jsx'
+import MenuBar from './menu-bar-component.jsx'
+import Login from './login-component.jsx'
 
 export default class Application extends Component {
 
@@ -135,9 +137,17 @@ export default class Application extends Component {
     }
 
     render () {
+        if (!this.props.authenticatedUser) {
+            return (
+                <div className='container'>
+                    <Login api={this.props.api} />
+                </div>
+            )
+        }
+
         if (this.props.sessionBroken) {
             return (
-                <div className='container' onDrop={this.onDropFile.bind(this)}>
+                <div className='container'>
                     <div className='broken-message'>
                         <div className='text'>There was an error trying to load your previous session. This could have been caused by a version upgrade.</div>
                         <div className='text'>We apologise for any inconvenience. If you find time, please report this bug on our Trello board.</div>
@@ -174,7 +184,8 @@ export default class Application extends Component {
 
         return (
             <div className='container' onDrop={this.onDropFile.bind(this)}>
-                <div className={`loader-outer maxIndex opaque${this.props.sessionLoading ? ' active' : ''}`}><div className='loader'></div><div className='text'>Loading session and starting workers...</div></div>
+                <MenuBar api={this.props.api} />
+                <div className={`loader-outer maxIndex opaque${this.props.sessionLoading ? ' active' : ''}`}><div className='loader'></div><div className='text'>Connecting to server...</div></div>
                 <div className='tab-bar'>
                     {workspaceTabs}
                 </div>

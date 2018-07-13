@@ -1,0 +1,11 @@
+// -------------------------------------------------------------
+// This file contains styles for the main login screen.
+// -------------------------------------------------------------
+
+@import 'mixins';
+
+.login-container {
+    flex-grow: 1;
+    align-items: flex-start;
+    background: #fafafa;
+}
