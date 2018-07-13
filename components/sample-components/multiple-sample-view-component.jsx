@@ -246,6 +246,9 @@ export default class MultipleSampleView extends Component {
                             {this.props.FCSFile.FCSParameters[c[0]].label + ' · ' + this.props.FCSFile.FCSParameters[c[1]].label}
                             <div className={'icon' + (this.props.workspace.invertedAxisPlots[x + '_' + y] ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
                         </div>
+                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, this.props.sample.plotImages[getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale })])}>
+                            <i className='lnr lnr-picture' />
+                        </div>
                         <Dropdown outerClasses='dark' ref={'homologyDropdown-' + c[0] + '-' + c[1]}>
                             <div className='inner'>
                                 <div className='icon'><i className='lnr lnr-cog'></i></div>

@@ -51,6 +51,14 @@
                 }
             }
 
+            .download-image {
+                padding: 0 10px;
+                align-items: center;
+                cursor: pointer;
+                @include backgroundHover(#ddd);
+                @include backgroundClick(#ddd);
+            }
+
             .dropdown {
                 align-items: stretch;
 
