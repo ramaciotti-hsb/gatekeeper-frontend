@@ -3,7 +3,7 @@
 // -------------------------------------------------------------
 import applicationReducer from '../reducers/application-reducer'
 import { setAuthenticatedUser } from '../actions/application-actions'
-import { createWorkspace, selectWorkspace } from '../actions/workspace-actions'
+import { createWorkspace, selectWorkspace, removeWorkspace, updateWorkspace } from '../actions/workspace-actions'
 
 let reduxStore = {}
 // Keep a copy of the redux store and dispatch events
@@ -120,8 +120,8 @@ export const api = {
 
     createWorkspace: async function (parameters) {
         const result = await makeAjaxCall(`${process.env.API_URL}/workspaces/create_workspace`, parameters)
-        if (result.workspace) {
-            const createWorkspaceAction = createWorkspace(parameters)
+        if (result.success) {
+            const createWorkspaceAction = createWorkspace(result.workspace)
             reduxStore.dispatch(createWorkspaceAction)
         } else {
             console.log('workspace failed to be created', result)
@@ -136,5 +136,22 @@ export const api = {
         } else {
             console.log('workspace failed to be selected', result)
         }
-    }
+    },
+
+    removeWorkspace: async function (workspaceId) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/workspaces/remove_workspace`, { workspaceId })
+        if (result.success) {
+            const removeAction = removeWorkspace(workspaceId)
+            reduxStore.dispatch(removeAction)
+        }
+    },
+
+    // Update a workspace with arbitrary parameters
+    updateWorkspace: async function (workspaceId, parameters) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/workspaces/update_workspace`, { workspaceId, parameters })
+        if (result.success) {
+            const updateWorkspaceAction = updateWorkspace(workspaceId, result.workspace)
+            reduxStore.dispatch(updateWorkspaceAction)
+        }
+    },
 }

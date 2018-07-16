@@ -196,6 +196,8 @@ const workspaces = (state = initialState, action = {}) => {
         if (workspaceIndex > -1) {
             const newWorkspace = _.merge(_.cloneDeep(state[workspaceIndex]), action.payload.parameters)
             newState = state.slice(0, workspaceIndex).concat([newWorkspace]).concat(state.slice(workspaceIndex + 1))
+        } else {
+            console.log('UPDATE_WORKSPACE failed: no workspace with id', action.payload.workspaceId, 'was found')
         }
     // --------------------------------------------------
     // Toggle parameter inversion for display (i.e flip x and y axis)
