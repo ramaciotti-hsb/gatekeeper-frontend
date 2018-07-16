@@ -19,6 +19,13 @@ export default class MenuBar extends Component {
         this.dropdownRef = React.createRef();
     }
 
+    uploadFCSFile (event) {
+        const files = event.target.files;
+        for (let file of files) {
+            this.props.api.uploadFCSFile(file)
+        }
+    }
+
     newWorkspaceClicked () {
         this.setState({
             newWorkspaceLoading: true
@@ -46,9 +53,10 @@ export default class MenuBar extends Component {
                                     <div className={`loader-outer opaque dark${this.state.newWorkspaceLoading ? ' active' : ''}`}><div className='loader small'></div></div>
                                     <div>New Workspace</div>
                                 </div>
-                                <div className='item'>
+                                <label className='item upload'>
+                                    <input id='file' type='file' multiple accept='.fcs' onChange={this.uploadFCSFile.bind(this)} />
                                     <div>Open FCS File(s)</div>
-                                </div>
+                                </label>
                             </div>
                         </div>
                     </div>

@@ -36,6 +36,13 @@
                     
                     .item {
                         padding: 12px;
+
+                        &.upload {
+
+                            input {
+                                display: none;
+                            }
+                        }
                     }
                 }
             } // .menu

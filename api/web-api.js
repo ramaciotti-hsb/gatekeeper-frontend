@@ -40,21 +40,37 @@ const checkResponse = (response, url, data) => {
 }
 
 // Wrapper for more easily making AJAX calls
-const makeAjaxCall = (url, data) => {
-    const headers = new Headers({
-        'Content-Type': 'application/json'
-    })
-    if (data && !_.isEmpty(data)) {
-        data = JSON.stringify(data)
+const makeAjaxCall = (url, data, multipart) => {
+    let request
+
+    if (multipart) {
+        const formData = new FormData()
+        formData.append("file", data)
+        request = new Request(url, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            body: formData
+        })
+    } else {
+        let headers = new Headers({})
+        if (data && !_.isEmpty(data)) {
+            headers = new Headers({
+                'Content-Type': 'application/json'
+            })
+            
+            data = JSON.stringify(data)
+        }
+
+        request = new Request(url, {
+            method: 'POST',
+            mode: 'cors',
+            redirect: 'follow',
+            headers: headers,
+            credentials: 'include',
+            body: data
+        })
     }
-    var request = new Request(url, {
-        method: 'POST',
-        mode: 'cors',
-        redirect: 'follow',
-        headers: headers,
-        credentials: 'include',
-        body: data
-    });
 
     return new Promise(function (resolve, reject) {
         fetch(request)
@@ -153,5 +169,66 @@ export const api = {
             const updateWorkspaceAction = updateWorkspace(workspaceId, result.workspace)
             reduxStore.dispatch(updateWorkspaceAction)
         }
+    },
+
+    // createFCSFileAndAddToWorkspace: async function (workspaceId, FCSFileParameters) {
+    //     const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/create_fcs_file`, { workspaceId, parameters: FCSFileParameters })
+
+    //     if (result.success) {
+    //         // Find the associated workspace
+    //         let workspace = _.find(currentState.workspaces, w => w.id === workspaceId)
+
+    //         let FCSFile = {
+    //             id: FCSFileId,
+    //             filePath: FCSFileParameters.filePath,
+    //             title: FCSFileParameters.title,
+    //             description: FCSFileParameters.description,
+    //         }
+
+    //         const createFCSFileAction = createFCSFileAndAddToWorkspace(workspaceId, FCSFile)
+    //         currentState = applicationReducer(currentState, createFCSFileAction)
+    //         reduxStore.dispatch(createFCSFileAction)
+
+    //         const FCSMetaData = await getFCSMetadata(FCSFile.filePath)
+
+    //         const updateAction = updateFCSFile(FCSFileId, FCSMetaData)
+    //         currentState = applicationReducer(currentState, updateAction)
+    //         reduxStore.dispatch(updateAction)
+
+    //         const sampleId = uuidv4()
+    //         const createSampleAction = createSampleAndAddToWorkspace(workspaceId, {
+    //             id: sampleId,
+    //             title: 'Root Sample',
+    //             FCSFileId,
+    //             description: 'Top level root sample for this FCS File',
+    //             gateTemplateId: workspace.gateTemplateIds[0],
+    //             populationCount: FCSMetaData.populationCount
+    //         })
+    //         currentState = applicationReducer(currentState, createSampleAction)
+    //         reduxStore.dispatch(createSampleAction)
+
+    //         const workspaceParameters = {
+    //             selectedGateTemplateId: workspace.gateTemplateIds[0],
+    //             selectedXScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP,
+    //             selectedYScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP
+    //         }
+
+    //         const updateWorkspaceAction = updateWorkspace(workspaceId, workspaceParameters)
+    //         currentState = applicationReducer(currentState, updateWorkspaceAction)
+    //         reduxStore.dispatch(updateWorkspaceAction)
+
+    //         const sample = _.find(currentState.samples, s => s.id === sampleId)
+    //         getAllPlotImages(sample, workspaceParameters)
+
+    //         saveSessionToDisk()
+
+    //         // Recursively apply the existing gating hierarchy
+    //         // api.applyGateTemplatesToSample(sampleId)
+    //     }
+    // },
+
+    uploadFCSFile: async function (file) {
+        // Create a new form upload to s3
+        const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/upload_fcs_file`, file, true)
     },
 }
