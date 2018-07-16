@@ -15,10 +15,11 @@ export default class FCSFileSelector extends Component {
         this.state = {
             containerWidth: 1000
         }
+        this.containerRef = React.createRef();
     }
 
     updateContainerSize () {
-        this.setState({ containerWidth: this.refs.container.offsetWidth })
+        this.setState({ containerWidth: this.containerRef.current.offsetWidth })
     }
 
     arrowKeyPressed (characterCode) {
@@ -146,7 +147,7 @@ export default class FCSFileSelector extends Component {
         }
 
         return (
-            <div className='fcs-file-selector-outer' ref='container'>
+            <div className='fcs-file-selector-outer' ref={this.containerRef}>
                 {inner}
             </div>
         )

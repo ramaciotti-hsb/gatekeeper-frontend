@@ -40,5 +40,6 @@ module.exports = {
                 'API_URL': JSON.stringify(process.env.API_URL)
             }
         }),
-    ]
+    ],
+    resolve: { alias: { 'react': path.resolve(__dirname, './node_modules', 'react') } }
 }

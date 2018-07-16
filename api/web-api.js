@@ -3,7 +3,7 @@
 // -------------------------------------------------------------
 import applicationReducer from '../reducers/application-reducer'
 import { setAuthenticatedUser } from '../actions/application-actions'
-import { createWorkspace } from '../actions/workspace-actions'
+import { createWorkspace, selectWorkspace } from '../actions/workspace-actions'
 
 let reduxStore = {}
 // Keep a copy of the redux store and dispatch events
@@ -125,6 +125,16 @@ export const api = {
             reduxStore.dispatch(createWorkspaceAction)
         } else {
             console.log('workspace failed to be created', result)
+        }
+    },
+
+    selectWorkspace: async function (workspaceId) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/user_settings/select_workspace`, { workspaceId })
+        if (result.success) {
+            const selectWorkspaceAction = selectWorkspace(workspaceId)
+            reduxStore.dispatch(selectWorkspaceAction)
+        } else {
+            console.log('workspace failed to be selected', result)
         }
     }
 }

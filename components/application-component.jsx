@@ -177,7 +177,7 @@ export default class Application extends Component {
         let workspaceView
 
         if (workspace) {
-            workspaceView = <Workspace workspaceId={this.props.selectedWorkspaceId} ref={'workspace-' + workspace.id}/>
+            workspaceView = <Workspace workspaceId={this.props.selectedWorkspaceId}/>
         } else {
             workspaceView = <Workspace />
         }
