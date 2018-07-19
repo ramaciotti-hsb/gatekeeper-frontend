@@ -19,11 +19,13 @@ export default class FCSParameterSelector extends Component {
         this.state = {
             filterValue: ''
         }
+
+        this.filterInputRef = React.createRef()
     }
 
     componentDidMount () {
         this.keyboardListenerId = uuidv4()
-        registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, () => { this.setState({ filterValue: '' }); this.refs.filterInput.blur() })
+        registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, () => { this.setState({ filterValue: '' }); this.filterInputRef.current.blur() })
     }
 
     componentWillUnmount () {
@@ -68,7 +70,7 @@ export default class FCSParameterSelector extends Component {
                 </div>
                 <div className='parameter-row filter'>
                     <i className={'lnr lnr-magnifier'} />
-                    <input type='text' placeholder='Filter' value={this.state.filterValue} onChange={this.onFilter.bind(this)} ref={'filterInput'} />
+                    <input type='text' placeholder='Filter' value={this.state.filterValue} onChange={this.onFilter.bind(this)} ref={this.filterInputRef} />
                 </div>
                 <div className='parameter-selector-inner'>
                     {parameters}

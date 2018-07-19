@@ -29,6 +29,10 @@
             .dropdown-inline {
                 width: 300px;
 
+                .inner .menu {
+                    z-index: 22;
+                }
+
                 .item {
                     flex-direction: row;
 

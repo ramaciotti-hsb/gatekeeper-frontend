@@ -35,6 +35,7 @@ let initialState = {
     plotDisplayHeight: 380,
     sessionBroken: false,
     authenticatedUser: null,
+    filesUploading: [],
     api: {}
 }
 
@@ -96,7 +97,6 @@ const applicationReducer = (state = initialState, action) => {
         newState.plotDisplayWidth = action.payload.plotDisplayWidth || newState.plotDisplayWidth
         newState.plotDisplayHeight = action.payload.plotDisplayHeight || newState.plotDisplayHeight
         newState.showDisabledParameters = action.payload.showDisabledParameters
-        console.log(newState)
     }
     // --------------------------------------------------
     // Selects which "API" object to use. This changes from

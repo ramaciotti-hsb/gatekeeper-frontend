@@ -24,12 +24,14 @@ class DropdownInline extends Component {
             dropdownVisible: false,
             searchText: ''
         }
+
+        this.searchRef = React.createRef()
     }
 
     showDropdown (event) {
         if (this.state.dropdownVisible === false) {
             this.setState({ dropdownVisible: true }, function () {
-                ReactDOM.findDOMNode(this.refs.searchInput).focus()
+                ReactDOM.findDOMNode(this.searchRef.current).focus()
             })
         }
         event.stopPropagation()
@@ -61,7 +63,7 @@ class DropdownInline extends Component {
     render () {
         var textLabel
         if (this.state.dropdownVisible === true) {
-            textLabel = <input type='text' placeholder='Type to search...' value={this.state.searchText} onChange={this.updateSearchText.bind(this)} ref='searchInput' />
+            textLabel = <input type='text' placeholder='Type to search...' value={this.state.searchText} onChange={this.updateSearchText.bind(this)} ref={this.searchRef} />
         } else {
             textLabel = <div className='text'>{this.props.textLabel}</div>
         }

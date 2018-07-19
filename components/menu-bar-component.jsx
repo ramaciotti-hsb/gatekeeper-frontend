@@ -14,15 +14,26 @@ export default class MenuBar extends Component {
     constructor (props) {
         super(props)
         this.state = {
-            newWorkspaceLoading: false
+            newWorkspaceLoading: false,
+            newFCSFileLoading: false
         }
         this.dropdownRef = React.createRef();
     }
 
     uploadFCSFile (event) {
         const files = event.target.files;
+        this.setState({
+            newFCSFileLoading: true
+        })
         for (let file of files) {
-            this.props.api.uploadFCSFile(file)
+
+            this.props.api.createFCSFileAndAddToWorkspace(this.props.workspaceId, { title: file.name }).then((FCSFile) => {
+                this.dropdownRef.current.getInstance().hideDropdown()
+                this.setState({
+                    newFCSFileLoading: false
+                })
+                this.props.api.uploadFCSFile(FCSFile.id, file)
+            })
         }
     }
 
@@ -54,7 +65,7 @@ export default class MenuBar extends Component {
                                     <div>New Workspace</div>
                                 </div>
                                 <label className='item upload'>
-                                    <input id='file' type='file' multiple accept='.fcs' onChange={this.uploadFCSFile.bind(this)} />
+                                    <input id='file' type='file' name='uploads' accept='.fcs' onChange={this.uploadFCSFile.bind(this)} />
                                     <div>Open FCS File(s)</div>
                                 </label>
                             </div>

@@ -15,7 +15,9 @@ export default class FCSFileSelector extends Component {
         this.state = {
             containerWidth: 1000
         }
-        this.containerRef = React.createRef();
+        this.containerRef = React.createRef()
+        this.fileSelectorRef = React.createRef()
+        this.machineTypeRef = React.createRef()
     }
 
     updateContainerSize () {
@@ -61,12 +63,12 @@ export default class FCSFileSelector extends Component {
     }
 
     selectFCSFile (FCSFileId) {
-        this.refs['FCSFileDropdown'].getInstance().hideDropdown()
+        this.fileSelectorRef.current.getInstance().hideDropdown()
         this.props.api.selectFCSFile(FCSFileId, this.props.workspaceId)   
     }
 
     selectMachineType (FCSFileId, machineType) {
-        this.refs['machineTypeDropdown'].getInstance().hideDropdown()
+        this.machineTypeRef.current.getInstance().hideDropdown()
         this.props.api.updateFCSFile(FCSFileId, { machineType })
     }
 
@@ -120,17 +122,17 @@ export default class FCSFileSelector extends Component {
             inner = (
                 <div className='fcs-file-selector-inner'>
                     <div className='header'>
-                        <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref='FCSFileDropdown' /></div>
+                        <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
                         <div className={'button delete' + (this.state.containerWidth < 1200 ? ' compact' : '')} onClick={this.props.api.removeFCSFile.bind(null, this.props.selectedFCSFile.id)}>
                             <i className='lnr lnr-cross-circle'></i>
                             <div className='text'>Remove File From Workspace</div>
                         </div>
-                        <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref='machineTypeDropdown' /></div>
+                        <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
                         <div className='divider' />
-                        <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
+                        {/*<div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
                             <i className='lnr lnr-cloud-sync'></i>
                             <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
-                        </div>
+                        </div>*/}
                     </div>
                     <div className='container-horizontal'>
                         <FCSParameterSelector />

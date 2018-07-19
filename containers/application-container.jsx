@@ -9,7 +9,6 @@ import Application from '../components/application-component.jsx'
 import _ from 'lodash'
 
 const mapStateToProps = state => {
-    console.log(state)
     const selectedWorkspace = _.find(state.workspaces, w => w.id === state.selectedWorkspaceId)
     let selectedGateTemplateId
     if (selectedWorkspace) {

@@ -1,9 +1,11 @@
 // -------------------------------------------------------------
 // Exported functions below
 // -------------------------------------------------------------
+
 import applicationReducer from '../reducers/application-reducer'
-import { setAuthenticatedUser } from '../actions/application-actions'
-import { createWorkspace, selectWorkspace, removeWorkspace, updateWorkspace } from '../actions/workspace-actions'
+import { setAuthenticatedUser, } from '../actions/application-actions'
+import { removeFCSFile, updateFCSFile } from '../actions/fcs-file-actions'
+import { createWorkspace, selectWorkspace, removeWorkspace, updateWorkspace, createFCSFileAndAddToWorkspace, selectFCSFile } from '../actions/workspace-actions'
 
 let reduxStore = {}
 // Keep a copy of the redux store and dispatch events
@@ -45,7 +47,9 @@ const makeAjaxCall = (url, data, multipart) => {
 
     if (multipart) {
         const formData = new FormData()
-        formData.append("file", data)
+        for (let key of _.keys(data)) {
+            formData.append(key, data[key])
+        }
         request = new Request(url, {
             method: 'POST',
             mode: 'cors',
@@ -89,6 +93,14 @@ const makeAjaxCall = (url, data, multipart) => {
             reject(message);
         });
     });
+
+    // return axios({
+    //   method: 'POST',
+    //   url,
+    //   data
+    // }).catch((error) => {
+
+    // })
 };
 
 // Start a recurring 5s authentication / internet connection check
@@ -106,7 +118,7 @@ export const api = {
 
         const setAuthenticatedUserAction = setAuthenticatedUser(result.user)
         reduxStore.dispatch(setAuthenticatedUserAction)
-        // api.getSession()
+        api.getSession()
     },
 
     getCurrentUser: async function () {
@@ -171,64 +183,96 @@ export const api = {
         }
     },
 
-    // createFCSFileAndAddToWorkspace: async function (workspaceId, FCSFileParameters) {
-    //     const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/create_fcs_file`, { workspaceId, parameters: FCSFileParameters })
+    createFCSFileAndAddToWorkspace: async function (workspaceId, FCSFileParameters) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/create_fcs_file`, { workspaceId, parameters: FCSFileParameters })
 
-    //     if (result.success) {
-    //         // Find the associated workspace
-    //         let workspace = _.find(currentState.workspaces, w => w.id === workspaceId)
+        if (result.success) {
+            // Find the associated workspace
+            let workspace = _.find(reduxStore.getState().workspaces, w => w.id === workspaceId)
 
-    //         let FCSFile = {
-    //             id: FCSFileId,
-    //             filePath: FCSFileParameters.filePath,
-    //             title: FCSFileParameters.title,
-    //             description: FCSFileParameters.description,
-    //         }
+            let FCSFile = {
+                id: result.FCSFile.id,
+                filePath: result.FCSFile.filePath,
+                title: result.FCSFile.title,
+                description: result.FCSFile.description,
+                uploadProgress: 0
+            }
 
-    //         const createFCSFileAction = createFCSFileAndAddToWorkspace(workspaceId, FCSFile)
-    //         currentState = applicationReducer(currentState, createFCSFileAction)
-    //         reduxStore.dispatch(createFCSFileAction)
+            const createFCSFileAction = createFCSFileAndAddToWorkspace(workspaceId, FCSFile)
+            reduxStore.dispatch(createFCSFileAction)
 
-    //         const FCSMetaData = await getFCSMetadata(FCSFile.filePath)
+            console.log('CREATED FCS FILE', FCSFile.id)
+            return FCSFile
 
-    //         const updateAction = updateFCSFile(FCSFileId, FCSMetaData)
-    //         currentState = applicationReducer(currentState, updateAction)
-    //         reduxStore.dispatch(updateAction)
+            // const FCSMetaData = await getFCSMetadata(FCSFile.filePath)
 
-    //         const sampleId = uuidv4()
-    //         const createSampleAction = createSampleAndAddToWorkspace(workspaceId, {
-    //             id: sampleId,
-    //             title: 'Root Sample',
-    //             FCSFileId,
-    //             description: 'Top level root sample for this FCS File',
-    //             gateTemplateId: workspace.gateTemplateIds[0],
-    //             populationCount: FCSMetaData.populationCount
-    //         })
-    //         currentState = applicationReducer(currentState, createSampleAction)
-    //         reduxStore.dispatch(createSampleAction)
+            // const updateAction = updateFCSFile(FCSFileId, FCSMetaData)
+            // currentState = applicationReducer(currentState, updateAction)
+            // reduxStore.dispatch(updateAction)
 
-    //         const workspaceParameters = {
-    //             selectedGateTemplateId: workspace.gateTemplateIds[0],
-    //             selectedXScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP,
-    //             selectedYScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP
-    //         }
+            // const sampleId = uuidv4()
+            // const createSampleAction = createSampleAndAddToWorkspace(workspaceId, {
+            //     id: sampleId,
+            //     title: 'Root Sample',
+            //     FCSFileId,
+            //     description: 'Top level root sample for this FCS File',
+            //     gateTemplateId: workspace.gateTemplateIds[0],
+            //     populationCount: FCSMetaData.populationCount
+            // })
+            // currentState = applicationReducer(currentState, createSampleAction)
+            // reduxStore.dispatch(createSampleAction)
 
-    //         const updateWorkspaceAction = updateWorkspace(workspaceId, workspaceParameters)
-    //         currentState = applicationReducer(currentState, updateWorkspaceAction)
-    //         reduxStore.dispatch(updateWorkspaceAction)
+            // const workspaceParameters = {
+            //     selectedGateTemplateId: workspace.gateTemplateIds[0],
+            //     selectedXScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP,
+            //     selectedYScale: FCSMetaData.machineType === constants.MACHINE_CYTOF ? constants.SCALE_LOG : constants.SCALE_BIEXP
+            // }
 
-    //         const sample = _.find(currentState.samples, s => s.id === sampleId)
-    //         getAllPlotImages(sample, workspaceParameters)
+            // const updateWorkspaceAction = updateWorkspace(workspaceId, workspaceParameters)
+            // currentState = applicationReducer(currentState, updateWorkspaceAction)
+            // reduxStore.dispatch(updateWorkspaceAction)
 
-    //         saveSessionToDisk()
+            // const sample = _.find(currentState.samples, s => s.id === sampleId)
+            // getAllPlotImages(sample, workspaceParameters)
 
-    //         // Recursively apply the existing gating hierarchy
-    //         // api.applyGateTemplatesToSample(sampleId)
-    //     }
-    // },
+            // saveSessionToDisk()
 
-    uploadFCSFile: async function (file) {
-        // Create a new form upload to s3
-        const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/upload_fcs_file`, file, true)
+            // Recursively apply the existing gating hierarchy
+            // api.applyGateTemplatesToSample(sampleId)
+        }
     },
+
+    uploadFCSFile: async function (FCSFileId, file) {
+        const createProgressTokenResult = await makeAjaxCall(`${process.env.API_URL}/progress_tokens/create_progress_token`, { message: 'Uploading ' + file.name })
+        const progressInterval = setInterval(() => {
+            makeAjaxCall(`${process.env.API_URL}/progress_tokens/get_progress_token`, { progressTokenId: createProgressTokenResult.progressTokenId }).then((result) => {
+                const updateFCSFileAction = updateFCSFile(FCSFileId, { uploadProgress: result.progressToken.progress })
+                reduxStore.dispatch(updateFCSFileAction)
+            })
+        }, 1000)
+        try {
+            const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/upload_fcs_file`, { FCSFileId, progressTokenId: createProgressTokenResult.progressTokenId, file }, true)
+            const updateFCSFileAction = updateFCSFile(FCSFileId, result.FCSFile)
+            reduxStore.dispatch(updateFCSFileAction)
+            clearInterval(progressInterval)            
+        } catch (error) {
+            clearInterval(progressInterval)
+        }
+    },
+
+    removeFCSFile: async function (FCSFileId) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/fcs_files/remove_fcs_file`, { FCSFileId })
+        const removeAction = removeFCSFile(FCSFileId)
+        reduxStore.dispatch(removeAction)
+    },
+
+    selectFCSFile: async function (FCSFileId, workspaceId) {
+        const result = await makeAjaxCall(`${process.env.API_URL}/workspaces/select_fcs_file`, { FCSFileId, workspaceId })
+        const selectAction = selectFCSFile(FCSFileId, workspaceId)
+        reduxStore.dispatch(selectAction)
+    },
+
+    setFCSParametersDisabled: async function () {
+        // TODO
+    }
 }

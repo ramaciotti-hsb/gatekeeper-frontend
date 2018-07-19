@@ -29,10 +29,12 @@ export default class MultipleSampleView extends Component {
         };
 
         this.state.combinations = this.filterPlots()
+
+        this.panelRef = React.createRef()
     }
 
     updateContainerSize () {
-        this.setState({ containerWidth: this.refs.panel.offsetWidth })
+        this.setState({ containerWidth: this.panelRef.offsetWidth })
     }
 
     componentDidMount () {
@@ -194,8 +196,16 @@ export default class MultipleSampleView extends Component {
     }
 
     render () {
+        if (!this.props.FCSFile.filePath && this.props.FCSFile.uploadProgress > 0) {
+            return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Uploading {this.props.FCSFile.title}: {this.props.FCSFile.uploadProgress}%</div></div></div>
+        }
+
+        if (!this.props.FCSFile.filePath) {
+            return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Waiting for FCS File to be uploaded</div></div></div>
+        }
+
         if (!this.props.sample) {
-            return <div className='panel sample' ref='panel'><div className='loader-outer active'><div className='loader'></div><div className='text'>Loading FCS File Metadata</div></div></div>
+            return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Loading FCS File Metadata</div></div></div>
         }
 
         const plotsPerRow = Math.floor(this.state.containerWidth / (this.props.plotDisplayWidth + 130))
@@ -269,7 +279,7 @@ export default class MultipleSampleView extends Component {
             )
         })
         return (
-            <div className='panel sample' ref='panel'>
+            <div className='panel sample' ref={this.panelRef}>
                 <div className={`loader-outer${this.props.sample.loading ? ' active' : ''}`}><div className='loader'></div><div className='text'>{this.props.sample.loadingMessage}</div></div>
                 <div className='panel-inner' ref='panelInner'>
                     <div className='header'>

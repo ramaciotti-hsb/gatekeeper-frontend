@@ -184,7 +184,7 @@ export default class Application extends Component {
 
         return (
             <div className='container' onDrop={this.onDropFile.bind(this)}>
-                <MenuBar api={this.props.api} />
+                <MenuBar api={this.props.api} workspaceId={this.props.selectedWorkspaceId} />
                 <div className={`loader-outer maxIndex opaque${this.props.sessionLoading ? ' active' : ''}`}><div className='loader'></div><div className='text'>Connecting to server...</div></div>
                 <div className='tab-bar'>
                     {workspaceTabs}
