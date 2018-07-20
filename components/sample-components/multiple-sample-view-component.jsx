@@ -34,7 +34,7 @@ export default class MultipleSampleView extends Component {
     }
 
     updateContainerSize () {
-        this.setState({ containerWidth: this.panelRef.offsetWidth })
+        this.setState({ containerWidth: this.panelRef.current.offsetWidth })
     }
 
     componentDidMount () {
@@ -259,7 +259,7 @@ export default class MultipleSampleView extends Component {
                         <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, this.props.sample.plotImages[getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale })])}>
                             <i className='lnr lnr-picture' />
                         </div>
-                        <Dropdown outerClasses='dark' ref={'homologyDropdown-' + c[0] + '-' + c[1]}>
+                        <Dropdown outerClasses='dark'>
                             <div className='inner'>
                                 <div className='icon'><i className='lnr lnr-cog'></i></div>
                                 <div className='menu'>
@@ -278,10 +278,11 @@ export default class MultipleSampleView extends Component {
                 </div>
             )
         })
+
         return (
             <div className='panel sample' ref={this.panelRef}>
                 <div className={`loader-outer${this.props.sample.loading ? ' active' : ''}`}><div className='loader'></div><div className='text'>{this.props.sample.loadingMessage}</div></div>
-                <div className='panel-inner' ref='panelInner'>
+                <div className='panel-inner'>
                     <div className='header'>
                         {upperTitle}
                         <div className='lower'>
@@ -301,7 +302,7 @@ export default class MultipleSampleView extends Component {
                             <input type='text' value={this.state.plotHeightString || this.props.plotDisplayHeight} onChange={this.updatePlotDisplayHeight.bind(this)} onBlur={this.setPlotDimensions.bind(this)} onKeyPress={(event) => { event.key === 'Enter' && event.target.blur() }} />
                         </div>
                     </div>
-                    <div className='gates' onScroll={(e) => { if (Math.abs(e.target.scrollTop - this.state.scrollTop) > (this.props.plotDisplayHeight + 115) * 2) { this.setState({ scrollTop: e.target.scrollTop }) } } } ref="gates">
+                    <div className='gates' onScroll={(e) => { if (Math.abs(e.target.scrollTop - this.state.scrollTop) > (this.props.plotDisplayHeight + 115) * 2) { this.setState({ scrollTop: e.target.scrollTop }) } } }>
                         <div className='gates-inner' style={{ position: 'relative', height: Math.floor((this.state.combinations.length / plotsPerRow) * (this.props.plotDisplayHeight + 115)) }}>
                             {gates}
                         </div>

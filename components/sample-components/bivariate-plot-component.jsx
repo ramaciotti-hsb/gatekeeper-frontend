@@ -31,6 +31,10 @@ export default class BivariatePlot extends Component {
 
         this.cacheImageKey = null
         this.cacheImage = null
+
+        this.graphRef = React.createRef()
+        this.gatesRef = React.createRef()
+        this.canvasRef = React.createRef()
     }
 
     // -------------------------------------------------------------------------
@@ -80,7 +84,7 @@ export default class BivariatePlot extends Component {
     }
 
     createGraphLayout () {
-        d3.select(this.refs.graph).selectAll(':scope > *').remove();
+        d3.select(this.graphRef.current).selectAll(':scope > *').remove();
 
         // Need to offset the whole graph if we're including cytof 0 histograms
         const xOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayWidth / this.props.plotWidth) : 0
@@ -111,7 +115,7 @@ export default class BivariatePlot extends Component {
         const rowWidth = 10
 
         const color = d3.scaleOrdinal(d3.schemeCategory10)
-        const svg = d3.select(this.refs.graph)
+        const svg = d3.select(this.graphRef.current)
         const custom = d3.select(document.createElement('custom'))
         this.svgElement = custom
         // const tooltip = d3.select("#tooltip")
@@ -240,7 +244,7 @@ export default class BivariatePlot extends Component {
         });
 
         // Draw each individual custom element with their properties.
-        var canvas = d3.select(this.refs.canvas)
+        var canvas = d3.select(this.canvasRef.current)
           .attr('width', this.props.plotDisplayWidth)
           .attr('height', this.props.plotDisplayHeight);
 
@@ -558,13 +562,13 @@ export default class BivariatePlot extends Component {
                 <div className={`loader-outer${isLoading ? ' active' : ''}`}><div className='loader'></div><div className="text">{loadingMessage}</div></div>
                 {gatingError}
                 {/* D3 Axis */}
-                <svg className={'axis' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref="graph"></svg>
+                <svg className={'axis' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref={this.graphRef}></svg>
                 {/* Gate Paths */}
-                <svg className={'gates' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref="gates">
+                <svg className={'gates' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref={this.gatesRef}>
                     {gates}
                 </svg>
                 {tooltip}
-                <canvas className={'canvas' + (gatingError ? ' gating-error' : '')} ref="canvas"/>
+                <canvas className={'canvas' + (gatingError ? ' gating-error' : '')} ref={this.canvasRef}/>
                 {/*<div className='step' onClick={this.performHomologyIteration.bind(this, 15, 4)}>Step</div>*/}
             </div>
         )
