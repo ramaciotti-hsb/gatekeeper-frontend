@@ -137,6 +137,17 @@
                         @include backgroundHover($highlight-colour);
                         @include backgroundClick($highlight-colour);
                     }
+
+                    .warning-message {
+                        display: none;
+                        color: $red-colour;
+                        font-size: 12px;
+                        padding-top: 10px;
+
+                        &.active {
+                            display: flex;
+                        }
+                    }
                 }
             }
         } // .lower

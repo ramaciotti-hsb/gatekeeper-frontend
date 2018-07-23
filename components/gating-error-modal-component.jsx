@@ -56,6 +56,8 @@ export default class GatingErrorModal extends Component {
     }
 
     applyAutoAnchoring () {
+        this.props.setGatingModalErrorMessage('')
+
         this.setState({
             autoAnchoringLoading: true
         })
@@ -106,6 +108,7 @@ export default class GatingErrorModal extends Component {
                         <div className={`loader-outer ${this.state.autoAnchoringLoading ? ' active' : ''}`}><div className='loader small'></div></div>
                         Perform Auto Anchoring
                     </div>
+                    <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
                 </div>
             </div>
         )

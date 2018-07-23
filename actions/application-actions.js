@@ -22,6 +22,14 @@ export const hideGatingModal = () => {
     }
 }
 
+export const setGatingModalErrorMessage = (message) => {
+    return {
+        type: 'SET_GATING_MODAL_ERROR_MESSAGE',
+        payload: { message }
+    }
+}
+
+
 export const setBackgroundJobsEnabled = (backgroundJobsEnabled) => {
     return {
         type: 'SET_BACKGROUND_JOBS_ENABLED',

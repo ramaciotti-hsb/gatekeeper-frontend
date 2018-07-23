@@ -118,6 +118,8 @@ export default class HomologyModal extends Component {
     }
 
     createGatesClicked () {
+        this.props.setGatingModalErrorMessage('')
+        
         this.props.api.createUnsavedGatesUsingHomology(this.props.selectedSample.id, {
             selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
             selectedYParameterIndex: this.props.modalOptions.selectedYParameterIndex,
@@ -377,6 +379,7 @@ export default class HomologyModal extends Component {
                     <div className='row'/>
                     <div className='divider'></div>
                     <div className={'warning-message' + (this.props.gateHasChildren ? ' active' : '')}>Warning: Current gates and any sub gates will be deleted upon recalculation.</div>
+                    <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
                     <div className='actions'>
                         <div className='button calculate-homology' onClick={this.createGatesClicked.bind(this)}>Create Gates</div>
                     </div>

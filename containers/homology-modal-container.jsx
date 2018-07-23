@@ -4,6 +4,7 @@
 
 import { connect } from 'react-redux'
 import HomologyModal from '../components/homology-modal-component.jsx'
+import { setGatingModalErrorMessage } from '../actions/application-actions'
 import _ from 'lodash'
 
 const mapStateToProps = (state, ownProps) => {
@@ -28,14 +29,17 @@ const mapStateToProps = (state, ownProps) => {
             visible: state.gatingModal.sampleId && state.gatingModal.visible,
             sampleId: state.gatingModal.sampleId,
             selectedXParameterIndex: state.gatingModal.selectedXParameterIndex || 0,
-            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex || 1
+            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex || 1,
+            errorMessage: state.gatingModal.errorMessage
         }
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        
+        setGatingModalErrorMessage: (message) => {
+            dispatch(setGatingModalErrorMessage(message))
+        }
     }
 }
 

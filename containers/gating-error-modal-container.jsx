@@ -4,6 +4,7 @@
 
 import { connect } from 'react-redux'
 import GatingErrorModal from '../components/gating-error-modal-component.jsx'
+import { setGatingModalErrorMessage } from '../actions/application-actions'
 import _ from 'lodash'
 
 const mapStateToProps = (state, ownProps) => {
@@ -31,13 +32,18 @@ const mapStateToProps = (state, ownProps) => {
             visible: state.gatingModal.gatingErrorId && state.gatingModal.visible,
             sampleId: state.gatingModal.sampleId,
             selectedXParameterIndex: state.gatingModal.selectedXParameterIndex,
-            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex
+            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex,
+            errorMessage: state.gatingModal.errorMessage
         }
     }
 }
 
 const mapDispatchToProps = dispatch => {
-    return { }
+    return {
+        setGatingModalErrorMessage: (message) => {
+            dispatch(setGatingModalErrorMessage(message))
+        }
+    }
 }
 
 const GatingErrorModalWrapped = connect(

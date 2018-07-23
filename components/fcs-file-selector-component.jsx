@@ -32,7 +32,7 @@ export default class FCSFileSelector extends Component {
         }
         // Get the index of the currently selected FCS file
         let index = _.findIndex(this.props.FCSFiles, fcs => fcs.id === this.props.selectedFCSFile.id)
-        console.log(index, this.props.FCSFiles.length)
+
         let newIndex = index
         if (characterCode === constants.CHARACTER_CODE_LEFT_ARROW && index > 0) {
             newIndex = index - 1
@@ -129,10 +129,10 @@ export default class FCSFileSelector extends Component {
                         </div>
                         <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
                         <div className='divider' />
-                        {/*<div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
+                        <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
                             <i className='lnr lnr-cloud-sync'></i>
                             <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
-                        </div>*/}
+                        </div>
                     </div>
                     <div className='container-horizontal'>
                         <FCSParameterSelector />

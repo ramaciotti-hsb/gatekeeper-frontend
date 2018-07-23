@@ -157,6 +157,12 @@ const applicationReducer = (state = initialState, action) => {
         newState.gatingModal = { visible: false }
     }
     // --------------------------------------------------
+    // Set the gating modal error message
+    // --------------------------------------------------
+    else if (action.type === 'SET_GATING_MODAL_ERROR_MESSAGE') {
+        newState.gatingModal.errorMessage = action.payload.message
+    }
+    // --------------------------------------------------
     // Disables and re enabled background jobs
     // --------------------------------------------------
     else if (action.type === 'SET_BACKGROUND_JOBS_ENABLED') {
