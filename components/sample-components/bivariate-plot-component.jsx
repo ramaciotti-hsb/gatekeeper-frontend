@@ -529,6 +529,27 @@ export default class BivariatePlot extends Component {
             }
         })
 
+        if (this.props.showMinPeakSizeGuide && this.props.minPeakSize > 0) {
+            const edges = 20
+            const radius = Math.sqrt(this.props.minPeakSize / Math.PI)
+            const circle = []
+            for (let i = 0; i < edges; i++) {
+                circle.push([
+                    ((this.props.plotDisplayWidth / 2) + xOffset) + radius * Math.cos(2 * Math.PI * i / edges),
+                    ((this.props.plotDisplayHeight / 2)) + radius * Math.sin(2 * Math.PI * i / edges)
+                ])
+            }
+
+            const points = circle.reduce((string, point) => {
+                return string + point[0] + " " + point[1] + " "
+            }, "")
+            gates.push((
+                <svg key={'guide'}>
+                    <polygon points={points} className={'guide'} />
+                </svg>
+            ))
+        }
+
         // Show a loading indicator if the parameters are marked as loading or if there is no image for the requested parameter combination
         let isLoading
         let loadingMessage

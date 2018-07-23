@@ -101,6 +101,14 @@
             // stroke-dasharray: 5, 5;
         }
 
+        .guide {
+            fill: #ccc;
+            fill-opacity: 0.7;
+            stroke: #ccc;
+            stroke-opacity: 1;
+            stroke-width: 2;
+        }
+
         .domain {
             stroke: #ccc;
             stroke-width: 2;

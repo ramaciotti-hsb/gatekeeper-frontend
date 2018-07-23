@@ -140,7 +140,7 @@ const applicationReducer = (state = initialState, action) => {
             if (gateTemplateGroup) {
                 const unsavedGates = _.cloneDeep(_.filter(newState.gates, g => g.parentSampleId === sample.id && gateTemplateGroup.childGateTemplateIds.includes(g.gateTemplateId))).map((gate) => {
                     const childSample = _.find(newState.samples, s => s.id === gate.childSampleId)
-                    gate.includeEventIds = childSample.includeEventIds
+                    gate.includeEventIds = []
                     gate.FCSFileId = sample.FCSFileId
                     gate.sampleId = sample.id
                     gate.id = uuidv4()

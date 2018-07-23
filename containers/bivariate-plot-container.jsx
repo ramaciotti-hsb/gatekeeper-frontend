@@ -82,6 +82,8 @@ const mapStateToProps = (state, ownProps) => {
                 gateTemplateGroup,
                 gatingError,
                 FCSFile,
+                showMinPeakSizeGuide: ownProps.showMinPeakSizeGuide,
+                minPeakSize: ownProps.minPeakSize,
                 plotWidth: state.plotWidth,
                 plotHeight: state.plotHeight,
                 plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,

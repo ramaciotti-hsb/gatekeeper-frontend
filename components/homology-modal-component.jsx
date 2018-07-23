@@ -24,7 +24,8 @@ export default class HomologyModal extends Component {
             createNegativeGate: false,
             selectingComboGate: false,
             selectedComboGateIds: [],
-            highlightedGateIds: []
+            highlightedGateIds: [],
+            showMinPeakSizeGuide: false
         }
     }
 
@@ -107,6 +108,12 @@ export default class HomologyModal extends Component {
 
         this.setState({
             highlightedGateIds: this.state.highlightedGateIds.slice(0)
+        })
+    }
+
+    setShowMinPeakSizeGuide (show) {
+        this.setState({
+            showMinPeakSizeGuide: show
         })
     }
 
@@ -374,7 +381,7 @@ export default class HomologyModal extends Component {
                     </div>
                     <div className='row'>
                         <div className='text'>Minimum Peak Size</div>
-                        <input type='number' value={this.state.minPeakSize} onChange={this.updateState.bind(this, 'minPeakSize')} />
+                        <input type='number' value={this.state.minPeakSize} onChange={this.updateState.bind(this, 'minPeakSize')} onMouseOver={this.setShowMinPeakSizeGuide.bind(this, true)} onMouseOut={this.setShowMinPeakSizeGuide.bind(this, false)} />
                     </div>
                     <div className='row'/>
                     <div className='divider'></div>
@@ -397,6 +404,8 @@ export default class HomologyModal extends Component {
                         <div className='graph'>
                             <BivariatePlot 
                                 gates={this.props.unsavedGates}
+                                showMinPeakSizeGuide={this.state.showMinPeakSizeGuide}
+                                minPeakSize={this.state.minPeakSize}
                                 highlightedGateIds={this.state.highlightedGateIds}
                                 sampleId={this.props.selectedSample.id}
                                 FCSFileId={this.props.selectedFCSFile.id}
