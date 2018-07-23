@@ -33,8 +33,6 @@ const mapStateToProps = (state, ownProps) => {
             }
         }
 
-        console.log(newWorkspace.selectedFCSFile)
-
         newWorkspace.gateTemplates = []
         // If the workspace contains gate templates, find them and add them as complete objects
         if (newWorkspace.gateTemplateIds) {

@@ -17,6 +17,8 @@ const gates = (state = [], action = {}) => {
             gateData: action.payload.gate.gateData,
             gateCreatorData: action.payload.gate.gateCreatorData,
             renderedPolygon: action.payload.gate.renderedPolygon,
+            renderedXCutoffs: action.payload.gate.renderedXCutoffs,
+            renderedYCutoffs: action.payload.gate.renderedYCutoffs,
             parentSampleId: action.payload.parentSampleId, // The parent population to gate on
             childSampleId: action.payload.childSampleId, // The resulting subpopulation after the gate
             selectedXParameterIndex: action.payload.gate.selectedXParameterIndex,
