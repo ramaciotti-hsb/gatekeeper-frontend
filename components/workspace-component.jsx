@@ -26,12 +26,13 @@ export default class WorkspaceView extends Component {
             const childGateTemplates = _.filter(this.props.workspace.gateTemplates, gt => childGateTemplateGroup.childGateTemplateIds.includes(gt.id))
             const childrenRendered = childGateTemplates.map((childGateTemplate) => {
                 return (
-                    <div className={'sidebar-gate-template' + (childGateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (childGateTemplate.highlighted ? ' highlighted' : '')}
+                    <div className={'sidebar-gate-template' + (childGateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (childGateTemplate.highlighted ? ' highlighted' : '') + (!childGateTemplate.populationCount ? ' disabled' : '')}
                     onMouseEnter={this.props.updateGateTemplate.bind(null, childGateTemplate.id, { highlighted: true })}
                     onMouseLeave={this.props.updateGateTemplate.bind(null, childGateTemplate.id, { highlighted: false })}
                     key={childGateTemplate.id}>
                         <div className='body' onClick={this.props.api.selectGateTemplate.bind(null, childGateTemplate.id, this.props.workspace.id)}>
                             <div className='title'><div className='text'>{childGateTemplate.title}</div></div>
+                            <div className='optional' style={!childGateTemplate.typeSpecificData || !childGateTemplate.typeSpecificData.optional ? { display: 'none'} : null}>Optional</div>
                             <div className='number' style={!childGateTemplate.populationCount ? { display: 'none'} : null}>{childGateTemplate.populationCount} ({(childGateTemplate.populationCount / gateTemplate.populationCount * 100).toFixed(1)}%)</div>
                         </div>
                         <div className='child-gate-templates'>{this.renderSubGateTemplates(childGateTemplate)}</div>

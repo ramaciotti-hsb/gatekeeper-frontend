@@ -19,7 +19,7 @@ export default class HomologyModal extends Component {
         super(props)
         this.state = {
             edgeDistance: this.props.plotWidth * 0.05,
-            minPeakHeight: Math.round(this.props.plotWidth * 0.01),
+            minPeakHeight: Math.round(this.props.plotWidth * 0.02),
             minPeakSize: props.selectedFCSFile.machineType === constants.MACHINE_CYTOF ? 2000 : 1000,
             createNegativeGate: false,
             selectingComboGate: false,
@@ -172,24 +172,6 @@ export default class HomologyModal extends Component {
 
         let contents
 
-        let unsavedGates = [{
-            id: 1,
-            title: '143Nd_CD45RA (HIGH) · 147Sm_CD20 (HIGH)',
-            gateCreatorData: {
-                widthIndex: 60
-            },
-            selectedXParameterIndex: 0,
-            selectedYParameterIndex: 1
-        },{
-            id: 2,
-            title: '143Nd_CD45RA (HIGH) · 147Sm_CD20 (HIGH)',
-            gateCreatorData: {
-                widthIndex: 60
-            },
-            selectedXParameterIndex: 0,
-            selectedYParameterIndex: 1
-        }]
-
         if (this.props.unsavedGates) {
             const gates = this.props.unsavedGates.map((gate) => {
                 const highlightGate = this.setGateHighlight.bind(this, gate.id, true)
@@ -223,11 +205,16 @@ export default class HomologyModal extends Component {
                                     <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                                 <div className='additional-options'>
+                                    <div className='title'>Gate Options</div>
                                     <div className='parameter width'>
                                         <div className='text'>Additional Width:</div>
                                         <div className='value'>{gate.gateCreatorData.widthIndex}</div>
                                         <i className='lnr lnr-plus-circle' onClick={this.updateWidthIndex.bind(this, gate, 1)} />
                                         <i className='lnr lnr-circle-minus' onClick={this.updateWidthIndex.bind(this, gate, -1)} />
+                                    </div>
+                                    <div className={'parameter checkbox mark-optional' + (gate.gateCreatorData.optional ? ' active' : '')} onClick={this.props.api.updateUnsavedGate.bind(null, gate.id, { gateCreatorData: { optional: !gate.gateCreatorData.optional } })}>
+                                        <i className={'lnr ' + (gate.gateCreatorData.optional ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
+                                        <div className='text'>Mark population as optional (won't cause an error if it isn't found)</div>
                                     </div>
                                     {cytofOptions}
                                 </div>

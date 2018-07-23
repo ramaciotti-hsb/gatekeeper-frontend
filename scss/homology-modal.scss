@@ -288,6 +288,7 @@
                             }
 
                             .parameter {
+                                margin-top: 10px;
                                 align-items: center;
 
                                 .text {
@@ -301,36 +302,39 @@
                                 }
                             }
 
+                            .parameter.checkbox {
+                                cursor: point;
+                                cursor: pointer;
+                                @include foregroundHover(#555)
+                                @include foregroundClick(#555)
+
+                                &.active {
+                                    @include foregroundHover($highlight-colour)
+                                    @include foregroundClick($highlight-colour)
+                                }
+
+                                i {
+                                    font-size: 18px;
+                                    margin-right: 5px;
+                                }
+                            }
+
                             .additional-options {
                                 flex-direction: column;
+
+                                & > .title {
+                                    font-weight: 600;
+                                    color: darken($highlight-colour, 40%);
+                                }
                             }
 
                             .cytof-options {
-                                margin-top: 10px;
+                                margin-top: 20px;
                                 flex-direction: column;
 
                                 .title {
                                     font-weight: 600;
                                     color: darken($highlight-colour, 40%);
-                                    margin-bottom: 10px;
-                                }
-
-                                .parameter {
-                                    cursor: point;
-                                    margin-bottom: 10px;
-                                    cursor: pointer;
-                                    @include foregroundHover(#555)
-                                    @include foregroundClick(#555)
-
-                                    &.active {
-                                        @include foregroundHover($highlight-colour)
-                                        @include foregroundClick($highlight-colour)
-                                    }
-
-                                    i {
-                                        font-size: 18px;
-                                        margin-right: 5px;
-                                    }
                                 }
                             }
                         } // .left

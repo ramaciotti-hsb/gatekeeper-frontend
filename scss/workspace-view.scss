@@ -127,6 +127,10 @@
             border-bottom: 1px solid #eee;
             min-width: 100%;
 
+            &.disabled {
+                pointer-events: none;
+            }
+
             &.highlighted > .body {
                 @include backgroundHover(lighten(#A7DBD8, 20%));
                 @include backgroundClick(lighten(#A7DBD8, 20%));    
@@ -155,9 +159,15 @@
                     flex-grow: 1;
                 }
 
+                & > .optional {
+                    font-weight: 600;
+                    color: darken($highlight-colour, 20%);
+                }
+
                 & > .number {
                     font-weight: 600;
                     color: #555;
+                    margin-left: 10px;
                 }
             }
 

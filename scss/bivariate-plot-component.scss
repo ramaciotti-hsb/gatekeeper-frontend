@@ -92,11 +92,13 @@
             cursor: pointer;
 
             &.highlighted, &:hover {
-                fill-opacity: 0.05;
+                fill: #C02942;
+                fill-opacity: 0.3;
             }
 
             &:active {
-                fill-opacity: 0.1;
+                fill: #C02942;
+                fill-opacity: 0.5;
             }
             // stroke-dasharray: 5, 5;
         }
