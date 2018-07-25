@@ -45,21 +45,21 @@
                 border-top: 1px solid #ddd;
                 background: #eee;
                 flex-shrink: 0;
+            }
 
-                .button {
-                    padding: 8px 12px;
-                    color: #fff;
-                    font-weight: 600;
-                    font-size: 12px;
-                    cursor: pointer;
-                    @include backgroundHover(darken($highlight-colour, 10%));
-                    @include backgroundClick(darken($highlight-colour, 10%));
+            .button {
+                padding: 8px 12px;
+                color: #fff;
+                font-weight: 600;
+                font-size: 12px;
+                cursor: pointer;
+                @include backgroundHover(darken($highlight-colour, 10%));
+                @include backgroundClick(darken($highlight-colour, 10%));
 
-                    &.disabled {
-                        opacity: 0.7;
-                        background: #bbb;
-                        pointer-events: none;
-                    }
+                &.disabled {
+                    opacity: 0.7;
+                    background: #bbb;
+                    pointer-events: none;
                 }
             }
 
@@ -103,6 +103,54 @@
                         padding: 8px 12px;
                         border: 1px solid #ccc;
                         width: 100px;
+                    }
+                }
+
+                .seed-peaks {
+                    border-top: 1px solid #ddd;
+                    flex-direction: column;
+                    align-items: stretch;
+
+                    .title {
+                        color: #333;
+                        margin: 0;
+                        padding: 0;
+                        font: 600 14px 'Open Sans';
+                        padding: 15px;
+                        border-bottom: 1px solid #eee;
+                    }
+
+                    .peak {
+                        flex-direction: row;
+                        align-items: stretch;
+                        border-bottom: 1px solid #eee;
+
+                        .text {
+                            padding: 10px 15px;
+                            align-items: center;
+                            font: 600 13px 'Open Sans';
+                            flex-grow: 1;
+                        }
+
+                        .close-button {
+                            align-items: center;
+                            cursor: pointer;
+                            padding: 0 10px;
+                            @include backgroundHover(#fafafa);
+                            @include backgroundClick(#fafafa);
+
+                            i {
+                                font-size: 22px;
+                            }
+                        } // .close-button
+                    } // .peak
+
+                    .button {
+                        margin: 15px;
+
+                        &.active {
+                            background: darken($highlight-colour, 25%);
+                        }
                     }
                 }
 
@@ -230,6 +278,10 @@
                         flex-shrink: 0;
                         border-bottom: 1px solid #ddd;
                         flex-direction: row;
+
+                        &.highlighted {
+                            background-color: darken(#fafafa, 4%);
+                        }
 
                         &.negative .left .population-count, &.combo .population-count {
                             margin-bottom: 0;

@@ -26,7 +26,8 @@ export default class BivariatePlot extends Component {
             visibleGateTooltipId: null,
             selectedXScale: this.props.selectedXScale || this.props.workspace.selectedXScale,
             selectedYScale: this.props.selectedYScale || this.props.workspace.selectedYScale,
-            machineType: this.props.FCSFile.machineType || this.props.workspace.machineType
+            machineType: this.props.FCSFile.machineType || this.props.workspace.machineType,
+            mousePosition: [0, 0]
         }
 
         this.cacheImageKey = null
@@ -175,74 +176,6 @@ export default class BivariatePlot extends Component {
               .attr("visibility", "visible");
         };
 
-        var moveSelection = function(start, moved) {
-            selection.attr("d", rect(start[0] - margin.left, start[1] - margin.top, moved[0] - start[0], moved[1] - start[1]));
-        };
-
-        var endSelection = (start, end) => {
-            selection.attr("visibility", "hidden");
-            // Limit the rectangle to the boundaries of the graph
-            const startX = Math.min(Math.max(0, start[0] - margin.left), this.props.plotDisplayWidth)
-            const endX = Math.min(Math.max(0, end[0] - margin.left), this.props.plotDisplayWidth)
-            const startY = Math.min(Math.max(0, start[1] - margin.top), this.props.plotDisplayHeight)
-            const endY = Math.min(Math.max(0, end[1] - margin.top), this.props.plotDisplayHeight)
-            const startXFixed = scales.xScale.invert(startX)
-            const endXFixed = scales.xScale.invert(endX)
-            const startYFixed = scales.yScale.invert(startY)
-            const endYFixed = scales.yScale.invert(endY)
-
-            // Only allow gates above a certain size
-            if (Math.abs(endX - startX) * Math.abs(endY - startY) < 400) {
-                return
-            }
-
-            const gate = {
-                type: constants.GATE_TYPE_POLYGON,
-                gateData: [
-                    [startXFixed, startYFixed],
-                    [endXFixed, startYFixed],
-                    [endXFixed, endYFixed],
-                    [startXFixed, endYFixed]
-                ],
-                selectedXParameterIndex: this.props.selectedXParameterIndex,
-                selectedYParameterIndex: this.props.selectedYParameterIndex,
-                selectedXScale: this.props.selectedXScale,
-                selectedYScale: this.props.selectedYScale,
-                gateCreator: constants.GATE_MANUAL
-            }
-
-            this.props.api.createSubSampleAndAddToWorkspace(
-                this.props.workspace.id,
-                this.props.sample.id,
-                {
-                    filePath: this.props.sample.filePath,
-                    FCSParameters: this.props.FCSFile.FCSParameters,
-                    plotImages: {},
-                    subSampleIds: [],
-                    selectedXParameterIndex: this.props.selectedXParameterIndex,
-                    selectedYParameterIndex: this.props.selectedYParameterIndex,
-                    selectedXScale: this.props.selectedXScale,
-                    selectedYScale: this.props.selectedYScale,
-                },
-                gate,
-            )
-        };
-
-        svgGates.on("mousedown", function (event) {
-          var subject = d3.select(window), parent = this.parentNode,
-              start = d3.mouse(parent);
-            startSelection(start);
-            subject
-              .on("mousemove.selection", function() {
-                moveSelection(start, d3.mouse(parent));
-              }).on("mouseup.selection", function() {
-                endSelection(start, d3.mouse(parent));
-                subject.on("mousemove.selection", null).on("mouseup.selection", null);
-              });
-
-            d3.event.preventDefault()
-        });
-
         // Draw each individual custom element with their properties.
         var canvas = d3.select(this.canvasRef.current)
           .attr('width', this.props.plotDisplayWidth)
@@ -379,14 +312,6 @@ export default class BivariatePlot extends Component {
         this.props.api.updateGateTemplateAndRecalculate(gateTemplate.id, { typeSpecificData: _.merge(gateTemplate.typeSpecificData, data) })
     }
 
-    showGateTooltip (gateId, event) {
-        event.stopPropagation()
-
-        this.setState({
-            visibleGateTooltipId: gateId
-        })
-    }
-
     selectGateTemplate (gateTemplateId) {
         this.props.api.selectGateTemplate(gateTemplateId, this.props.workspace.id)
     }
@@ -394,6 +319,18 @@ export default class BivariatePlot extends Component {
     componentDidMount() {
         this.createGraphLayout()
         // this.initHomologyIteration()
+    }
+
+    setMouseOver (mouseOver) {
+        this.setState({
+            mouseOver: mouseOver
+        })
+    }
+
+    updateMousePosition (event) {
+        this.setState({
+            mousePosition: [event.nativeEvent.offsetX, event.nativeEvent.offsetY]
+        })
     }
 
     componentDidUpdate(prevProps) {
@@ -502,7 +439,6 @@ export default class BivariatePlot extends Component {
                     return (
                         <svg onMouseEnter={this.props.updateGateTemplate.bind(null, gateTemplate.id, { highlighted: true })}
                             onMouseLeave={this.props.updateGateTemplate.bind(null, gateTemplate.id, { highlighted: false })}
-                            onContextMenu={this.showGateTooltip.bind(this, gate.id)}
                             onClick={this.selectGateTemplate.bind(this, gate.gateTemplateId)}
                             key={gate.id}>
                             <polygon points={points} className={'gate' + (gateTemplate.highlighted ? ' highlighted' : '')} />
@@ -520,7 +456,8 @@ export default class BivariatePlot extends Component {
                         )
                     }
                     return (
-                        <svg key={gate.id}>
+                        <svg key={gate.id} onMouseEnter={this.props.setGateHighlight.bind(null, gate.id, true)}
+                            onMouseLeave={this.props.setGateHighlight.bind(null, gate.id, false )}>
                             <polygon points={points} className={'gate' + (this.props.highlightedGateIds && this.props.highlightedGateIds.includes(gate.id) ? ' highlighted' : '')} />
                             {gateTemplatePosition}
                         </svg>
@@ -548,6 +485,55 @@ export default class BivariatePlot extends Component {
                     <polygon points={points} className={'guide'} />
                 </svg>
             ))
+        }
+
+        if (this.props.seedPeaks) {
+            for (let peak of this.props.seedPeaks) {
+                const edges = 20
+                const radius = Math.sqrt(this.props.minPeakSize / Math.PI)
+                if (_.isUndefined(this.props.minPeakSize)) {
+                    console.log(this.props)
+                }
+                const circle = []
+                for (let i = 0; i < edges; i++) {
+                    circle.push([
+                        (peak.position[0] * widthDisplayRatio + xOffset) + radius * Math.cos(2 * Math.PI * i / edges),
+                        (peak.position[1] * heightDisplayRatio) + radius * Math.sin(2 * Math.PI * i / edges)
+                    ])
+                }
+
+                const points = circle.reduce((string, point) => {
+                    return string + point[0] + " " + point[1] + " "
+                }, "")
+                gates.push((
+                    <svg key={peak.id}>
+                        <polygon points={points} className={'guide'} />
+                    </svg>
+                ))
+            }
+        }
+
+        if (this.props.showSeedCreator) {
+            if (this.state.mouseOver) {
+                const edges = 20
+                const radius = Math.sqrt(this.props.minPeakSize / Math.PI)
+                const circle = []
+                for (let i = 0; i < edges; i++) {
+                    circle.push([
+                        (this.state.mousePosition[0]) + radius * Math.cos(2 * Math.PI * i / edges),
+                        (this.state.mousePosition[1]) + radius * Math.sin(2 * Math.PI * i / edges)
+                    ])
+                }
+
+                const points = circle.reduce((string, point) => {
+                    return string + point[0] + " " + point[1] + " "
+                }, "")
+                gates.push((
+                    <svg key={'guide'}>
+                        <polygon points={points} className={'guide'} />
+                    </svg>
+                ))
+            }
         }
 
         // Show a loading indicator if the parameters are marked as loading or if there is no image for the requested parameter combination
@@ -579,13 +565,15 @@ export default class BivariatePlot extends Component {
         }
 
         return (
-            <div className='svg-outer' onClick={this.showGateTooltip.bind(this, null)}>
+            <div className='svg-outer'>
                 <div className={`loader-outer${isLoading ? ' active' : ''}`}><div className='loader'></div><div className="text">{loadingMessage}</div></div>
                 {gatingError}
                 {/* D3 Axis */}
                 <svg className={'axis' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref={this.graphRef}></svg>
                 {/* Gate Paths */}
-                <svg className={'gates' + (gatingError ? ' gating-error' : '')} width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref={this.gatesRef}>
+                <svg className={'gates' + (gatingError ? ' gating-error' : '')} onMouseEnter={this.setMouseOver.bind(this, true)} onMouseLeave={this.setMouseOver.bind(this, false)} onMouseMove={this.props.showSeedCreator ? this.updateMousePosition.bind(this) : () => {}}
+                    onClick={this.props.showSeedCreator ? this.props.createGatingModalSeedPeak.bind(this, [ Math.round((this.state.mousePosition[0] - xOffset) / widthDisplayRatio), Math.round(this.state.mousePosition[1] / heightDisplayRatio) ]) : () => {}}
+                    width={this.props.plotDisplayWidth + this.state.graphMargin.left + this.state.graphMargin.right} height={this.props.plotDisplayHeight + this.state.graphMargin.bottom + this.state.graphMargin.top} ref={this.gatesRef}>
                     {gates}
                 </svg>
                 {tooltip}

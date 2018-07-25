@@ -266,7 +266,6 @@ export default class MultipleSampleView extends Component {
                                     <div className='menu-header'>Auto Gating</div>
                                     <div className='menu-inner'>
                                         <div className='item' onClick={this.calculateHomology.bind(this, c[0], c[1])}><div>Persistent Homology</div></div>
-                                        <div className='item' onClick={this.calculateHomology.bind(this, c[0], c[1])}><div>Persistent Homology (Recursive)</div></div>
                                     </div>
                                 </div>
                             </div>

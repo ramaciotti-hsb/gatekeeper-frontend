@@ -62,10 +62,30 @@ export default class GatingErrorModal extends Component {
             autoAnchoringLoading: true
         })
 
-        this.props.api.applyErrorHandlerToGatingError(this.props.gatingError.id, { type: constants.GATE_ERROR_HANDLING_AUTO_ANCHOR }).then((result) => {
+        this.props.api.applyErrorHandlerToGatingError(this.props.gatingError.id, { type: constants.GATING_ERROR_HANDLER_AUTO_ANCHOR }).then((result) => {
             this.setState({
                 autoAnchoringLoading: false
             })
+        })
+    }
+
+    recalculateUsingSeedPeaks () {
+        this.props.setGatingModalErrorMessage('')
+
+        this.setState({
+            manualHandlerLoading: true
+        })
+
+        this.props.api.applyErrorHandlerToGatingError(this.props.gatingError.id, { type: constants.GATING_ERROR_HANDLER_MANUAL, seedPeaks: this.props.modalOptions.seedPeaks }).then((result) => {
+            this.setState({
+                manualHandlerLoading: false
+            })
+        })
+    }
+
+    setShowSeedCreator (show) {
+        this.setState({
+            showSeedCreator: show
         })
     }
 
@@ -97,6 +117,29 @@ export default class GatingErrorModal extends Component {
             })
         }
 
+        const peaks = this.props.modalOptions.seedPeaks.map((peak) => {
+            return (
+                <div className='peak' key={peak.id}>
+                    <div className='text'>Peak at [{peak.position[0]}, {peak.position[1]}]</div>
+                    <div className='close-button'>
+                        <i className='lnr lnr-cross' onClick={this.props.removeGatingModalSeedPeak.bind(null, peak.id)}></i>
+                    </div>
+                </div>
+            )
+        })
+
+        const seedPeaks = (
+            <div className='handler seed-peaks'>
+                <div className='title'>Manual Resolution using Seed peaks</div>
+                {peaks}
+                <div>
+                    <div className={'button toggle-seed-peaks' + (this.state.showSeedCreator ? ' active' : '')} onClick={this.setShowSeedCreator.bind(this, !this.state.showSeedCreator)}>{this.state.showSeedCreator ? 'Mouse Over Plot to Add' : 'Add Seed Peaks'}</div>
+                    <div className={'button recalculate' + (this.props.modalOptions.seedPeaks.length === 0 ? ' disabled' : '')} onClick={this.recalculateUsingSeedPeaks.bind(this)}>Recalculate Using Seeds</div>
+                </div>
+            </div>
+        )
+
+
         const contents = (
             <div className='gating-errors'>
                 <div className='title first'>Gating Errors</div>
@@ -110,6 +153,7 @@ export default class GatingErrorModal extends Component {
                     </div>
                     <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
                 </div>
+                {seedPeaks}
             </div>
         )
 
@@ -126,6 +170,10 @@ export default class GatingErrorModal extends Component {
                                 highlightedGateIds={this.state.highlightedGateIds}
                                 sampleId={this.props.selectedSample.id}
                                 FCSFileId={this.props.selectedFCSFile.id}
+                                minPeakSize={1000}
+                                showSeedCreator={this.state.showSeedCreator}
+                                seedPeaks={this.props.modalOptions.seedPeaks}
+                                setGateHighlight={this.setGateHighlight.bind(this)}
                                 showGateTemplatePositions={true}
                                 selectedXParameterIndex={this.props.selectedGateTemplateGroup.selectedXParameterIndex}
                                 selectedYParameterIndex={this.props.selectedGateTemplateGroup.selectedYParameterIndex}

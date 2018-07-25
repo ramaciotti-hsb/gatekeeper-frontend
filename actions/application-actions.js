@@ -2,6 +2,8 @@
 // Redux actions for interacting with the global application state.
 // -------------------------------------------------------------
 
+import uuidv4 from 'uuid/v4'
+
 export const setAuthenticatedUser = (authenticatedUser) => {
     return {
         type: 'SET_AUTHENTICATED_USER',
@@ -29,6 +31,19 @@ export const setGatingModalErrorMessage = (message) => {
     }
 }
 
+export const createGatingModalSeedPeak = (position) => {
+    return {
+        type: 'CREATE_GATING_MODAL_SEED_PEAK',
+        payload: { seedPeak: { id: uuidv4(), position } }
+    }
+}
+
+export const removeGatingModalSeedPeak = (seedPeakId) => {
+    return {
+        type: 'REMOVE_GATING_MODAL_SEED_PEAK',
+        payload: { seedPeakId }
+    }
+}
 
 export const setBackgroundJobsEnabled = (backgroundJobsEnabled) => {
     return {

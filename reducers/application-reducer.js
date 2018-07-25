@@ -163,6 +163,20 @@ const applicationReducer = (state = initialState, action) => {
         newState.gatingModal.errorMessage = action.payload.message
     }
     // --------------------------------------------------
+    // Adds a gating modal seed peak
+    // --------------------------------------------------
+    else if (action.type === 'CREATE_GATING_MODAL_SEED_PEAK') {
+        newState.gatingModal.seedPeaks = newState.gatingModal.seedPeaks || []
+        newState.gatingModal.seedPeaks.push(action.payload.seedPeak)
+    }
+    // --------------------------------------------------
+    // Removes a gating modal seed peak
+    // --------------------------------------------------
+    else if (action.type === 'REMOVE_GATING_MODAL_SEED_PEAK') {
+        newState.gatingModal.seedPeaks = newState.gatingModal.seedPeaks || []
+        _.remove(newState.gatingModal.seedPeaks, p => p.id === action.payload.seedPeakId)
+    }
+    // --------------------------------------------------
     // Disables and re enabled background jobs
     // --------------------------------------------------
     else if (action.type === 'SET_BACKGROUND_JOBS_ENABLED') {
@@ -192,6 +206,7 @@ const applicationReducer = (state = initialState, action) => {
     // Sets unsaved gates which will display on the auto gating modal
     // --------------------------------------------------
     else if (action.type === 'SET_UNSAVED_GATES') {
+        newState.gatingModal.seedPeaks = []
         newState.unsavedGates = _.cloneDeep(action.payload.unsavedGates)
     }
     // --------------------------------------------------

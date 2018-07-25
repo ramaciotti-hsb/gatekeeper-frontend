@@ -25,13 +25,17 @@ export default class HomologyModal extends Component {
             selectingComboGate: false,
             selectedComboGateIds: [],
             highlightedGateIds: [],
-            showMinPeakSizeGuide: false
+            showMinPeakSizeGuide: false,
+            showSeedCreator: false
         }
     }
 
     modalOuterClicked (event) {
         this.props.api.hideGatingModal()
         this.props.api.resetUnsavedGates()
+        this.setState({
+            showSeedCreator: false
+        })
     }
 
     modalInnerClicked (event) {
@@ -117,6 +121,12 @@ export default class HomologyModal extends Component {
         })
     }
 
+    setShowSeedCreator (show) {
+        this.setState({
+            showSeedCreator: show
+        })
+    }
+
     updateWidthIndex(gate, increment, event) {
         if (event.shiftKey) {
             increment *= 10
@@ -126,6 +136,10 @@ export default class HomologyModal extends Component {
 
     createGatesClicked () {
         this.props.setGatingModalErrorMessage('')
+
+        this.setState({
+            showSeedCreator: false
+        })
         
         this.props.api.createUnsavedGatesUsingHomology(this.props.selectedSample.id, {
             selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
@@ -136,7 +150,8 @@ export default class HomologyModal extends Component {
             edgeDistance: this.state.edgeDistance,
             minPeakHeight: this.state.minPeakHeight,
             minPeakSize: this.state.minPeakSize,
-            removeExistingGates: true
+            removeExistingGates: true,
+            seedPeaks: this.props.modalOptions.seedPeaks
         })
     }
 
@@ -157,7 +172,15 @@ export default class HomologyModal extends Component {
     componentDidMount () {
         this.keyboardListenerId = uuidv4()
         // Hide the modal when the escape key is pressed
-        registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, this.modalOuterClicked.bind(this))
+        registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, () => {
+            if (this.state.showSeedCreator) {
+                this.setState({
+                    showSeedCreator: false
+                })
+            } else {
+                this.modalOuterClicked.bind(this)                
+            }
+        })
     }
 
     componentWillUnmount () {
@@ -195,7 +218,7 @@ export default class HomologyModal extends Component {
                     }
 
                     return (
-                        <div className={'gate' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
+                        <div className={'gate' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
                         onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
                             <div className='left'>
                                 <div className='title'>
@@ -226,7 +249,7 @@ export default class HomologyModal extends Component {
                     )
                 } else if (gate.type === constants.GATE_TYPE_NEGATIVE) {
                     return (
-                        <div className={'gate negative' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
+                        <div className={'gate negative' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
                         onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
                             <div className='left'>
                                 <div className='title'>
@@ -355,6 +378,27 @@ export default class HomologyModal extends Component {
                 </div>
             )
         } else {
+            const peaks = this.props.modalOptions.seedPeaks.map((peak) => {
+                return (
+                    <div className='peak' key={peak.id}>
+                        <div className='text'>Peak at [{peak.position[0]}, {peak.position[1]}]</div>
+                        <div className='close-button'>
+                            <i className='lnr lnr-cross' onClick={this.props.removeGatingModalSeedPeak.bind(null, peak.id)}></i>
+                        </div>
+                    </div>
+                )
+            })
+
+            const seedPeaks = (
+                <div className='seed-peaks'>
+                    <div className='title'>Seed peaks</div>
+                    {peaks}
+                    <div>
+                        <div className={'button toggle-seed-peaks' + (this.state.showSeedCreator ? ' active' : '')} onClick={this.setShowSeedCreator.bind(this, !this.state.showSeedCreator)}>{this.state.showSeedCreator ? 'Mouse Over Plot to Add' : 'Add Seed Peaks'}</div>
+                    </div>
+                </div>
+            )
+
             contents = (
                 <div className='homology-options'>
                     <div className='title'>Homology Options</div>
@@ -371,6 +415,7 @@ export default class HomologyModal extends Component {
                         <input type='number' value={this.state.minPeakSize} onChange={this.updateState.bind(this, 'minPeakSize')} onMouseOver={this.setShowMinPeakSizeGuide.bind(this, true)} onMouseOut={this.setShowMinPeakSizeGuide.bind(this, false)} />
                     </div>
                     <div className='row'/>
+                    {seedPeaks}
                     <div className='divider'></div>
                     <div className={'warning-message' + (this.props.gateHasChildren ? ' active' : '')}>Warning: Current gates and any sub gates will be deleted upon recalculation.</div>
                     <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
@@ -391,8 +436,11 @@ export default class HomologyModal extends Component {
                         <div className='graph'>
                             <BivariatePlot 
                                 gates={this.props.unsavedGates}
+                                setGateHighlight={this.setGateHighlight.bind(this)}
                                 showMinPeakSizeGuide={this.state.showMinPeakSizeGuide}
                                 minPeakSize={this.state.minPeakSize}
+                                showSeedCreator={this.state.showSeedCreator}
+                                seedPeaks={this.props.modalOptions.seedPeaks}
                                 highlightedGateIds={this.state.highlightedGateIds}
                                 sampleId={this.props.selectedSample.id}
                                 FCSFileId={this.props.selectedFCSFile.id}

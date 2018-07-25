@@ -4,7 +4,7 @@
 
 import { connect } from 'react-redux'
 import GatingErrorModal from '../components/gating-error-modal-component.jsx'
-import { setGatingModalErrorMessage } from '../actions/application-actions'
+import { setGatingModalErrorMessage, removeGatingModalSeedPeak } from '../actions/application-actions'
 import _ from 'lodash'
 
 const mapStateToProps = (state, ownProps) => {
@@ -33,7 +33,8 @@ const mapStateToProps = (state, ownProps) => {
             sampleId: state.gatingModal.sampleId,
             selectedXParameterIndex: state.gatingModal.selectedXParameterIndex,
             selectedYParameterIndex: state.gatingModal.selectedYParameterIndex,
-            errorMessage: state.gatingModal.errorMessage
+            errorMessage: state.gatingModal.errorMessage,
+            seedPeaks: state.gatingModal.seedPeaks || []
         }
     }
 }
@@ -42,6 +43,9 @@ const mapDispatchToProps = dispatch => {
     return {
         setGatingModalErrorMessage: (message) => {
             dispatch(setGatingModalErrorMessage(message))
+        },
+        removeGatingModalSeedPeak: (peakId) => {
+            dispatch(removeGatingModalSeedPeak(peakId))
         }
     }
 }

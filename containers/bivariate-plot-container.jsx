@@ -5,6 +5,7 @@
 import { connect } from 'react-redux'
 import { createSubSampleAndAddToWorkspace } from '../actions/workspace-actions'
 import { updateGateTemplate } from '../actions/gate-template-actions'
+import { createGatingModalSeedPeak } from '../actions/application-actions'
 import BivariatePlot from '../components/sample-components/bivariate-plot-component.jsx'
 import _ from 'lodash'
 
@@ -44,6 +45,9 @@ const mapStateToProps = (state, ownProps) => {
                 sample: newSample,
                 gates: ownProps.gates,
                 FCSFile,
+                setGateHighlight: ownProps.setGateHighlight,
+                showSeedCreator: ownProps.showSeedCreator,
+                minPeakSize: ownProps.minPeakSize,
                 plotWidth: state.plotWidth,
                 plotHeight: state.plotHeight,
                 plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,
@@ -82,8 +86,10 @@ const mapStateToProps = (state, ownProps) => {
                 gateTemplateGroup,
                 gatingError,
                 FCSFile,
+                showSeedCreator: ownProps.showSeedCreator,
+                seedPeaks: ownProps.seedPeaks || [],
                 showMinPeakSizeGuide: ownProps.showMinPeakSizeGuide,
-                minPeakSize: ownProps.minPeakSize,
+                minPeakSize: ownProps.minPeakSize || 1000,
                 plotWidth: state.plotWidth,
                 plotHeight: state.plotHeight,
                 plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,
@@ -101,6 +107,9 @@ const mapDispatchToProps = dispatch => {
     return {
         updateGateTemplate: (gateTemplateId, parameters) => {
             dispatch(updateGateTemplate(gateTemplateId, parameters))
+        },
+        createGatingModalSeedPeak: (position) => {
+            dispatch(createGatingModalSeedPeak(position))
         }
     }
 }
