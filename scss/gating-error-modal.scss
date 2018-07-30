@@ -67,6 +67,11 @@
                 background: #fafafa;
                 flex-direction: column;
                 flex-grow: 1;
+                overflow-y: scroll;
+
+                & > div {
+                    flex-shrink: 0;
+                }
 
                 & > .title {
                     font-size: 18px;
@@ -163,6 +168,10 @@
                     &.seed-peaks {
                         align-items: stretch;
 
+                        .title {
+                            margin-bottom: 0;
+                        }
+
                         .peak {
                             flex-direction: row;
                             align-items: stretch;
@@ -198,6 +207,294 @@
                     }
                 }
             }
+
+                        .unsaved-gates {
+                flex-grow: 1;
+                background: #fafafa;
+                flex-direction: column;
+                font-size: 12px;
+
+                & > .title {
+                    font-size: 18px;
+                    color: #777;
+                    font-weight: 200;
+                    align-items: stretch;
+                    border-bottom: 1px solid #ddd;
+                    flex-shrink: 0;
+
+                    .text {
+                        padding-left: 15px;
+                        margin: 10px 0;
+                        flex-grow: 1;
+                    }
+
+                    .dropdown {
+                        align-items: stretch;
+
+                        &.active {
+                            .inner .icon {
+                                color: #fff;
+                                border-right: 1px solid #666;
+                                background: #666;
+
+                                &:hover {
+                                    background: #666;
+                                }
+
+                                &:active {
+                                    background: #666;
+                                }
+                            }
+                        }
+
+                        .inner {
+                            align-items: stretch;
+
+                            .icon {
+                                padding: 0 12px;
+                                cursor: pointer;                        
+                                align-items: center;
+                                border-right: 1px solid #eee;
+                                @include backgroundHover(#fafafa);
+                                @include backgroundClick(#fafafa);
+                            }
+
+                            .menu {
+                                width: 300px;
+                                align-items: stretch;
+
+                                .menu-inner {
+                                    flex-direction: column;
+                                    align-items: stretch;
+                                    
+                                    .item {
+                                        cursor: pointer;
+                                        @include backgroundHover(#666);
+                                        @include backgroundClick(#666);
+
+                                        i {
+                                            margin-right: 15px;
+                                            font-size: 22px;
+                                        }
+
+                                        &.clickable {
+                                            cursor: pointer;
+
+                                            &.active {
+                                                @include foregroundHover(darken($highlight-colour, 15%));
+                                                @include foregroundClick(darken($highlight-colour, 15%));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    .close-button {
+                        cursor: pointer;
+                        align-items: center;
+                        padding: 0 10px;
+                        @include foregroundHover(#888);
+                        @include foregroundClick(#888);
+                        
+                        .lnr-cross {
+                            font-size: 26px;
+                        }
+                    }
+                }
+
+                .gates {
+                    flex-grow: 1;
+                    overflow-y: scroll;
+                    padding: 0;
+                    align-items: stretch;
+                    flex-wrap: nowrap;
+                    flex-direction: column;
+
+                    .gate {
+                        flex-shrink: 0;
+                        border-bottom: 1px solid #ddd;
+                        flex-direction: row;
+
+                        &.highlighted {
+                            background-color: darken(#fafafa, 4%);
+                        }
+
+                        &.negative .left .population-count, &.combo .population-count {
+                            margin-bottom: 0;
+                        }
+
+                        &.combo {
+
+                            .combo-list {
+                                flex-direction: column;
+                                align-items: flex-start;
+
+                                .included-gate {
+                                    padding: 8px 12px;
+                                    margin: 5px 0;
+                                    color: #fff;
+                                    border-radius: 5px;
+                                    @include backgroundHover(darken($highlight-colour, 30%))
+                                }
+                            }
+                        }
+
+                        .left {
+                            padding: 10px;                            
+                            flex-direction: column;
+                            flex-grow: 1;
+
+                            & > .title {
+                                font-size: 13px;
+                                font-weight: 600;
+                                margin-bottom: 5px;
+                            }
+
+                            .population-count {
+                                margin-bottom: 10px;
+                              
+                                .highlight {
+                                    margin-right: 3px;
+                                }
+                            }
+
+                            .width {
+
+                                i {
+                                    font-size: 18px;
+                                    margin-right: 5px;
+                                    cursor: pointer;
+
+                                    &:hover {
+                                        color: #555;
+                                    }
+
+                                    &:active {
+                                        color: $highlight-colour;
+                                    }
+                                }
+                            }
+
+                            .parameter {
+                                margin-top: 10px;
+                                align-items: center;
+
+                                .text {
+                                    flex-grow: 1;
+                                }
+
+                                .value {
+                                    margin-right: 5px;
+                                    font-size: 18px;
+                                    color: #aaa;
+                                }
+                            }
+
+                            .parameter.checkbox {
+                                cursor: point;
+                                cursor: pointer;
+                                @include foregroundHover(#555)
+                                @include foregroundClick(#555)
+
+                                &.active {
+                                    @include foregroundHover($highlight-colour)
+                                    @include foregroundClick($highlight-colour)
+                                }
+
+                                i {
+                                    font-size: 18px;
+                                    margin-right: 5px;
+                                }
+                            }
+
+                            .additional-options {
+                                flex-direction: column;
+
+                                & > .title {
+                                    font-weight: 600;
+                                    color: darken($highlight-colour, 40%);
+                                }
+                            }
+
+                            .cytof-options {
+                                margin-top: 20px;
+                                flex-direction: column;
+
+                                .title {
+                                    font-weight: 600;
+                                    color: darken($highlight-colour, 40%);
+                                }
+                            }
+                        } // .left
+
+                        .dismiss {
+                            cursor: pointer;
+
+                            &:hover {
+                                @include foregroundClick($red-colour);
+                            }
+
+                            i {
+                                font-size: 26px;
+                                align-items: center;
+                                justify-content: center;
+                                display: flex;
+                                padding: 0 15px;
+                            }
+                        }
+
+                        .right {
+                            max-width: 0px;
+                            transition: max-width 0.2s ease;
+
+                            i {
+                                font-size: 26px;
+                                align-items: center;
+                                justify-content: center;
+                                display: flex;
+                                padding: 0 15px;
+                            }
+                        }
+
+                        &.combo-selection {
+                            cursor: pointer;
+                            @include backgroundHover(#fafafa);
+                            @include backgroundClick(#fafafa);
+
+                            &.active {
+                                @include backgroundHover(lighten($highlight-colour, 30%));
+                                @include backgroundClick(lighten($highlight-colour, 30%));
+
+                                .right i {
+                                    color: $highlight-colour;
+                                }
+                            }
+
+                            .left {
+                                padding: 20px;
+                            }
+
+                            .dismiss {
+                                display: none;
+                            }
+
+                            .right {
+                                max-width: 100px;
+                            }
+
+                            .population-count {
+                                margin-bottom: 0;
+                            }
+
+                            .additional-options {
+                                display: none;
+                            }
+                        }
+                    } // .gate
+                }
+            } // .unsaved-gates
         } // .lower
     } // .gating-error-inner
 } // .gating-error-outer

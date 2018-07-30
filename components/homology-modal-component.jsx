@@ -45,7 +45,7 @@ export default class HomologyModal extends Component {
     componentDidUpdate (prevProps) {
         if (prevProps.selectedFCSFile.machineType !== this.props.selectedFCSFile.machineType) {
             this.setState({
-                minPeakSize: this.props.selectedFCSFile.machineType === constants.MACHINE_CYTOF ? 5000 : 1000
+                minPeakSize: this.props.selectedFCSFile.machineType === constants.MACHINE_CYTOF ? 2000 : 1000
             })
         }
     }
@@ -148,9 +148,8 @@ export default class HomologyModal extends Component {
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
             edgeDistance: this.state.edgeDistance,
-            minPeakHeight: this.state.minPeakHeight,
-            minPeakSize: this.state.minPeakSize,
-            removeExistingGates: true,
+            minPeakHeight: parseInt(this.state.minPeakHeight),
+            minPeakSize: parseInt(this.state.minPeakSize),
             seedPeaks: this.props.modalOptions.seedPeaks
         })
     }
@@ -163,9 +162,9 @@ export default class HomologyModal extends Component {
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
             edgeDistance: this.state.edgeDistance,
-            minPeakHeight: this.state.minPeakHeight,
-            minPeakSize: this.state.minPeakSize,
-            removeExistingGates: true
+            minPeakHeight: parseInt(this.state.minPeakHeight),
+            minPeakSize: parseInt(this.state.minPeakSize),
+            recalculateGates: true
         }).then(this.modalOuterClicked.bind(this))
     }
 

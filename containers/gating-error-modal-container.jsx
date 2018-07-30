@@ -26,6 +26,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedGateTemplateGroup,
         selectedSample,
         gatingError,
+        unsavedGates: state.unsavedGates,
         plotWidth: state.plotWidth,
         plotHeight: state.plotHeight,
         modalOptions: {

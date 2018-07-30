@@ -230,21 +230,21 @@ export default class BivariatePlot extends Component {
                     }
                     context.lineTo(polygon[0][0], polygon[0][1])
 
-                    if (gate.renderedXCutoffs && gate.gateCreatorData.includeXChannelZeroes !== false) {
+                    if (gate.gateCreatorData.includeXChannelZeroes) {
                         const xCutoffs = gate.renderedXCutoffs.map(cutoff => cutoff * widthDisplayRatio)
                         context.moveTo(0, xCutoffs[0])
                         context.lineTo(xOffset, xCutoffs[0])
-                        context.lineTo(xOffset, xCutoffs[2])
-                        context.lineTo(0, xCutoffs[2])
+                        context.lineTo(xOffset, xCutoffs[1])
+                        context.lineTo(0, xCutoffs[1])
                         context.lineTo(0, xCutoffs[0])
                     }
 
-                    if (gate.renderedYCutoffs && gate.gateCreatorData.includeYChannelZeroes !== false) {
+                    if (gate.gateCreatorData.includeYChannelZeroes) {
                         const yCutoffs = gate.renderedYCutoffs.map(cutoff => cutoff * heightDisplayRatio)
                         context.moveTo(yCutoffs[0] + xOffset, this.props.plotDisplayWidth)
                         context.lineTo(yCutoffs[0] + xOffset, this.props.plotDisplayWidth - yOffset)
-                        context.lineTo(yCutoffs[2] + xOffset, this.props.plotDisplayWidth - yOffset)
-                        context.lineTo(yCutoffs[2] + xOffset, this.props.plotDisplayWidth)
+                        context.lineTo(yCutoffs[1] + xOffset, this.props.plotDisplayWidth - yOffset)
+                        context.lineTo(yCutoffs[1] + xOffset, this.props.plotDisplayWidth)
                         context.lineTo(yCutoffs[0] + xOffset, this.props.plotDisplayWidth)
                     }
 
