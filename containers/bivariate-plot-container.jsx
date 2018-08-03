@@ -21,20 +21,12 @@ const mapStateToProps = (state, ownProps) => {
         // Find the selected sample
         const sample = _.find(state.samples, w => w.id === ownProps.sampleId) || {}
         const newSample = _.clone(sample)
-        newSample.subSamples = []
         // If the workspace contains samples, find them and add them as complete objects
-        if (newSample.subSampleIds) {
-            for (let subSampleId of newSample.subSampleIds) {
-                const subSample = _.find(state.samples, s => s.id === subSampleId)
-                if (sample) { newSample.subSamples.push(sample) }
-            }
-            
-            newSample.subSampleIds = null
-        }
-
+        sample.subSamples = _.filter(state.samples, s => s.parentSampleId === newSample.id)
+        
         // Find the parent sample if there is one
-        const parent = _.find(state.samples, s => s.subSampleIds.includes(ownProps.sampleId))
-        if (parent) {
+        if (newSample.parentSampleId) {
+            const parent = _.find(state.samples, s => s.id === newSample.parentSampleId)
             newSample.parentTitle = parent.title
         }
 

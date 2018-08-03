@@ -5,9 +5,9 @@
 // -------------------------------------------------------------
 
 import _ from 'lodash'
-import { sampleLoadingFinished } from '../actions/sample-actions'
+import { sampleLoadingFinished, removeSample } from '../actions/sample-actions'
 
-const samples = (state = [], action = {}) => {
+const sampleReducer = (state = [], action = {}) => {
     let newState = state.slice(0)
     // console.log(action)
 
@@ -17,6 +17,7 @@ const samples = (state = [], action = {}) => {
     if (action.type === 'CREATE_SAMPLE') {
         const newSample = {
             id: action.payload.id,
+            parentSampleId: action.payload.parentSampleId,
             title: action.payload.title,
             FCSFileId: action.payload.FCSFileId,
             description: action.payload.description,
@@ -24,7 +25,6 @@ const samples = (state = [], action = {}) => {
             includeEventIds: action.payload.includeEventIds || [],
             gateTemplateId: action.payload.gateTemplateId,
             parametersLoading: action.payload.parametersLoading || [],
-            subSampleIds: [],
             plotImages: action.payload.plotImages || {}
         }
 
@@ -39,35 +39,12 @@ const samples = (state = [], action = {}) => {
             const sampleIndex = _.findIndex(state, s => s.id === sample.id)
             newState = newState.slice(0, sampleIndex).concat(newState.slice(sampleIndex + 1))
 
-            // Then remove the id of the removed sample from the parents subSampleIds array if there is a parent
-            const parentSampleIndex = _.findIndex(state, s => s.subSampleIds.includes(action.payload.sampleId))
-            if (parentSampleIndex > -1) {
-                const parentSample = state.slice(parentSampleIndex, parentSampleIndex + 1)[0]
-                const childIdIndex = _.findIndex(parentSample.subSampleIds, s => s === action.payload.sampleId)
-                parentSample.subSampleIds = parentSample.subSampleIds.slice(0, childIdIndex).concat(parentSample.subSampleIds.slice(childIdIndex + 1))
-                newState = newState.slice(0, parentSampleIndex).concat([parentSample]).concat(newState.slice(parentSampleIndex + 1))
+            // Remove any sub samples
+            for (let subSample of _.filter(newState.samples, s => s.parentSampleId === action.payload.sampleId)) {
+                newState = sampleReducer(newState, removeSample(subSample.id))
             }
         } else {
             console.log('REMOVE_SAMPLE failed: no sample with id', action.payload.sampleId, 'was found')
-        }
-    // --------------------------------------------------
-    // Add a subsample id to the "child ids" array
-    // --------------------------------------------------
-    } else if (action.type === 'ADD_CHILD_SAMPLE') {
-        // Find the target sample if there is one
-        const sampleIndex = _.findIndex(state, s => s.id === action.payload.childSampleId)
-        if (sampleIndex > -1) {
-            // Find the parent sample if there is one
-            const parentSampleIndex = _.findIndex(state, s => s.id === action.payload.parentSampleId)
-            if (parentSampleIndex > -1) {
-                const parentSample = _.cloneDeep(state[parentSampleIndex])
-                parentSample.subSampleIds.push(action.payload.childSampleId)
-                newState = state.slice(0, parentSampleIndex).concat([parentSample]).concat(state.slice(parentSampleIndex + 1))
-            } else {
-                console.log('ADD_CHILD_SAMPLE failed: no parent sample with id', action.payload.parentSampleId, 'was found')   
-            }
-        } else {
-            console.log('ADD_CHILD_SAMPLE failed: no child sample with id', action.payload.parentSampleId, 'was found')   
         }
     // --------------------------------------------------
     // Set the url for a sample plot image
@@ -108,4 +85,4 @@ const samples = (state = [], action = {}) => {
     return newState
 }
 
-export default samples
+export default sampleReducer

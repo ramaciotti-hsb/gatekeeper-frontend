@@ -22,16 +22,7 @@ const mapStateToProps = (state, ownProps) => {
         const newSample = _.cloneDeep(sample)
         newSample.subSamples = []
         // If the workspace contains samples, find them and add them as complete objects
-        if (newSample.subSampleIds) {
-            for (let subSampleId of newSample.subSampleIds) {
-                const subSample = _.find(state.samples, s => s.id === subSampleId)
-                if (sample) { newSample.subSamples.push(subSample) }
-            }
-            
-            newSample.subSampleIds = null
-        }
-
-        newSample.sampleId = newSample.id
+        sample.subSamples = _.filter(state.samples, s => s.parentSampleId === newSample.id)
 
         // Find any gates on this sample
         const gates = []
@@ -44,8 +35,8 @@ const mapStateToProps = (state, ownProps) => {
         }
 
         // Find the parent sample if there is one
-        const parent = _.find(state.samples, s => s.subSampleIds.includes(ownProps.sampleId))
-        if (parent) {
+        if (newSample.parentSampleId) {
+            const parent = _.find(state.samples, s => s.id === newSample.parentSampleId)
             newSample.parentTitle = parent.title
             newSample.parentId = parent.id
         }
