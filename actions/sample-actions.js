@@ -5,6 +5,15 @@
 import uuidv4 from 'uuid/v4'
 
 // This is also picked up by the application reducer
+export const createSample = (parameters) => {
+    return {
+        type: 'CREATE_SAMPLE',
+        payload: parameters
+    }
+}
+
+
+// This is also picked up by the application reducer
 export const removeSample = (sampleId) => {
     return {
         type: 'REMOVE_SAMPLE',

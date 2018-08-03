@@ -56,13 +56,6 @@ export const createFCSFileAndAddToWorkspace = (workspaceId, FCSFileParameters) =
     }
 }
 
-export const createSampleAndAddToWorkspace = (workspaceId, sampleParameters) => {
-    return {
-        type: 'CREATE_SAMPLE_AND_ADD_TO_WORKSPACE',
-        payload: { workspaceId, sample: sampleParameters }
-    }
-}
-
 // This event creates both a new sample and a new gate
 export const createSubSampleAndAddToWorkspace = (workspaceId, parentSampleId, sampleParameters, gateParameters) => {
     return {

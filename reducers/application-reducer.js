@@ -262,18 +262,6 @@ const applicationReducer = (state = initialState, action) => {
             console.log('CREATE_GATE_TEMPLATE_GROUP_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
         }
     // --------------------------------------------------
-    // Create a sample and add it to a particular workspace
-    // --------------------------------------------------
-    } else if (action.type === 'CREATE_SAMPLE_AND_ADD_TO_WORKSPACE') {
-        // Find the workspace the user wants to add to
-        const workspace = _.find(newState.workspaces, w => w.id === action.payload.workspaceId)
-        if (workspace) {
-            // Create a new sample with the sample reducer
-            newState.samples = sampleReducer(newState.samples, { type: 'CREATE_SAMPLE', payload: action.payload.sample })
-        } else {
-            console.log('CREATE_SAMPLE_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
-        }
-    // --------------------------------------------------
     // Create a new subsample and a corresponding gate
     // --------------------------------------------------
     } else if (action.type === 'CREATE_SUBSAMPLE_AND_ADD_TO_WORKSPACE') {
@@ -285,7 +273,7 @@ const applicationReducer = (state = initialState, action) => {
             newState.gates = gateReducer(newState.gates, { type: 'CREATE_GATE', payload: action.payload.gate })
             newState.workspaces = workspaceReducer(newState.workspaces, { type: 'SELECT_SAMPLE', payload: { workspaceId: workspace.id, sampleId: action.payload.sample.id } })
         } else {
-            console.log('CREATE_SAMPLE_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
+            console.log('CREATE_SUBSAMPLE_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
         }
     // --------------------------------------------------
     // Remove a workspace and all the samples in it
