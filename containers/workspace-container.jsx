@@ -85,7 +85,7 @@ const mapStateToProps = (state, ownProps) => {
         }
 
         // If there is a highlighted gate, highlight it's subsample
-        const highlightedGate = _.find(state.gates, g => g.highlighted && workspace.sampleIds.includes(g.childSampleId)) || {}
+        const highlightedGate = _.find(state.gates, g => g.highlighted && g.workspaceId === newWorkspace.id) || {}
         return { api: state.api, workspace: newWorkspace, highlightedGate }
     } else {
         return { api: state.api }

@@ -18,6 +18,7 @@ const sampleReducer = (state = [], action = {}) => {
         const newSample = {
             id: action.payload.id,
             parentSampleId: action.payload.parentSampleId,
+            workspaceId: action.payload.workspaceId,
             title: action.payload.title,
             FCSFileId: action.payload.FCSFileId,
             description: action.payload.description,

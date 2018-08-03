@@ -96,23 +96,6 @@ const workspaces = (state = initialState, action = {}) => {
             console.log('SELECT_GATE_TEMPLATE failed: no workspace with id', action.payload.workspaceId, 'was found')
         }
     // --------------------------------------------------
-    // Add an existing sample to a workspace
-    // --------------------------------------------------
-    } else if (action.type === 'ADD_SAMPLE_TO_WORKSPACE') {
-        const workspaceIndex = _.findIndex(state, w => w.id === action.payload.workspaceId)
-
-        if (workspaceIndex > -1) {
-            const newWorkspace = _.clone(state[workspaceIndex])
-            newWorkspace.sampleIds = state[workspaceIndex].sampleIds.slice(0)
-            if (!newWorkspace.sampleIds.includes(action.payload.sampleId)) {
-                newWorkspace.sampleIds.push(action.payload.sampleId)
-
-                newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
-            }
-        } else {
-            console.log('ADD_SAMPLE_TO_WORKSPACE failed: no workspace with id', action.payload.workspaceId, 'was found')
-        }
-    // --------------------------------------------------
     // Select an FCS File that is already within a workspace
     // --------------------------------------------------
     } else if (action.type === 'SELECT_FCS_FILE') {
@@ -167,25 +150,6 @@ const workspaces = (state = initialState, action = {}) => {
             }
         } else {
             console.log('REMOVE_GATE_TEMPLATE failed: no workspace with id', action.payload.workspaceId, 'was found')
-        }
-    // --------------------------------------------------
-    // Removes a sample from it's workspace
-    // --------------------------------------------------
-    } else if (action.type === 'REMOVE_SAMPLE') {
-        const workspaceIndex = _.findIndex(state, w => w.sampleIds.includes(action.payload.sampleId))
-
-        if (workspaceIndex > -1) {
-            const newWorkspace = _.clone(state[workspaceIndex])
-            newWorkspace.sampleIds = state[workspaceIndex].sampleIds.slice(0)
-
-            const sampleIdIndex = _.findIndex(state[workspaceIndex].sampleIds, s => s === action.payload.sampleId)
-            if (sampleIdIndex > -1) {
-                newWorkspace.sampleIds = newWorkspace.sampleIds.slice(0, sampleIdIndex).concat(newWorkspace.sampleIds.slice(sampleIdIndex + 1))
-
-                newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
-            }
-        } else {
-            console.log('REMOVE_SAMPLE failed: no workspace with id', action.payload.workspaceId, 'was found')
         }
     // --------------------------------------------------
     // Update an arbitrary parameters on a workspace
