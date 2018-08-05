@@ -19,12 +19,12 @@ const sampleReducer = (state = [], action = {}) => {
             id: action.payload.id,
             parentSampleId: action.payload.parentSampleId,
             workspaceId: action.payload.workspaceId,
-            title: action.payload.title,
+            gateTemplateId: action.payload.gateTemplateId,
             FCSFileId: action.payload.FCSFileId,
+            title: action.payload.title,
             description: action.payload.description,
             populationCount: action.payload.populationCount,
             includeEventIds: action.payload.includeEventIds || [],
-            gateTemplateId: action.payload.gateTemplateId,
             parametersLoading: action.payload.parametersLoading || [],
             plotImages: action.payload.plotImages || {}
         }

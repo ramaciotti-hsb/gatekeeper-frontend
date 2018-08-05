@@ -4,7 +4,6 @@
 
 import { connect } from 'react-redux'
 import { createSample, removeSample } from '../actions/sample-actions.js'
-import { selectSample } from '../actions/workspace-actions.js'
 import { updateGateTemplate } from '../actions/gate-template-actions'
 import WorkspaceView from '../components/workspace-component.jsx'
 import { showGatingModal } from '../actions/application-actions'
