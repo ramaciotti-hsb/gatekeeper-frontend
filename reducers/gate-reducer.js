@@ -6,13 +6,11 @@ import _ from 'lodash'
 
 const gates = (state = [], action = {}) => {
     let newState = state.slice(0)
-
     // --------------------------------------------------
     // Create a new gate and add to state
     // --------------------------------------------------
     if (action.type === 'CREATE_GATE') {
         const newGate = action.payload
-
         newState.push(newGate)
     }
     // --------------------------------------------------

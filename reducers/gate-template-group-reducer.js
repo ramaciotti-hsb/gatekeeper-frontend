@@ -15,17 +15,17 @@ const gateTemplateGroups = (state = initialState, action = {}) => {
     // --------------------------------------------------
     if (action.type === 'CREATE_GATE_TEMPLATE_GROUP') {
         const newGateTemplateGroup = {
-            id: action.payload.gateTemplateGroup.id,
-            title: action.payload.gateTemplateGroup.title,
-            creator: action.payload.gateTemplateGroup.creator,
-            parentGateTemplateId: action.payload.gateTemplateGroup.parentGateTemplateId,
-            childGateTemplateIds: action.payload.gateTemplateGroup.childGateTemplateIds,
-            selectedXParameterIndex: action.payload.gateTemplateGroup.selectedXParameterIndex,
-            selectedYParameterIndex: action.payload.gateTemplateGroup.selectedYParameterIndex,
-            selectedXScale: action.payload.gateTemplateGroup.selectedXScale,
-            selectedYScale: action.payload.gateTemplateGroup.selectedYScale,
-            machineType: action.payload.gateTemplateGroup.machineType,
-            typeSpecificData: action.payload.gateTemplateGroup.typeSpecificData
+            id: action.payload.id,
+            workspaceId: action.payload.workspaceId,
+            title: action.payload.title,
+            creator: action.payload.creator,
+            parentGateTemplateId: action.payload.parentGateTemplateId,
+            selectedXParameterIndex: action.payload.selectedXParameterIndex,
+            selectedYParameterIndex: action.payload.selectedYParameterIndex,
+            selectedXScale: action.payload.selectedXScale,
+            selectedYScale: action.payload.selectedYScale,
+            machineType: action.payload.machineType,
+            typeSpecificData: action.payload.typeSpecificData
         }
 
         newState.push(newGateTemplateGroup)
@@ -52,39 +52,6 @@ const gateTemplateGroups = (state = initialState, action = {}) => {
             newState = newState.slice(0, gateTemplateGroupIndex).concat(newState.slice(gateTemplateGroupIndex + 1))
         } else {
             console.log('REMOVE_GATE_TEMPLATE_GROUP failed: no gateTemplateGroup with id', action.payload.gateTemplateGroupId, 'was found')
-        }
-    // --------------------------------------------------
-    // Removes a gate template from it's group
-    // --------------------------------------------------
-    } else if (action.type === 'REMOVE_GATE_TEMPLATE_FROM_GROUP') {
-        const gateTemplateGroupIndex = _.findIndex(state, w => w.id === action.payload.gateTemplateGroupId)
-
-        if (gateTemplateGroupIndex > -1) {
-            const newGateTemplateGroup = _.clone(state[gateTemplateGroupIndex])
-            newGateTemplateGroup.childGateTemplateIds = state[gateTemplateGroupIndex].childGateTemplateIds.slice(0)
-
-            const gateTemplateIdIndex = _.findIndex(state[gateTemplateGroupIndex].childGateTemplateIds, s => s === action.payload.gateTemplateId)
-            if (gateTemplateIdIndex > -1) {
-                newGateTemplateGroup.childGateTemplateIds = newGateTemplateGroup.childGateTemplateIds.slice(0, gateTemplateIdIndex).concat(newGateTemplateGroup.childGateTemplateIds.slice(gateTemplateIdIndex + 1))
-
-                newState = newState.slice(0, gateTemplateGroupIndex).concat([ newGateTemplateGroup ]).concat(newState.slice(gateTemplateGroupIndex + 1))
-            }
-        } else {
-            console.log('REMOVE_GATE_TEMPLATE_FROM_GROUP failed: no gateTemplateGroup with id', action.payload.gateTemplateGroupId, 'was found')
-        }
-    // --------------------------------------------------
-    // Add a gate template to a group
-    // --------------------------------------------------
-    } else if (action.type === 'ADD_GATE_TEMPLATE_TO_GROUP') {
-        const gateTemplateGroupIndex = _.findIndex(state, w => w.id === action.payload.gateTemplateGroupId)
-
-        if (gateTemplateGroupIndex > -1) {
-            const newGateTemplateGroup = _.clone(state[gateTemplateGroupIndex])
-            newGateTemplateGroup.childGateTemplateIds = state[gateTemplateGroupIndex].childGateTemplateIds.slice(0)
-            newGateTemplateGroup.childGateTemplateIds.push(action.payload.gateTemplateId)
-            newState = newState.slice(0, gateTemplateGroupIndex).concat([ newGateTemplateGroup ]).concat(newState.slice(gateTemplateGroupIndex + 1))
-        } else {
-            console.log('ADD_GATE_TEMPLATE_TO_GROUP failed: no gateTemplateGroup with id', action.payload.gateTemplateGroupId, 'was found')
         }
     // --------------------------------------------------
     // Sets the loading state of a particular sample for this template group

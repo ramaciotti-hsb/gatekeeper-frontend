@@ -45,11 +45,11 @@ const mapStateToProps = (state, ownProps) => {
         const gateTemplate = _.find(state.gateTemplates, gt => gt.id === sample.gateTemplateId)
 
         // Find the gate template group that houses the corresponding gate template
-        const gateTemplateGroup = _.find(state.gateTemplateGroups, g => g.childGateTemplateIds.includes(sample.gateTemplateId))
+        const gateTemplateGroup = _.find(state.gateTemplateGroups, g => g.id === gateTemplate.gateTemplateGroupId)
         let parentGateTitle
         if (gateTemplateGroup) {
             const parentGateTemplate = _.find(state.gateTemplates, gt => gt.id === gateTemplateGroup.parentGateTemplateId)
-            if (!_.find(state.gateTemplateGroups, g => g.childGateTemplateIds.includes(parentGateTemplate.id))) {
+            if (!parentGateTemplate.gateTemplateGroupId) {
                 parentGateTitle = 'Root Gate'
             } else {
                 parentGateTitle = parentGateTemplate.title

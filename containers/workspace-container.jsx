@@ -24,22 +24,14 @@ const mapStateToProps = (state, ownProps) => {
             }
         }
 
-        newWorkspace.gateTemplates = []
-        // If the workspace contains gate templates, find them and add them as complete objects
-        if (newWorkspace.gateTemplateIds) {
-            for (let gateTemplateId of newWorkspace.gateTemplateIds) {
-                const gateTemplate = _.clone(_.find(state.gateTemplates, s => s.id === gateTemplateId))
-                if (gateTemplate) {
-                    // Add the population count for the corresponding sample
-                    const sampleForGateTemplate = _.find(state.samples, s => s.FCSFileId === newWorkspace.selectedFCSFileId && s.gateTemplateId === gateTemplate.id)
-                    if (sampleForGateTemplate) {
-                        gateTemplate.populationCount = sampleForGateTemplate.populationCount
-                    }
-                    newWorkspace.gateTemplates.push(gateTemplate)
-                }
+        newWorkspace.gateTemplates = _.filter(state.gateTemplates, gt => gt.workspaceId === ownProps.workspaceId).map((gateTemplate) => {
+            const cloneTemplate = _.clone(gateTemplate)
+            const sampleForGateTemplate = _.find(state.samples, s => s.FCSFileId === newWorkspace.selectedFCSFileId && s.gateTemplateId === gateTemplate.id)
+            if (sampleForGateTemplate) {
+                cloneTemplate.populationCount = sampleForGateTemplate.populationCount
             }
-            newWorkspace.gateTemplateIds = null
-        }
+            return cloneTemplate
+        })
 
         if (newWorkspace.selectedGateTemplateId) {
             for (let gateTemplate of newWorkspace.gateTemplates) {
@@ -53,27 +45,16 @@ const mapStateToProps = (state, ownProps) => {
             newWorkspace.selectedSample = _.find(state.samples, s => s.gateTemplateId === newWorkspace.selectedGateTemplate.id && s.FCSFileId === newWorkspace.selectedFCSFile.id)
         }
 
-        newWorkspace.gateTemplateGroups = []
-        // If the workspace contains gate template groups, find them and add them as complete objects
-        if (newWorkspace.gateTemplateGroupIds) {
-            for (let gateTemplateGroupId of newWorkspace.gateTemplateGroupIds) {
-                const gateTemplateGroup = _.clone(_.find(state.gateTemplateGroups, s => s.id === gateTemplateGroupId))
-                if (gateTemplateGroup) {
-                    const relatedSample = _.find(state.samples, s => s.gateTemplateId === gateTemplateGroup.parentGateTemplateId && s.FCSFileId === newWorkspace.selectedFCSFileId)
-                    // If there are gating errors for this sample and gate template group, mark the group as "errored"
-                    if (relatedSample) {
-                        const gatingError = _.find(state.gatingErrors, e => e.sampleId === relatedSample.id && e.gateTemplateGroupId === gateTemplateGroupId)                        
-                        gateTemplateGroup.gatingError = gatingError
-                    }
-                    // If there are no subsamples for this FCS file and gate template group, mark the gate template as loading
-                    else if (!_.find(state.samples, s => gateTemplateGroup.childGateTemplateIds.includes(s.gateTemplateId) && s.FCSFileId === newWorkspace.selectedFCSFileId)) {
-                        gateTemplateGroup.loading = true
-                    }
-                    newWorkspace.gateTemplateGroups.push(gateTemplateGroup)
-                }
+        newWorkspace.gateTemplateGroups = _.filter(state.gateTemplateGroups, g => g.workspaceId === ownProps.workspaceId).map((gateTemplateGroup) => {
+            const relatedSample = _.find(state.samples, s => s.gateTemplateId === gateTemplateGroup.parentGateTemplateId && s.FCSFileId === newWorkspace.selectedFCSFileId)
+            // If there are gating errors for this sample and gate template group, mark the group as "errored"
+            if (relatedSample) {
+                const gatingError = _.find(state.gatingErrors, e => e.sampleId === relatedSample.id && e.gateTemplateGroupId === gateTemplateGroup.id)                        
+                gateTemplateGroup.gatingError = gatingError
             }
-            newWorkspace.gateTemplateGroupIds = null
-        }
+
+            return gateTemplateGroup
+        })
 
         // If there is a highlighted gate, highlight it's subsample
         const highlightedGate = _.find(state.gates, g => g.highlighted && g.workspaceId === newWorkspace.id) || {}

@@ -416,7 +416,7 @@ export default class BivariatePlot extends Component {
         const heightDisplayRatio = this.props.plotDisplayHeight / this.props.plotHeight
         const gates = _.filter(this.props.gates, g => g.type === constants.GATE_TYPE_POLYGON).map((gate) => {
             const gateTemplate = _.find(this.props.gateTemplates, gt => gt.id === gate.gateTemplateId)
-            const gateTemplateGroup = _.find(this.props.gateTemplateGroups, g => g.childGateTemplateIds.includes(gateTemplate.id))
+            const gateTemplateGroup = _.find(this.props.gateTemplateGroups, g => g.id === gateTemplate.gateTemplateGroupId)
 
             if (gate.type === constants.GATE_TYPE_POLYGON) {
                 const scaledPoints = gate.renderedPolygon.map(p => [ (p[0] * widthDisplayRatio) + xOffset, p[1] * heightDisplayRatio ])

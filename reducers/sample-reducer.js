@@ -9,8 +9,6 @@ import { sampleLoadingFinished, removeSample } from '../actions/sample-actions'
 
 const sampleReducer = (state = [], action = {}) => {
     let newState = state.slice(0)
-    // console.log(action)
-
     // --------------------------------------------------
     // Create a new sample and add to state
     // --------------------------------------------------

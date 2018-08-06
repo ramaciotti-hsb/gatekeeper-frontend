@@ -138,7 +138,7 @@ const applicationReducer = (state = initialState, action) => {
         } else {
             newState.gatingModal.sampleId = sample.id
             if (gateTemplateGroup) {
-                const unsavedGates = _.cloneDeep(_.filter(newState.gates, g => g.parentSampleId === sample.id && gateTemplateGroup.childGateTemplateIds.includes(g.gateTemplateId))).map((gate) => {
+                const unsavedGates = _.cloneDeep(_.filter(newState.gates, g => g.parentSampleId === sample.id && _.find(newState.gateTemplates, gt => gt.id === g.gateTemplateId && gt.gateTemplateGroupId === gateTemplateGroup.id))).map((gate) => {
                     const childSample = _.find(newState.samples, s => s.id === gate.childSampleId)
                     gate.includeEventIds = []
                     gate.FCSFileId = sample.FCSFileId
@@ -222,32 +222,6 @@ const applicationReducer = (state = initialState, action) => {
     } else if (action.type === 'SELECT_WORKSPACE') {
         newState.selectedWorkspaceId = action.payload.id
     // --------------------------------------------------
-    // Create a gate template and add it to a particular workspace
-    // --------------------------------------------------
-    } else if (action.type === 'CREATE_GATE_TEMPLATE_AND_ADD_TO_WORKSPACE') {
-        // Find the workspace the user wants to add to
-        const workspace = _.find(newState.workspaces, w => w.id === action.payload.workspaceId)
-        if (workspace) {
-            // Create a new gate template with the gate template reducer
-            newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'CREATE_GATE_TEMPLATE', payload: action.payload })
-            newState.workspaces = workspaceReducer(newState.workspaces, { type: 'ADD_GATE_TEMPLATE_TO_WORKSPACE', payload: { workspaceId: workspace.id, gateTemplateId: action.payload.gateTemplate.id } })
-        } else {
-            console.log('CREATE_GATE_TEMPLATE_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
-        }
-    // --------------------------------------------------
-    // Create a gate template group and add it to a particular workspace
-    // --------------------------------------------------
-    } else if (action.type === 'CREATE_GATE_TEMPLATE_GROUP_AND_ADD_TO_WORKSPACE') {
-        // Find the workspace the user wants to add to
-        const workspace = _.find(newState.workspaces, w => w.id === action.payload.workspaceId)
-        if (workspace) {
-            // Create a new gate template with the gate template reducer
-            newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, { type: 'CREATE_GATE_TEMPLATE_GROUP', payload: action.payload })
-            newState.workspaces = workspaceReducer(newState.workspaces, { type: 'ADD_GATE_TEMPLATE_GROUP_TO_WORKSPACE', payload: { workspaceId: workspace.id, gateTemplateGroupId: action.payload.gateTemplateGroup.id } })
-        } else {
-            console.log('CREATE_GATE_TEMPLATE_GROUP_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
-        }
-    // --------------------------------------------------
     // Remove a workspace and all the samples in it
     // --------------------------------------------------
     } else if (action.type === 'REMOVE_WORKSPACE') {
@@ -260,28 +234,12 @@ const applicationReducer = (state = initialState, action) => {
                 newState = applicationReducer(newState, { type: 'SELECT_WORKSPACE', payload: { id: null }})
             }
         }
-        
+
         newState.workspaces = workspaceReducer(newState.workspaces, action)
 
-        for (let sample of _.filter(newState.samples, s => s.workspaceId === action.payload.id)) {
-            newState.samples = sampleReducer(newState.samples, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
-        }
-
-        for (let FCSFile of _.filter(newState.FCSFiles, fcs => fcs.workspaceId === action.payload.id)) {
-            newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: FCSFile.id } })
-        }
-
-        // Delete any gate template groups that are no longer in a workspace
-        let removedGroups = _.filter(newState.gateTemplateGroups, g => !_.find(newState.workspaces, w => w.gateTemplateGroupIds.includes(g.id)))
-        for (let gateTemplateGroup of removedGroups) {
-            newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, { type: 'REMOVE_GATE_TEMPLATE_GROUP', payload: { gateTemplateGroupId: gateTemplateGroup.id } })
-        }
-
-        // Delete any gate templates that are no longer in a workspace
-        let removedTemplates = _.filter(newState.gateTemplates, gt => !_.find(newState.workspaces, w => w.gateTemplateIds.includes(gt.id)))
-        for (let gateTemplate of removedTemplates) {
-            newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: gateTemplate.id } })
-        }
+        // Remove the root gate template, which will remove everything else
+        const rootGateTemplate = _.find(newState.gateTemplates, gt => !gt.gateTemplateGroupId && gt.workspaceId === action.payload.id)
+        newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: rootGateTemplate.id } })
     // --------------------------------------------------
     // Remove an FCS File, and all the samples that depend on it
     // --------------------------------------------------    
@@ -292,130 +250,31 @@ const applicationReducer = (state = initialState, action) => {
             newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
         }
     // --------------------------------------------------
-    // Remove a gate template, any child gate templates and unselect if selected
+    // Remove a gate template, any child gate template groups and samples
+    // --------------------------------------------------
+    } else if (action.type === 'REMOVE_GATE_TEMPLATE') {
+        newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: action.payload.gateTemplateId } })
+        // Delete any samples that are based on this gate template
+        for (let sample of _.filter(newState.samples, s => s.gateTemplateId === action.payload.gateTemplateId)) {
+            newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
+        }
+        // Delete any child gate template groups
+        for (let gateTemplateGroup of _.filter(newState.gateTemplateGroups, g => g.parentGateTemplateId === action.payload.gateTemplateId)) {
+            newState = applicationReducer(newState, { type: 'REMOVE_GATE_TEMPLATE_GROUP', payload: { gateTemplateGroupId: gateTemplateGroup.id } })
+        }
+    // --------------------------------------------------
+    // Remove a gate template group, any child gate templates
     // --------------------------------------------------
     } else if (action.type === 'REMOVE_GATE_TEMPLATE_GROUP') {
-        // Find all gate templates that will be affected, including child templates and template groups
-        const gateTemplatesToRemove = []
-        const gateTemplateGroupsToRemove = [action.payload.gateTemplateGroupId]
-        const addChildTemplates = (gateTemplateId) => {
-            const gateTemplate = _.find(newState.gateTemplates, gt => gt.id === gateTemplateId)
-            gateTemplatesToRemove.push(gateTemplateId)
-
-            const templateGroup = _.find(newState.gateTemplateGroups, g => g.parentGateTemplateId === gateTemplateId)
-            if (templateGroup) {
-                gateTemplateGroupsToRemove.push(templateGroup.id)
-
-                for (let childGateTemplateId of templateGroup.childGateTemplateIds) {
-                    addChildTemplates(childGateTemplateId)
-                }
-            }
-        }
-
-        const gateTemplateGroup = _.find(newState.gateTemplateGroups, g => g.id === action.payload.gateTemplateGroupId)
-
-        for (let gateTemplateId of gateTemplateGroup.childGateTemplateIds) {
-            addChildTemplates(gateTemplateId)
-        }
-        
-        for (let gateTemplateId of gateTemplatesToRemove) {
-            const removeAction = removeGateTemplate(gateTemplateId)
-            // Find the workspace that the gateTemplate is inside and remove it from there
-            const workspaceIndex = _.findIndex(newState.workspaces, w => w.gateTemplateIds.includes(removeAction.payload.gateTemplateId))
-
-            if (workspaceIndex > -1) {
-                const newWorkspace = _.clone(newState.workspaces[workspaceIndex])
-                newWorkspace.gateTemplateIds = newWorkspace.gateTemplateIds.slice(0)
-
-                if (newWorkspace.selectedGateTemplateId === removeAction.payload.gateTemplateId) {
-                    const selectedGateTemplateIndex = _.findIndex(newWorkspace.gateTemplateIds, s => s === removeAction.payload.gateTemplateId)
-                    if (selectedGateTemplateIndex > -1) {
-
-                        // Select another gateTemplate if there is one available to select, otherwise do nothing
-                        if (newWorkspace.gateTemplateIds.length > 1) {
-
-                            if (selectedGateTemplateIndex < newWorkspace.gateTemplateIds.length - 1) {
-                                newWorkspace.selectedGateTemplateId = newWorkspace.gateTemplateIds[Math.min(Math.max(selectedGateTemplateIndex + 1, 0), newWorkspace.gateTemplateIds.length - 1)]
-                            } else {
-                                newWorkspace.selectedGateTemplateId = newWorkspace.gateTemplateIds[newWorkspace.gateTemplateIds.length - 2]
-                            }
-                        } else {
-                            newWorkspace.selectedGateTemplateId = null
-                        }
-
-                        newState.workspaces = newState.workspaces.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.workspaces.slice(workspaceIndex + 1))
-                    } else {
-                        console.log('REMOVE_GATE_TEMPLATE failed: no gateTemplate with id', removeAction.payload.gateTemplateId, 'was found in gateTemplateIds of workspace with id', removeAction.payload.workspaceId)       
-                    }
-                }
-
-                newState.workspaces = workspaceReducer(newState.workspaces, removeAction)
-            }
-
-            newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, removeAction)
-            // Remove the gate template from it's group if there is one
-            const group = _.find(newState.gateTemplateGroups, gt => gt.childGateTemplateIds.includes(gateTemplateId))
-            if (group) {
-                newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, removeGateTemplateFromGroup(gateTemplateId, group.id))
-            }
-        }
-
-        for (let gateTemplateGroupId of gateTemplateGroupsToRemove) {
-            const removeAction = removeGateTemplateGroup(gateTemplateGroupId)
-            // Find the workspace that the gateTemplateGroup is inside and remove it from there
-            const workspaceIndex = _.findIndex(newState.workspaces, w => w.gateTemplateGroupIds.includes(removeAction.payload.gateTemplateGroupId))
-
-            if (workspaceIndex > -1) {
-                const newWorkspace = _.clone(newState.workspaces[workspaceIndex])
-                newWorkspace.gateTemplateGroupIds = newWorkspace.gateTemplateGroupIds.slice(0)
-
-                if (newWorkspace.selectedGateTemplateId === removeAction.payload.gateTemplateGroupId) {
-                    const selectedGateTemplateIndex = _.findIndex(newWorkspace.gateTemplateGroupIds, s => s === removeAction.payload.gateTemplateGroupId)
-                    if (selectedGateTemplateIndex > -1) {
-
-                        // Select another gateTemplateGroup if there is one available to select, otherwise do nothing
-                        if (newWorkspace.gateTemplateGroupIds.length > 1) {
-
-                            if (selectedGateTemplateIndex < newWorkspace.gateTemplateGroupIds.length - 1) {
-                                newWorkspace.selectedGateTemplateId = newWorkspace.gateTemplateGroupIds[Math.min(Math.max(selectedGateTemplateIndex + 1, 0), newWorkspace.gateTemplateGroupIds.length - 1)]
-                            } else {
-                                newWorkspace.selectedGateTemplateId = newWorkspace.gateTemplateGroupIds[newWorkspace.gateTemplateGroupIds.length - 2]
-                            }
-                        } else {
-                            newWorkspace.selectedGateTemplateId = null
-                        }
-
-                        newState.workspaces = newState.workspaces.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.workspaces.slice(workspaceIndex + 1))
-                    } else {
-                        console.log('REMOVE_SAMPLE failed: no gateTemplateGroup with id', removeAction.payload.gateTemplateGroupId, 'was found in gateTemplateGroupIds of workspace with id', removeAction.payload.workspaceId)       
-                    }
-                }
-
-                newState.workspaces = workspaceReducer(newState.workspaces, removeAction)
-            }
-
-            newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, removeAction)
-        }
-
+        newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, { type: 'REMOVE_GATE_TEMPLATE_GROUP', payload: { gateTemplateGroupId: action.payload.gateTemplateGroupId } })
         // Delete any gating errors that no longer point to a valid gate template group
         let orphanGatingErrors = _.filter(newState.gatingErrors, e => !_.find(newState.gateTemplateGroups, g => e.gateTemplateGroupId === g.id))
         for (let error of orphanGatingErrors) {
             newState.gatingErrors = gatingErrorReducer(newState.gatingErrors, { type: 'REMOVE_GATING_ERROR', payload: { gatingErrorId: error.id } })
         }
-        // Delete any gates that no longer point to a valid gateTemplate (i.e. their parent or child has been deleted)
-        let orphanGates = _.filter(newState.gates, g => !_.find(newState.gateTemplates, gt => g.gateTemplateId === gt.id))
-        for (let gate of orphanGates) {
-            newState.gates = gateReducer(newState.gates, { type: 'REMOVE_GATE', payload: { gateId: gate.id } })
-        }
-        // Delete any samples that no longer point to a valid gateTemplate (i.e. their parent or child has been deleted)
-        let orphanSamples = _.filter(newState.samples, s => !_.find(newState.gateTemplates, gt => s.gateTemplateId === gt.id))
-        for (let sample of orphanSamples) {
-            newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
-        }
-        // Delete any empty gate template groups
-        let emptyGroups = _.filter(newState.gateTemplateGroups, g => g.childGateTemplateIds.length === 0)
-        for (let gateTemplateGroup of emptyGroups) {
-            newState.gateTemplateGroups = gateTemplateGroupReducer(newState.gateTemplateGroups, { type: 'REMOVE_GATE_TEMPLATE_GROUP', payload: { gateTemplateGroupId: gateTemplateGroup.id } })
+        // Delete any gate templates that are no longer in a gate template group
+        for (let gateTemplate of _.filter(newState.gateTemplates, gt => gt.gateTemplateGroupId === action.payload.gateTemplateGroupId)) {
+            newState = applicationReducer(newState, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: gateTemplate.id } })
         }
     // --------------------------------------------------
     // Remove a sample, any subsamples and unselect if selected
@@ -425,6 +284,10 @@ const applicationReducer = (state = initialState, action) => {
         // Delete any gates that no longer point to a valid sample (i.e. their parent or child has been deleted)
         for (let gate of _.filter(newState.gates, g => !_.find(newState.samples, s => g.parentSampleId === s.id) || !_.find(newState.samples, s => g.childSampleId === s.id))) {
             newState.gates = gateReducer(newState.gates, { type: 'REMOVE_GATE', payload: { gateId: gate.id } })
+        }
+        // Delete child samples
+        for (let sample of _.filter(newState.samples, s => s.parentSampleId === action.payload.sampleId)) {
+            newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
         }
     // --------------------------------------------------
     // Select a different FCS File

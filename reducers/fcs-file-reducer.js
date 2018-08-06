@@ -6,8 +6,6 @@ import _ from 'lodash'
 
 const FCSFiles = (state = [], action = {}) => {
     let newState = state.slice(0)
-    // console.log(action)
-
     // --------------------------------------------------
     // Create a new sample and add to state
     // --------------------------------------------------

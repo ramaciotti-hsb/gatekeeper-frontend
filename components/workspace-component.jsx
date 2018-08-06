@@ -21,9 +21,10 @@ export default class WorkspaceView extends Component {
     renderSubGateTemplates (gateTemplate) {
         // Find any gate groups that refer to this gating template
         const childGroups = _.filter(this.props.workspace.gateTemplateGroups, g => g.parentGateTemplateId === gateTemplate.id)
+
         if (childGroups.length === 0) { return }
         return childGroups.map((childGateTemplateGroup) => {
-            const childGateTemplates = _.filter(this.props.workspace.gateTemplates, gt => childGateTemplateGroup.childGateTemplateIds.includes(gt.id))
+            const childGateTemplates = _.filter(this.props.workspace.gateTemplates, gt => gt.gateTemplateGroupId === childGateTemplateGroup.id)
             const childrenRendered = childGateTemplates.map((childGateTemplate) => {
                 return (
                     <div className={'sidebar-gate-template' + (childGateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (childGateTemplate.highlighted ? ' highlighted' : '') + (!childGateTemplate.populationCount ? ' disabled' : '')}
@@ -90,8 +91,8 @@ export default class WorkspaceView extends Component {
         const workspacesGateTemplatesRendered = []
 
         for (let gateTemplate of this.props.workspace.gateTemplates) {
-            // Start with the root sample (i.e. doesn't have a creator)
-            if (!gateTemplate.creator) {
+            // Start with the root sample (i.e. doesn't have a group)
+            if (!gateTemplate.gateTemplateGroupId) {
                 workspacesGateTemplatesRendered.push((
                     <div className={'sidebar-gate-template' + (gateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (gateTemplate.id === this.props.highlightedGate.childGateTemplateId ? ' highlighted' : '')} key={gateTemplate.id}>
                         <div className='body' onClick={this.props.api.selectGateTemplate.bind(null, gateTemplate.id, this.props.workspace.id)}>

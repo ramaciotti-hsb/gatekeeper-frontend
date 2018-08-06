@@ -6,10 +6,9 @@ import uuidv4 from 'uuid/v4'
 
 // Create a new gate template
 export const createGateTemplate = (parameters) => {
-    if (!parameters.id) { parameters.id = uuidv4() }
     return {
         type: 'CREATE_GATE_TEMPLATE',
-        payload: { gateTemplate: parameters }
+        payload: parameters
     }
 }
 

@@ -6,15 +6,15 @@ import uuidv4 from 'uuid/v4'
 
 // Create a new gate template group
 export const createGateTemplateGroup = (parameters) => {
-    if (!parameters.id) { parameters.id = uuidv4() }
     return {
         type: 'CREATE_GATE_TEMPLATE_GROUP',
-        payload: { gateTemplateGroup: parameters }
+        payload: parameters
     }
 }
 
 // Remove a gate template group
 export const removeGateTemplateGroup = (gateTemplateGroupId) => {
+    console.log(gateTemplateGroupId)
     return {
         type: 'REMOVE_GATE_TEMPLATE_GROUP',
         payload: { gateTemplateGroupId }
@@ -26,22 +26,6 @@ export const updateGateTemplateGroup = (gateTemplateGroupId, parameters) => {
     return {
         type: 'UPDATE_GATE_TEMPLATE_GROUP',
         payload: { gateTemplateGroupId, parameters }
-    }
-}
-
-// Remove a gate template from a gate template group
-export const removeGateTemplateFromGroup = (gateTemplateId, gateTemplateGroupId) => {
-    return {
-        type: 'REMOVE_GATE_TEMPLATE_FROM_GROUP',
-        payload: { gateTemplateId, gateTemplateGroupId }
-    }
-}
-
-// Remove a gate template from a gate template group
-export const addGateTemplateToGroup = (gateTemplateId, gateTemplateGroupId) => {
-    return {
-        type: 'ADD_GATE_TEMPLATE_TO_GROUP',
-        payload: { gateTemplateId, gateTemplateGroupId }
     }
 }
 

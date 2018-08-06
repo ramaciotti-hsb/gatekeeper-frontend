@@ -26,25 +26,11 @@ export const updateWorkspace = (workspaceId, parameters) => {
     }
 }
 
-export const createGateTemplateAndAddToWorkspace = (workspaceId, gateTemplateParameters) => {
-    return {
-        type: 'CREATE_GATE_TEMPLATE_AND_ADD_TO_WORKSPACE',
-        payload: { workspaceId, gateTemplate: gateTemplateParameters }
-    }
-}
-
 // Selects a gate template within a workspace
 export const selectGateTemplate = (gateTemplateId, workspaceId) => {
     return {
         type: 'SELECT_GATE_TEMPLATE',
         payload: { gateTemplateId, workspaceId }
-    }
-}
-
-export const createGateTemplateGroupAndAddToWorkspace = (workspaceId, gateTemplateGroupParameters) => {
-    return {
-        type: 'CREATE_GATE_TEMPLATE_GROUP_AND_ADD_TO_WORKSPACE',
-        payload: { workspaceId, gateTemplateGroup: gateTemplateGroupParameters }
     }
 }
 

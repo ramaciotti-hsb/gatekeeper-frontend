@@ -15,14 +15,16 @@ const gateTemplates = (state = initialState, action = {}) => {
     // --------------------------------------------------
     if (action.type === 'CREATE_GATE_TEMPLATE') {
         const newGateTemplate = {
-            id: action.payload.gateTemplate.id,
-            title: action.payload.gateTemplate.title,
-            type: action.payload.gateTemplate.type,
-            creator: action.payload.gateTemplate.creator,
-            exampleGateId: action.payload.gateTemplate.exampleGateId,
-            xGroup: action.payload.gateTemplate.xGroup,
-            yGroup: action.payload.gateTemplate.yGroup,
-            typeSpecificData: action.payload.gateTemplate.typeSpecificData
+            id: action.payload.id,
+            workspaceId: action.payload.workspaceId,
+            gateTemplateGroupId: action.payload.gateTemplateGroupId,
+            title: action.payload.title,
+            type: action.payload.type,
+            creator: action.payload.creator,
+            exampleGateId: action.payload.exampleGateId,
+            xGroup: action.payload.xGroup,
+            yGroup: action.payload.yGroup,
+            typeSpecificData: action.payload.typeSpecificData
         }
 
         newState.push(newGateTemplate)
