@@ -246,7 +246,7 @@ const applicationReducer = (state = initialState, action) => {
     } else if (action.type === 'REMOVE_FCS_FILE') {
         newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: action.payload.FCSFileId } })
         // Delete any samples that no longer point to a valid FCSFile (i.e. their parent or child has been deleted)
-        for (let sample of _.filter(newState.samples, s => !_.find(newState.FCSFiles, fcs => s.FCSFileId === action.payload.FCSFileId))) {
+        for (let sample of _.filter(newState.samples, s => s.FCSFileId === action.payload.FCSFileId)) {
             newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
         }
     // --------------------------------------------------

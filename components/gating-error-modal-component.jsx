@@ -249,9 +249,6 @@ export default class GatingErrorModal extends Component {
                                     {comboList}
                                 </div>
                             </div>
-                            <div className='dismiss'>
-                                <i className='lnr lnr-cross-circle' onClick={this.removeComboGate.bind(this, gate.id)} />
-                            </div>
                             <div className='right'>
                                 <i className='lnr lnr-checkmark-circle' />
                             </div>
