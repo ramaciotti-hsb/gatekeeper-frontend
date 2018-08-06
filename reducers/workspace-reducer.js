@@ -27,23 +27,6 @@ const workspaces = (state = initialState, action = {}) => {
             console.log('REMOVE_WORKSPACE failed: no workspace with id', action.payload.id, 'was found')
         }
     // --------------------------------------------------
-    // Add an existing FCS file to a workspace
-    // --------------------------------------------------
-    } else if (action.type === 'ADD_FCS_FILE_TO_WORKSPACE') {
-        const workspaceIndex = _.findIndex(state, w => w.id === action.payload.workspaceId)
-
-        if (workspaceIndex > -1) {
-            const newWorkspace = _.clone(state[workspaceIndex])
-            newWorkspace.FCSFileIds = state[workspaceIndex].FCSFileIds.slice(0)
-            if (!newWorkspace.FCSFileIds.includes(action.payload.FCSFileId)) {
-                newWorkspace.FCSFileIds.push(action.payload.FCSFileId)
-
-                newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
-            }
-        } else {
-            console.log('ADD_FCS_FILE_TO_WORKSPACE failed: no workspace with id', action.payload.workspaceId, 'was found')
-        }
-    // --------------------------------------------------
     // Add an existing gate template to a workspace
     // --------------------------------------------------
     } else if (action.type === 'ADD_GATE_TEMPLATE_TO_WORKSPACE') {
@@ -103,13 +86,8 @@ const workspaces = (state = initialState, action = {}) => {
 
         if (workspaceIndex > -1) {
             const newWorkspace = _.clone(state[workspaceIndex])
-            newWorkspace.FCSFileIds = state[workspaceIndex].FCSFileIds.slice(0)
-            if (newWorkspace.FCSFileIds.includes(action.payload.FCSFileId)) {
-                newWorkspace.selectedFCSFileId = action.payload.FCSFileId
-                newState[workspaceIndex] = newWorkspace
-            } else {
-                console.log('SELECT_FCS_FILE failed: no FCS File with id', action.payload.FCSFileId, 'was found in FCSFileIds of workspace with id', action.payload.workspaceId)       
-            }
+            newWorkspace.selectedFCSFileId = action.payload.FCSFileId
+            newState[workspaceIndex] = newWorkspace
         } else {
             console.log('SELECT_FCS_FILE failed: no workspace with id', action.payload.workspaceId, 'was found')
         }

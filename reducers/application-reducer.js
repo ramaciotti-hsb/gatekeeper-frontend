@@ -222,20 +222,6 @@ const applicationReducer = (state = initialState, action) => {
     } else if (action.type === 'SELECT_WORKSPACE') {
         newState.selectedWorkspaceId = action.payload.id
     // --------------------------------------------------
-    // Create an FCS File and add it to a particular workspace
-    // --------------------------------------------------
-    } else if (action.type === 'CREATE_FCS_FILE_AND_ADD_TO_WORKSPACE') {
-        // Find the workspace the user wants to add to
-        const workspace = _.find(newState.workspaces, w => w.id === action.payload.workspaceId)
-        if (workspace) {
-            // Create a new sample with the sample reducer
-            newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'CREATE_FCS_FILE', payload: action.payload.FCSFile })
-            newState.workspaces = workspaceReducer(newState.workspaces, { type: 'ADD_FCS_FILE_TO_WORKSPACE', payload: { workspaceId: workspace.id, FCSFileId: action.payload.FCSFile.id } })
-            newState.workspaces = workspaceReducer(newState.workspaces, { type: 'SELECT_FCS_FILE', payload: { workspaceId: workspace.id, FCSFileId: action.payload.FCSFile.id } })
-        } else {
-            console.log('CREATE_FCS_FILE_AND_ADD_TO_WORKSPACE failed: workspace with id', action.payload.workspaceId, 'was found')   
-        }
-    // --------------------------------------------------
     // Create a gate template and add it to a particular workspace
     // --------------------------------------------------
     } else if (action.type === 'CREATE_GATE_TEMPLATE_AND_ADD_TO_WORKSPACE') {
@@ -281,6 +267,10 @@ const applicationReducer = (state = initialState, action) => {
             newState.samples = sampleReducer(newState.samples, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
         }
 
+        for (let FCSFile of _.filter(newState.FCSFiles, fcs => fcs.workspaceId === action.payload.id)) {
+            newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: FCSFile.id } })
+        }
+
         // Delete any gate template groups that are no longer in a workspace
         let removedGroups = _.filter(newState.gateTemplateGroups, g => !_.find(newState.workspaces, w => w.gateTemplateGroupIds.includes(g.id)))
         for (let gateTemplateGroup of removedGroups) {
@@ -292,56 +282,13 @@ const applicationReducer = (state = initialState, action) => {
         for (let gateTemplate of removedTemplates) {
             newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: gateTemplate.id } })
         }
-
-        // Delete any FCS Files that are no longer in a workspace
-        let removedFCSFiles = _.filter(newState.FCSFiles, gt => !_.find(newState.workspaces, w => w.FCSFileIds.includes(gt.id)))
-        for (let FCSFile of removedFCSFiles) {
-            newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: FCSFile.id } })
-        }
     // --------------------------------------------------
     // Remove an FCS File, and all the samples that depend on it
     // --------------------------------------------------    
     } else if (action.type === 'REMOVE_FCS_FILE') {
-        // newState.FCSFiles = FCSFileReducer(newState.FCSFiles, action)
-        const removeAction = removeFCSFile(action.payload.FCSFileId)
-        // Find the workspace that the gateTemplate is inside and remove it from there
-        const workspaceIndex = _.findIndex(newState.workspaces, w => w.FCSFileIds.includes(removeAction.payload.FCSFileId))
-
-        if (workspaceIndex > -1) {
-            const newWorkspace = _.clone(newState.workspaces[workspaceIndex])
-            newWorkspace.FCSFileIds = newWorkspace.FCSFileIds.slice(0)
-
-            if (newWorkspace.selectedFCSFileId === removeAction.payload.FCSFileId) {
-                const selectedFCSFileIndex = _.findIndex(newWorkspace.FCSFileIds, id => id === removeAction.payload.FCSFileId)
-                if (selectedFCSFileIndex > -1) {
-                    // Select another FCS File if there is one available to select, otherwise do nothing
-                    if (newWorkspace.FCSFileIds.length > 1) {
-
-                        if (selectedFCSFileIndex < newWorkspace.FCSFileIds.length - 1) {
-                            newWorkspace.selectedFCSFileId = newWorkspace.FCSFileIds[Math.min(Math.max(selectedFCSFileIndex + 1, 0), newWorkspace.FCSFileIds.length - 1)]
-                        } else {
-                            newWorkspace.selectedFCSFileId = newWorkspace.FCSFileIds[Math.max(newWorkspace.FCSFileIds.length - 2, 0)]
-                        }
-                    } else {
-                        newWorkspace.selectedFCSFileId = null
-                    }
-
-                    newWorkspace.FCSFileIds = newWorkspace.FCSFileIds.slice(0, selectedFCSFileIndex).concat(newWorkspace.FCSFileIds.slice(selectedFCSFileIndex + 1))
-
-                    newState.workspaces = newState.workspaces.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.workspaces.slice(workspaceIndex + 1))
-                } else {
-                    console.log('REMOVE_FCS_FILE failed: selected FCS file is null or undefined')
-                }
-            }
-
-            newState.FCSFiles = FCSFileReducer(newState.FCSFiles, removeAction)
-        } else {
-            console.log('REMOVE_FCS_FILE failed: no FCS File with id', removeAction.payload.FCSFileId, 'was found in FCSFileIds of workspace with id', removeAction.payload.workspaceId)       
-        }
-
+        newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: action.payload.FCSFileId } })
         // Delete any samples that no longer point to a valid FCSFile (i.e. their parent or child has been deleted)
-        let orphanSamples = _.filter(newState.samples, s => !_.find(newState.FCSFiles, fcs => s.FCSFileId === fcs.id))
-        for (let sample of orphanSamples) {
+        for (let sample of _.filter(newState.samples, s => !_.find(newState.FCSFiles, fcs => s.FCSFileId === action.payload.FCSFileId))) {
             newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
         }
     // --------------------------------------------------

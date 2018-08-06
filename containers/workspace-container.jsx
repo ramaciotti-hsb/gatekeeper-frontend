@@ -14,15 +14,7 @@ const mapStateToProps = (state, ownProps) => {
         // Find the selected workspace
         const workspace = _.find(state.workspaces, w => w.id === ownProps.workspaceId) || {}
         const newWorkspace = _.clone(workspace)
-        newWorkspace.FCSFiles = []
-        // If the workspace contains FCSFiles, find them and add them as complete objects
-        if (newWorkspace.FCSFileIds) {
-            for (let FCSFileId of newWorkspace.FCSFileIds) {
-                const FCSFile = _.find(state.FCSFiles, fcs => fcs.id === FCSFileId)
-                if (FCSFile) { newWorkspace.FCSFiles.push(FCSFile) }
-            }
-            newWorkspace.FCSFileIds = null
-        }
+        newWorkspace.FCSFiles = _.filter(state.FCSFiles, fcs => fcs.workspaceId === newWorkspace.id)
 
         if (newWorkspace.selectedFCSFileId) {
             for (let FCSFile of newWorkspace.FCSFiles) {

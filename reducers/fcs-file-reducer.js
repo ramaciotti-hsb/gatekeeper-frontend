@@ -14,6 +14,7 @@ const FCSFiles = (state = [], action = {}) => {
     if (action.type === 'CREATE_FCS_FILE') {
         const newFCSFile = {
             id: action.payload.id,
+            workspaceId: action.payload.workspaceId,
             title: action.payload.title,
             description: action.payload.description,
             machineType: action.payload.machineType,

@@ -14,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
     const selectedSample = _.find(state.samples, s => ownProps.selectedFCSFile && s.FCSFileId === ownProps.selectedFCSFile.id && s.gateTemplateId === workspace.selectedGateTemplateId) || {}
     return {
         api: state.api,
-        FCSFiles: _.filter(state.FCSFiles, fcs => _.find(state.workspaces, w => w.id === ownProps.workspaceId).FCSFileIds.includes(fcs.id)),
+        FCSFiles: _.filter(state.FCSFiles, fcs => fcs.workspaceId === ownProps.workspaceId),
         selectedFCSFile: ownProps.selectedFCSFile,
         selectedSample,
         workspaceId: ownProps.workspaceId,

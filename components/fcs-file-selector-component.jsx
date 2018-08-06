@@ -76,13 +76,8 @@ export default class FCSFileSelector extends Component {
         let inner
 
         if (this.props.FCSFiles.length > 0) {
-            let multipleSampleView
-            if (this.props.selectedFCSFile && this.props.selectedSample) {
-                multipleSampleView = <MultipleSampleView FCSFileId={this.props.selectedFCSFile.id} sampleId={this.props.selectedSample.id} />
-            }
-
             const FCSFiles = this.props.FCSFiles.map((FCSFile) => {
-                const isSelected = FCSFile.id === this.props.selectedFCSFile.id
+                const isSelected = this.props.selectedFCSFile && FCSFile.id === this.props.selectedFCSFile.id
                 return {
                     value: FCSFile.title,
                     component: (
@@ -94,53 +89,76 @@ export default class FCSFileSelector extends Component {
                 }
             })
 
-            const machineTypes = [
-                {
-                    key: constants.MACHINE_FLORESCENT,
-                    label: 'Florescent'
-                },
-                {
-                    key: constants.MACHINE_CYTOF,
-                    label: 'Mass Cytometry'
+            if (this.props.selectedFCSFile) {
+                let multipleSampleView
+                if (this.props.selectedFCSFile && this.props.selectedSample) {
+                    multipleSampleView = <MultipleSampleView FCSFileId={this.props.selectedFCSFile.id} sampleId={this.props.selectedSample.id} />
                 }
-            ]
 
-            const machineTypesRendered = machineTypes.map((machineType) => {
-                return {
-                    value: machineType.label,
-                    component: <div className='item' onClick={this.selectMachineType.bind(this, this.props.selectedFCSFile.id, machineType.key)} key={machineType.key}>{machineType.label}</div>
+                const machineTypes = [
+                    {
+                        key: constants.MACHINE_FLORESCENT,
+                        label: 'Florescent'
+                    },
+                    {
+                        key: constants.MACHINE_CYTOF,
+                        label: 'Mass Cytometry'
+                    }
+                ]
+
+                const machineTypesRendered = machineTypes.map((machineType) => {
+                    return {
+                        value: machineType.label,
+                        component: <div className='item' onClick={this.selectMachineType.bind(this, this.props.selectedFCSFile.id, machineType.key)} key={machineType.key}>{machineType.label}</div>
+                    }
+                })
+
+                let machineTypeMessage
+                if (this.props.selectedFCSFile && this.props.selectedFCSFile.machineType) {
+                    machineTypeMessage = 'Machine Type: ' + _.find(machineTypes, m => m.key === this.props.selectedFCSFile.machineType).label
+                } else {
+                    machineTypeMessage = 'Loading...'
                 }
-            })
 
-            let machineTypeMessage
-            if (this.props.selectedFCSFile && this.props.selectedFCSFile.machineType) {
-                machineTypeMessage = 'Machine Type: ' + _.find(machineTypes, m => m.key === this.props.selectedFCSFile.machineType).label
-            } else {
-                machineTypeMessage = 'Loading...'
+                inner = (
+                    <div className='fcs-file-selector-inner'>
+                        <div className='header'>
+                            <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
+                            <div className={'button delete' + (this.state.containerWidth < 1200 ? ' compact' : '')} onClick={this.props.api.removeFCSFile.bind(null, this.props.selectedFCSFile.id)}>
+                                <i className='lnr lnr-cross-circle'></i>
+                                <div className='text'>Remove File From Workspace</div>
+                            </div>
+                            <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
+                            <div className='divider' />
+                            <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
+                                <i className='lnr lnr-cloud-sync'></i>
+                                <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
+                            </div>
+                        </div>
+                        <div className='container-horizontal'>
+                            <FCSParameterSelector />
+                            {multipleSampleView}
+                        </div>
+                    </div>
+                )
+            } else { // There is no selected FCS file
+                    inner = (
+                    <div className='fcs-file-selector-inner'>
+                        <div className='header'>
+                            <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
+                            <div className='divider' />
+                            <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
+                                <i className='lnr lnr-cloud-sync'></i>
+                                <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
+                            </div>
+                        </div>
+                        <div className='container-horizontal'>
+                            <div className='center'>Select an FCS file to get started.</div>
+                        </div>
+                    </div>
+                )
             }
-
-            inner = (
-                <div className='fcs-file-selector-inner'>
-                    <div className='header'>
-                        <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
-                        <div className={'button delete' + (this.state.containerWidth < 1200 ? ' compact' : '')} onClick={this.props.api.removeFCSFile.bind(null, this.props.selectedFCSFile.id)}>
-                            <i className='lnr lnr-cross-circle'></i>
-                            <div className='text'>Remove File From Workspace</div>
-                        </div>
-                        <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
-                        <div className='divider' />
-                        <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
-                            <i className='lnr lnr-cloud-sync'></i>
-                            <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
-                        </div>
-                    </div>
-                    <div className='container-horizontal'>
-                        <FCSParameterSelector />
-                        {multipleSampleView}
-                    </div>
-                </div>
-            )
-        } else {
+        } else { // There are no FCS files in the workspace
             inner = (
                 <div className='fcs-file-selector-inner empty'>
                     <div>Drag and drop FCS Files or use Use File -> Add to workspace to add an FCSFile.</div>

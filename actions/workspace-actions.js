@@ -48,14 +48,6 @@ export const createGateTemplateGroupAndAddToWorkspace = (workspaceId, gateTempla
     }
 }
 
-
-export const createFCSFileAndAddToWorkspace = (workspaceId, FCSFileParameters) => {
-    return {
-        type: 'CREATE_FCS_FILE_AND_ADD_TO_WORKSPACE',
-        payload: { workspaceId, FCSFile: FCSFileParameters }
-    }
-}
-
 export const removeWorkspace = (id) => {
     return {
         type: 'REMOVE_WORKSPACE',

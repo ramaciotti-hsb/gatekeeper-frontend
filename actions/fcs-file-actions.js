@@ -3,6 +3,14 @@
 // -------------------------------------------------------------
 
 // This is also picked up by the application reducer
+export const createFCSFile = (parameters) => {
+    return {
+        type: 'CREATE_FCS_FILE',
+        payload: parameters
+    }
+}
+
+// This is also picked up by the application reducer
 export const updateFCSFile = (FCSFileId, parameters) => {
     return {
         type: 'UPDATE_FCS_FILE',

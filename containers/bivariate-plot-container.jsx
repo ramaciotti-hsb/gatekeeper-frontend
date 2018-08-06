@@ -15,7 +15,7 @@ const mapStateToProps = (state, ownProps) => {
     const newFCSFile = _.cloneDeep(FCSFile)
 
     // Find the workspace that this FCS File is inside
-    let workspace = _.find(state.workspaces, w => w.FCSFileIds.includes(ownProps.FCSFileId))
+    let workspace = _.find(state.workspaces, w => w.id === newFCSFile.workspaceId)
     
     if (ownProps.sampleId) {
         // Find the selected sample
