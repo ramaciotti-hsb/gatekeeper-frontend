@@ -22,6 +22,7 @@ export default class HomologyModal extends Component {
             minPeakHeight: Math.round(this.props.plotWidth * 0.02),
             minPeakSize: props.selectedFCSFile.machineType === constants.MACHINE_CYTOF ? 2000 : 1000,
             createNegativeGate: false,
+            createDoubleZeroGate: false,
             selectingComboGate: false,
             selectedComboGateIds: [],
             highlightedGateIds: [],
@@ -58,6 +59,11 @@ export default class HomologyModal extends Component {
     toggleCreateNegativeGate () {
         const exists = _.find(this.props.unsavedGates, g => g.type === constants.GATE_TYPE_NEGATIVE)
         this.props.api.setUnsavedNegativeGateVisible(!exists)
+    }
+
+    toggleCreateDoubleZeroGate () {
+        const exists = _.find(this.props.unsavedGates, g => g.type === constants.GATE_TYPE_DOUBLE_ZERO)
+        this.props.api.setUnsavedDoubleZeroGateVisible(!exists)
     }
 
     toggleSelectingComboGate () {
@@ -221,7 +227,8 @@ export default class HomologyModal extends Component {
                         onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
                             <div className='left'>
                                 <div className='title'>
-                                    {gate.title}
+                                    <div className='text'>{gate.title}</div>
+                                    <i className='lnr lnr-cross-circle' onClick={this.props.api.removeUnsavedGate.bind(null, gate.id)}/>
                                 </div>
                                 <div className='population-count'>
                                     <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
@@ -260,6 +267,26 @@ export default class HomologyModal extends Component {
                             </div>
                             <div className='dismiss'>
                                 <i className='lnr lnr-cross-circle' onClick={this.toggleCreateNegativeGate.bind(this)} />
+                            </div>
+                            <div className='right'>
+                                <i className='lnr lnr-checkmark-circle' />
+                            </div>
+                        </div>
+                    )
+                } else if (gate.type === constants.GATE_TYPE_DOUBLE_ZERO) {
+                    return (
+                        <div className={'gate double-negative' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
+                        onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
+                            <div className='left'>
+                                <div className='title'>
+                                    {gate.title}
+                                </div>
+                                <div className='population-count'>
+                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                </div>
+                            </div>
+                            <div className='dismiss'>
+                                <i className='lnr lnr-cross-circle' onClick={this.toggleCreateDoubleZeroGate.bind(this)} />
                             </div>
                             <div className='right'>
                                 <i className='lnr lnr-checkmark-circle' />
@@ -311,6 +338,7 @@ export default class HomologyModal extends Component {
             })
 
             const negativeGateExists = _.find(this.props.unsavedGates, g => g.type === constants.GATE_TYPE_NEGATIVE)
+            const doubleZeroGateExists = _.find(this.props.unsavedGates, g => g.type === constants.GATE_TYPE_DOUBLE_ZERO)
 
             let panelTitle
             if (this.state.selectingComboGate) {
@@ -339,6 +367,10 @@ export default class HomologyModal extends Component {
                                         <div className={'item clickable' + (negativeGateExists ? ' active' : '')} onClick={this.toggleCreateNegativeGate.bind(this)}>
                                             <i className={'lnr ' + (negativeGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />                                        
                                             <div>Create Negative Gate (Includes All Uncaptured Events)</div>
+                                        </div>
+                                        <div className={'item clickable' + (doubleZeroGateExists ? ' active' : '')} onClick={this.toggleCreateDoubleZeroGate.bind(this)}>
+                                            <i className={'lnr ' + (doubleZeroGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />                                        
+                                            <div>Create Double Zero Gate (Includes All Uncaptured Events)</div>
                                         </div>
                                     </div>
                                 </div>

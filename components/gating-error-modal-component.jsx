@@ -171,7 +171,8 @@ export default class GatingErrorModal extends Component {
                         onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
                             <div className='left'>
                                 <div className='title'>
-                                    {gate.title}
+                                    <div className='text'>{gate.title}</div>
+                                    <i className='lnr lnr-cross-circle' onClick={this.props.api.removeUnsavedGate.bind(null, gate.id)}/>
                                 </div>
                                 <div className='population-count'>
                                     <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
