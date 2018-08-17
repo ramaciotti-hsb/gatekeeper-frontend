@@ -45,13 +45,6 @@ export const removeGatingModalSeedPeak = (seedPeakId) => {
     }
 }
 
-export const setBackgroundJobsEnabled = (backgroundJobsEnabled) => {
-    return {
-        type: 'SET_BACKGROUND_JOBS_ENABLED',
-        payload: { backgroundJobsEnabled }
-    }
-}
-
 export const setPlotDimensions = (plotWidth, plotHeight) => {
     return {
         type: 'SET_PLOT_DIMENSIONS',

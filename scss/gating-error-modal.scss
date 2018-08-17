@@ -350,6 +350,18 @@
                                 font-size: 13px;
                                 font-weight: 600;
                                 margin-bottom: 5px;
+                                flex-direction: row;
+
+                                .text {
+                                    flex-grow: 1;
+                                }
+
+                                i {
+                                    font-size: 22px;
+                                    cursor: pointer;
+                                    @include foregroundHover(darken($red-colour, 10%));
+                                    @include foregroundClick(darken($red-colour, 10%));
+                                }
                             }
 
                             .population-count {

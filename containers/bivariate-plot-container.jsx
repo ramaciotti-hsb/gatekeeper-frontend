@@ -45,7 +45,6 @@ const mapStateToProps = (state, ownProps) => {
                 plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,
                 plotDisplayHeight: ownProps.plotDisplayHeight || state.plotDisplayHeight,
                 machineType: FCSFile.machineType,
-                backgroundJobsEnabled: state.backgroundJobsEnabled 
             }
         } else {
             // Find any gates on this plot
@@ -87,11 +86,10 @@ const mapStateToProps = (state, ownProps) => {
                 plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,
                 plotDisplayHeight: ownProps.plotDisplayHeight || state.plotDisplayHeight,
                 machineType: FCSFile.machineType,
-                backgroundJobsEnabled: state.backgroundJobsEnabled 
             }
         }
     } else {
-        return { api: state.api, gates: [], gateTemplates: [], workspace, FCSFile, plotWidth: state.plotWidth, plotHeight: state.plotHeight, backgroundJobsEnabled: state.backgroundJobsEnabled }
+        return { api: state.api, gates: [], gateTemplates: [], workspace, FCSFile, plotWidth: state.plotWidth, plotHeight: state.plotHeight }
     }
 }
 

@@ -23,7 +23,6 @@ let initialState = {
     gatingErrors: gatingErrorReducer(),
     selectedWorkspaceId: null,
     sessionLoading: true, // Display a global loading spinner while the session loads
-    backgroundJobsEnabled: true,
     showDisabledParameters: true,
     gatingModal: {},
     unsavedGates: null,
@@ -51,7 +50,6 @@ const applicationReducer = (state = initialState, action) => {
         unsavedGates: state.unsavedGates ? state.unsavedGates.slice(0) : null,
         selectedWorkspaceId: state.selectedWorkspaceId,
         sessionLoading: state.sessionLoading,
-        backgroundJobsEnabled: state.backgroundJobsEnabled,
         showDisabledParameters: state.showDisabledParameters,
         plotWidth: state.plotWidth,
         plotHeight: state.plotHeight,
@@ -91,7 +89,6 @@ const applicationReducer = (state = initialState, action) => {
         newState.gateTemplateGroups = action.payload.gateTemplateGroups ? action.payload.gateTemplateGroups.slice(0) : []
         newState.gatingErrors = action.payload.gatingErrors ? action.payload.gatingErrors.slice(0) : []
         newState.selectedWorkspaceId = action.payload.selectedWorkspaceId
-        newState.backgroundJobsEnabled = action.payload.backgroundJobsEnabled
         newState.plotWidth = action.payload.plotWidth || newState.plotWidth
         newState.plotHeight = action.payload.plotHeight || newState.plotHeight
         newState.plotDisplayWidth = action.payload.plotDisplayWidth || newState.plotDisplayWidth
@@ -175,12 +172,6 @@ const applicationReducer = (state = initialState, action) => {
     else if (action.type === 'REMOVE_GATING_MODAL_SEED_PEAK') {
         newState.gatingModal.seedPeaks = newState.gatingModal.seedPeaks || []
         _.remove(newState.gatingModal.seedPeaks, p => p.id === action.payload.seedPeakId)
-    }
-    // --------------------------------------------------
-    // Disables and re enabled background jobs
-    // --------------------------------------------------
-    else if (action.type === 'SET_BACKGROUND_JOBS_ENABLED') {
-        newState.backgroundJobsEnabled = action.payload.backgroundJobsEnabled
     }
     // --------------------------------------------------
     // Toggles display of the parameter enable / disable sidebar

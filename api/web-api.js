@@ -233,7 +233,6 @@ export const api = {
             // reduxStore.dispatch(updateWorkspaceAction)
 
             // const sample = _.find(currentState.samples, s => s.id === sampleId)
-            // getAllPlotImages(sample, workspaceParameters)
 
             // saveSessionToDisk()
 

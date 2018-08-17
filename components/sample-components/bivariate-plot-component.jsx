@@ -5,6 +5,7 @@ import path from 'path'
 import * as d3 from "d3"
 import '../../scss/sample-view.scss'
 import uuidv4 from 'uuid/v4'
+import querystring from 'querystring'
 import polygonsIntersect from 'polygon-overlap'
 import pointInsidePolygon from 'point-in-polygon'
 import { distanceToPolygon, distanceBetweenPoints } from 'distance-to-polygon'
@@ -180,9 +181,6 @@ export default class BivariatePlot extends Component {
         var canvas = d3.select(this.canvasRef.current)
           .attr('width', this.props.plotDisplayWidth)
           .attr('height', this.props.plotDisplayHeight);
-
-
-        if (!this.props.sample.plotImages[getPlotImageKey(this.props)]) { return }
         
         var context = canvas.node().getContext('2d')
 
@@ -298,7 +296,24 @@ export default class BivariatePlot extends Component {
         if (this.cacheImageKey !== this.props.sample.id + '_' + getPlotImageKey(this.props)) {
             this.cacheImageKey = this.props.sample.id + '_' + getPlotImageKey(this.props)
             this.cacheImage = new Image()
-            this.cacheImage.src = this.props.sample.plotImages[getPlotImageKey(this.props)]            
+            const parameters = {
+                workspaceId: this.props.workspace.id,
+                FCSFileId: this.props.FCSFile.id,
+                sampleId: this.props.sample.id,
+                machineType: this.props.machineType,
+                selectedXParameterIndex: this.props.selectedXParameterIndex,
+                selectedXScale: this.props.selectedXScale,
+                selectedYParameterIndex: this.props.selectedYParameterIndex,
+                selectedYScale: this.props.selectedYScale,
+                minXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.positiveMin,
+                maxXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.max,
+                minYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.positiveMin,
+                maxYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.max,
+                plotWidth: this.props.plotWidth,
+                plotHeight: this.props.plotHeight
+            }
+
+            this.cacheImage.src = window.JOBS_API_URL + '/plot_images?' + querystring.stringify(parameters)
         } else {
             redrawGraph(this.cacheImage)
         }
@@ -361,12 +376,11 @@ export default class BivariatePlot extends Component {
             }
         }
 
-        // Update the graph if images are now available
-        if (prevProps.sample.plotImages[getPlotImageKey(prevProps)] !== this.props.sample.plotImages[getPlotImageKey(this.props)]) {
+        if (prevProps.sampleId !== this.props.sampleId) {
             shouldReset = true
         }
 
-        if (prevProps.sampleId !== this.props.sampleId) {
+        if (prevProps.selectedXParameterIndex !== this.props.selectedXParameterIndex || prevProps.selectedYParameterIndex !== this.props.selectedYParameterIndex) {
             shouldReset = true
         }
 
@@ -543,13 +557,6 @@ export default class BivariatePlot extends Component {
             && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loading) {
             isLoading = true
             loadingMessage = this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex] && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loadingMessage
-        } else if (!this.props.sample.plotImages[getPlotImageKey(this.props)]) {
-            isLoading = true
-            if (this.props.backgroundJobsEnabled) {
-                loadingMessage = 'Generating image for plot...'                
-            } else {
-                loadingMessage = 'Background jobs are disabled.'
-            }
         }
 
         // Show an error message if automated gates failed to apply

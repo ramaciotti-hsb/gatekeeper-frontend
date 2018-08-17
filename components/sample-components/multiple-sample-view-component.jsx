@@ -137,11 +137,6 @@ export default class MultipleSampleView extends Component {
             }
         }
 
-        // If the user has filtered down to less than 4 combinations, try and generate these images of interest first
-        for (let c of combinations) {
-            this.props.api.getImageForPlot(this.props.sample.id, { selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale, machineType: this.props.FCSFile.machineType }, true)
-        }
-
         return combinations
     }
 
@@ -254,7 +249,7 @@ export default class MultipleSampleView extends Component {
                             {this.props.FCSFile.FCSParameters[c[0]].label + ' · ' + this.props.FCSFile.FCSParameters[c[1]].label}
                             <div className={'icon' + (this.props.workspace.invertedAxisPlots[x + '_' + y] ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
                         </div>
-                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, this.props.sample.plotImages[getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale })])}>
+                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, 'http://127.0.0.1:3145/plot_images/' + this.props.sample.id + '/' + getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale }) )}>
                             <i className='lnr lnr-picture' />
                         </div>
                         <Dropdown outerClasses='dark'>

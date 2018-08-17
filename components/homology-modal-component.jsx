@@ -147,12 +147,18 @@ export default class HomologyModal extends Component {
             showSeedCreator: false
         })
         
-        this.props.api.createUnsavedGatesUsingHomology(this.props.selectedSample.id, {
+        this.props.api.createUnsavedGatesUsingHomology(this.props.selectedWorkspace.id, this.props.selectedFCSFile.id, this.props.selectedSample.id, {
             selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
             selectedYParameterIndex: this.props.modalOptions.selectedYParameterIndex,
             selectedXScale: this.props.selectedWorkspace.selectedXScale,
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
+            minXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].statistics.positiveMin,
+            maxXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].statistics.max,
+            minYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].statistics.positiveMin,
+            maxYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].statistics.max,
+            plotWidth: this.props.plotWidth,
+            plotHeight: this.props.plotHeight,
             edgeDistance: this.state.edgeDistance,
             minPeakHeight: parseInt(this.state.minPeakHeight),
             minPeakSize: parseInt(this.state.minPeakSize),

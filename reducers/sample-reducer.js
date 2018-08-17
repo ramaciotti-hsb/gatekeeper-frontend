@@ -24,7 +24,6 @@ const sampleReducer = (state = [], action = {}) => {
             populationCount: action.payload.populationCount,
             includeEventIds: action.payload.includeEventIds || [],
             parametersLoading: action.payload.parametersLoading || [],
-            plotImages: action.payload.plotImages || {}
         }
 
         newState.push(newSample)
@@ -53,8 +52,6 @@ const sampleReducer = (state = [], action = {}) => {
         const sampleIndex = _.findIndex(state, s => s.id === action.payload.sampleId)
         if (sampleIndex > -1) {
             const newSample = _.clone(state[sampleIndex])
-            newSample.plotImages = Object.assign({}, newSample.plotImages)
-            newSample.plotImages[action.payload.imageKey] = action.payload.filePath
             newState = state.slice(0, sampleIndex).concat([newSample]).concat(state.slice(sampleIndex + 1))
         } else {
             console.log('SET_SAMPLE_PLOT_IMAGE failed: no sample with id', action.payload.sampleId, 'was found')   

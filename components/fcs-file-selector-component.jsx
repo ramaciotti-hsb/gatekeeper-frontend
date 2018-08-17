@@ -130,10 +130,6 @@ export default class FCSFileSelector extends Component {
                             </div>
                             <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
                             <div className='divider' />
-                            <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
-                                <i className='lnr lnr-cloud-sync'></i>
-                                <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
-                            </div>
                         </div>
                         <div className='container-horizontal'>
                             <FCSParameterSelector />

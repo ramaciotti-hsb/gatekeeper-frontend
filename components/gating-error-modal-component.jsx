@@ -197,6 +197,23 @@ export default class GatingErrorModal extends Component {
                             </div>
                         </div>
                     )
+                } else if (gate.type === constants.GATE_TYPE_DOUBLE_ZERO) {
+                    return (
+                        <div className={'gate double-negative' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
+                        onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
+                            <div className='left'>
+                                <div className='title'>
+                                    {gate.title}
+                                </div>
+                                <div className='population-count'>
+                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                </div>
+                            </div>
+                            <div className='right'>
+                                <i className='lnr lnr-checkmark-circle' />
+                            </div>
+                        </div>
+                    )
                 } else if (gate.type === constants.GATE_TYPE_NEGATIVE) {
                     return (
                         <div className={'gate negative' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
