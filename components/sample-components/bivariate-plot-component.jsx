@@ -28,7 +28,8 @@ export default class BivariatePlot extends Component {
             selectedXScale: this.props.selectedXScale || this.props.workspace.selectedXScale,
             selectedYScale: this.props.selectedYScale || this.props.workspace.selectedYScale,
             machineType: this.props.FCSFile.machineType || this.props.workspace.machineType,
-            mousePosition: [0, 0]
+            mousePosition: [0, 0],
+            imageLoading: true,
         }
 
         this.cacheImageKey = null
@@ -293,34 +294,44 @@ export default class BivariatePlot extends Component {
             let selectionMinX, selectionMaxX, selectionMinY, selectionMaxY
         }
 
-        if (this.cacheImageKey !== this.props.sample.id + '_' + getPlotImageKey(this.props)) {
-            this.cacheImageKey = this.props.sample.id + '_' + getPlotImageKey(this.props)
+
+        const parameters = {
+            workspaceId: this.props.workspace.id,
+            FCSFileId: this.props.FCSFile.id,
+            sampleId: this.props.sample.id,
+            machineType: this.props.machineType,
+            selectedXParameterIndex: this.props.selectedXParameterIndex,
+            selectedXScale: this.props.selectedXScale,
+            selectedYParameterIndex: this.props.selectedYParameterIndex,
+            selectedYScale: this.props.selectedYScale,
+            minXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.positiveMin,
+            maxXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.max,
+            minYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.positiveMin,
+            maxYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.max,
+            plotWidth: this.props.plotWidth,
+            plotHeight: this.props.plotHeight
+        }
+
+        if (this.cacheImageKey !== querystring.stringify(parameters)) {
+            this.cacheImageKey = querystring.stringify(parameters)
             this.cacheImage = new Image()
-            const parameters = {
-                workspaceId: this.props.workspace.id,
-                FCSFileId: this.props.FCSFile.id,
-                sampleId: this.props.sample.id,
-                machineType: this.props.machineType,
-                selectedXParameterIndex: this.props.selectedXParameterIndex,
-                selectedXScale: this.props.selectedXScale,
-                selectedYParameterIndex: this.props.selectedYParameterIndex,
-                selectedYScale: this.props.selectedYScale,
-                minXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.positiveMin,
-                maxXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.max,
-                minYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.positiveMin,
-                maxYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.max,
-                plotWidth: this.props.plotWidth,
-                plotHeight: this.props.plotHeight
-            }
 
             this.cacheImage.src = window.JOBS_API_URL + '/plot_images?' + querystring.stringify(parameters)
+            this.setState({
+                imageLoading: true
+            })
         } else {
             redrawGraph(this.cacheImage)
         }
 
-        this.cacheImage.onload = () => {
-            redrawGraph(this.cacheImage)
-        }
+        this.cacheImage.onload = function (cacheImageKey) {
+            if (cacheImageKey === this.cacheImageKey) {
+                this.setState({
+                    imageLoading: false
+                })
+                redrawGraph(this.cacheImage)
+            }
+        }.bind(this, this.cacheImageKey)
     }
 
     updateTypeSpecificData (gateTemplate, data) {
@@ -557,6 +568,9 @@ export default class BivariatePlot extends Component {
             && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loading) {
             isLoading = true
             loadingMessage = this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex] && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loadingMessage
+        } else if (this.state.imageLoading) {
+            isLoading = true
+            loadingMessage = 'Generating image for plot...'
         }
 
         // Show an error message if automated gates failed to apply

@@ -143,10 +143,6 @@ export default class FCSFileSelector extends Component {
                         <div className='header'>
                             <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
                             <div className='divider' />
-                            <div className={'button jobs' + (this.state.containerWidth < 1200 ? ' compact' : '') + (this.props.backgroundJobsEnabled ? ' enabled' : ' disabled')} onClick={this.props.api.setBackgroundJobsEnabled.bind(this, !this.props.backgroundJobsEnabled)}>
-                                <i className='lnr lnr-cloud-sync'></i>
-                                <div className='text'>Background Jobs {this.props.backgroundJobsEnabled ? 'Enabled' : 'Disabled'}</div>
-                            </div>
                         </div>
                         <div className='container-horizontal'>
                             <div className='center'>Select an FCS file to get started.</div>

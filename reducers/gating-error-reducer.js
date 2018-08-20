@@ -38,10 +38,10 @@ const gatingErrors = (state = initialState, action = {}) => {
     // Remove a gating error
     // --------------------------------------------------
     } else if (action.type === 'REMOVE_GATING_ERROR') {
-        const gatingError = _.find(state, s => s.id === action.payload.gatingErrorId)
+        const gatingError = _.find(state, g => g.id === action.payload.gatingErrorId)
 
         if (gatingError) {
-            const gatingErrorIndex = _.findIndex(state, s => s.id === gatingError.id)
+            const gatingErrorIndex = _.findIndex(state, g => g.id === gatingError.id)
             newState = newState.slice(0, gatingErrorIndex).concat(newState.slice(gatingErrorIndex + 1))
         } else {
             console.log('REMOVE_GATING_ERROR failed: no gatingError with id', action.payload.gatingErrorId, 'was found')

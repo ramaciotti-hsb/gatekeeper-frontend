@@ -197,8 +197,12 @@ export default class MultipleSampleView extends Component {
             return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Waiting for FCS File to be uploaded</div></div></div>
         }
 
-        if (!this.props.sample) {
+        if (this.props.FCSFile.FCSParameters.length === 0) {
             return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Loading FCS File Metadata</div></div></div>
+        }
+
+        if (!this.props.sample) {
+            return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='text'>No sample for this gate template and FCS file.</div></div></div>
         }
 
         const plotsPerRow = Math.floor(this.state.containerWidth / (this.props.plotDisplayWidth + 130))

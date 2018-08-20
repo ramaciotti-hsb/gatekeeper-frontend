@@ -39,7 +39,16 @@ export default class FCSParameterSelector extends Component {
     }
 
     render () {
-        const parameters = _.filter(this.props.selectedFCSFile.FCSParameters, p => p.key.toLowerCase().match(this.state.filterValue.toLowerCase()) || p.label.toLowerCase().match(this.state.filterValue.toLowerCase())).map((parameter) => {
+        const parameters = _.filter(this.props.selectedFCSFile.FCSParameters, p => p.key.toLowerCase().match(this.state.filterValue.toLowerCase()) || p.label.toLowerCase().match(this.state.filterValue.toLowerCase())).sort((a, b) => {
+            if (!a.key.match(/\d+/)) {
+                return 1
+            } else if (!b.key.match(/\d+/)) {
+                return -1
+            } else {
+                return a.key.match(/\d+/)[0] - b.key.match(/\d+/)[0]                
+            }
+        }).map((parameter) => {
+            
             const disabled = this.props.selectedWorkspace.disabledParameters && this.props.selectedWorkspace.disabledParameters[parameter.key]
             let parameterKey
             if (parameter.key !== parameter.label) {
