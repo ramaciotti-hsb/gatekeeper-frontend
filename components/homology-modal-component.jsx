@@ -167,6 +167,9 @@ export default class HomologyModal extends Component {
     }
 
     applyGatesClicked () {
+        this.setState({
+            applyGatesClicked: true
+        })
         this.props.api.applyUnsavedGatesToSample(this.props.selectedSample.id, {
             selectedXParameter: this.props.modalOptions.selectedXParameter,
             selectedYParameter: this.props.modalOptions.selectedYParameter,
@@ -177,7 +180,12 @@ export default class HomologyModal extends Component {
             minPeakHeight: parseInt(this.state.minPeakHeight),
             minPeakSize: parseInt(this.state.minPeakSize),
             recalculateGates: true
-        }).then(this.modalOuterClicked.bind(this))
+        }).then(() => {
+            this.setState({
+                applyGatesClicked: false
+            })
+            this.modalOuterClicked()
+        })
     }
 
     componentDidMount () {
@@ -400,7 +408,10 @@ export default class HomologyModal extends Component {
             } else {
                 actions = (
                     <div className='actions'>
-                        <div className='button apply-gates' onClick={this.applyGatesClicked.bind(this)}>Apply Gates To Sample</div>
+                        <div className='button apply-gates' onClick={this.applyGatesClicked.bind(this)}>
+                            <div className={`loader-outer ${this.state.applyGatesLoading ? ' active' : ''}`}><div className='loader small'></div></div>
+                            Apply Gates To Sample
+                        </div>
                     </div>
                 )
             }

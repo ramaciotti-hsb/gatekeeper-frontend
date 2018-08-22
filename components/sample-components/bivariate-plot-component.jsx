@@ -296,6 +296,10 @@ export default class BivariatePlot extends Component {
         }
 
 
+        if (this.cacheImage) {
+            this.cacheImage.onLoad = null
+        }
+
         const parameters = {
             workspaceId: this.props.workspace.id,
             FCSFileId: this.props.FCSFile.id,
@@ -317,7 +321,7 @@ export default class BivariatePlot extends Component {
             this.cacheImageKey = querystring.stringify(parameters)
             this.cacheImage = new Image()
 
-            this.cacheImage.src = window.JOBS_API_URL + '/plot_images?' + querystring.stringify(parameters)
+            this.cacheImage.src = this.props.api.getJobsApiUrl() + '/plot_images?' + querystring.stringify(parameters)
             this.setState({
                 imageLoading: true
             })
@@ -326,13 +330,13 @@ export default class BivariatePlot extends Component {
         }
 
         this.cacheImage.onload = function (cacheImageKey) {
-            //if (cacheImageKey === this.cacheImageKey) {
+            if (cacheImageKey === this.cacheImageKey) {
                 this.setState({
                     imageLoading: false
                 })
                 redrawGraph(this.cacheImage)
-            //}
-        }.bind(this)//.bind(this, this.cacheImageKey)
+            }
+        }.bind(this, this.cacheImageKey)
     }
 
     updateTypeSpecificData (gateTemplate, data) {

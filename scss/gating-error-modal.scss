@@ -52,8 +52,13 @@
                     font-weight: 600;
                     font-size: 12px;
                     cursor: pointer;
+                    position: relative;
                     @include backgroundHover(darken($highlight-colour, 10%));
                     @include backgroundClick(darken($highlight-colour, 10%));
+
+                    .loader-outer.active {
+                        pointer-events: none;
+                    }
 
                     &.disabled {
                         opacity: 0.7;
@@ -198,6 +203,7 @@
                         } // .peak
 
                         .button {
+                            position: relative;
                             margin-top: 15px;
                             
                             &.active {
