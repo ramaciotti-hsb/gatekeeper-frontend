@@ -11,7 +11,7 @@ const mapStateToProps = (state, ownProps) => {
     const selectedWorkspace = _.find(state.workspaces, w => w.id === state.selectedWorkspaceId) || {}
     const selectedFCSFile = _.find(state.FCSFiles, fcs => fcs.id === selectedWorkspace.selectedFCSFileId) || {}
     const selectedGateTemplate = _.find(state.gateTemplates, gt => gt.id === selectedWorkspace.selectedGateTemplateId) || {}
-    const selectedGateTemplateGroup = _.find(state.gateTemplateGroups, g => g.parentGateTemplateId === selectedGateTemplate.id && g.selectedXParameterIndex === state.gatingModal.selectedXParameterIndex && g.selectedYParameterIndex === state.gatingModal.selectedYParameterIndex) 
+    const selectedGateTemplateGroup = _.find(state.gateTemplateGroups, g => g.parentGateTemplateId === selectedGateTemplate.id && g.selectedXParameter === state.gatingModal.selectedXParameter && g.selectedYParameter === state.gatingModal.selectedYParameter) 
     const gateHasChildren = selectedGateTemplateGroup ? true : false
     const selectedSample = _.find(state.samples, s => s.gateTemplateId === selectedGateTemplate.id && s.FCSFileId === selectedFCSFile.id) || {}
 
@@ -28,8 +28,8 @@ const mapStateToProps = (state, ownProps) => {
         modalOptions: {
             visible: state.gatingModal.sampleId && state.gatingModal.visible,
             sampleId: state.gatingModal.sampleId,
-            selectedXParameterIndex: state.gatingModal.selectedXParameterIndex || 0,
-            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex || 1,
+            selectedXParameter: state.gatingModal.selectedXParameter,
+            selectedYParameter: state.gatingModal.selectedYParameter,
             errorMessage: state.gatingModal.errorMessage,
             seedPeaks: state.gatingModal.seedPeaks || []
         }

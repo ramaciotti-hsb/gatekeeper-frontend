@@ -72,8 +72,8 @@ export default class MultipleSampleView extends Component {
         }
     }
 
-    calculateHomology (selectedXParameterIndex, selectedYParameterIndex) {
-        this.props.api.showGatingModal(this.props.sample.id, selectedXParameterIndex, selectedYParameterIndex)
+    calculateHomology (selectedXParameter, selectedYParameter) {
+        this.props.api.showGatingModal(this.props.sample.id, selectedXParameter, selectedYParameter)
     }
 
     matchLabels(xLabel, yLabel, matchString) {
@@ -109,28 +109,29 @@ export default class MultipleSampleView extends Component {
 
     filterPlots () {
         const combinations = []
-        for (let x = 0; x < this.props.FCSFile.FCSParameters.length; x++) {
+        for (let i = 0; i < _.keys(this.props.FCSFile.FCSParameters).length; i++) {
+            const parameter = _.values(this.props.FCSFile.FCSParameters)[i]
             // Don't bother displaying the plot if the parameter is disabled
-            if (this.props.workspace.disabledParameters[this.props.FCSFile.FCSParameters[x].key]) { continue }
-            for (let y = x + 1; y < this.props.FCSFile.FCSParameters.length; y++) {
-                if (this.props.workspace.disabledParameters[this.props.FCSFile.FCSParameters[y].key]) { continue }
+            if (this.props.workspace.disabledParameters[parameter.key]) { continue }
+            for (let j = i + 1; j < _.keys(this.props.FCSFile.FCSParameters).length; j++) {
+                const parameter2 = _.values(this.props.FCSFile.FCSParameters)[j]
+                if (this.props.workspace.disabledParameters[parameter2.key]) { continue }
 
-                if (this.matchLabels(this.props.FCSFile.FCSParameters[x].label, this.props.FCSFile.FCSParameters[y].label, this.state.filterPlotString)) {
+                if (this.matchLabels(parameter.label, parameter2.label, this.state.filterPlotString)) {
 
                     let shouldAdd = true
                     if (this.props.workspace.hideUngatedPlots) {
-                        if (!_.find(this.props.gates, g => g.selectedXParameterIndex === x && g.selectedYParameterIndex === y)) {
+                        if (!_.find(this.props.gates, g => g.selectedXParameter === parameter.key && g.selectedYParameter === parameter2.key)) {
                             shouldAdd = false 
                         }
                     }
 
                     if (shouldAdd) {
-                        const x2 = Math.min(x, y)
-                        const y2 = Math.max(x, y)
-                        if (this.props.workspace.invertedAxisPlots[x2 + '_' + y2]) {
-                            combinations.push([y, x])
+                        const keys = [parameter.key, parameter2.key].sort()
+                        if (this.props.workspace.invertedAxisPlots[keys[0] + '_' + keys[1]]) {
+                            combinations.push([keys[1], keys[0]])
                         } else {
-                            combinations.push([x, y])
+                            combinations.push([keys[0], keys[1]])
                         }
                     }
                 }
@@ -142,11 +143,11 @@ export default class MultipleSampleView extends Component {
 
     showGate (gateId) {
         const gate = _.find(this.props.gates, g => g.id === gateId)
-        if (this.state.selectedXParameterIndex !== gate.selectedXParameterIndex
-            || this.state.selectedYParameterIndex !== gate.selectedYParameterIndex) {
+        if (this.state.selectedXParameter !== gate.selectedXParameter
+            || this.state.selectedYParameter !== gate.selectedYParameter) {
             this.props.api.updateWorkspace(this.props.workspace.id, {
-                selectedXParameterIndex: gate.selectedXParameterIndex,
-                selectedYParameterIndex: gate.selectedYParameterIndex,
+                selectedXParameter: gate.selectedXParameter,
+                selectedYParameter: gate.selectedYParameter,
                 selectedXScale: gate.selectedXScale,
                 selectedYScale: gate.selectedYScale
             })
@@ -169,9 +170,9 @@ export default class MultipleSampleView extends Component {
             shouldReset = true
         } else if (this.props.FCSFile.FCSParameters.length !== prevProps.FCSFile.FCSParameters.length) {
             shouldReset = true
-        } else if (this.props.workspace.selectedXParameterIndex != prevProps.workspace.selectedXParameterIndex) {
+        } else if (this.props.workspace.selectedXParameter != prevProps.workspace.selectedXParameter) {
             shouldReset = true
-        } else if (this.props.workspace.selectedYParameterIndex != prevProps.workspace.selectedYParameterIndex) {
+        } else if (this.props.workspace.selectedYParameter != prevProps.workspace.selectedYParameter) {
             shouldReset = true
         } else if (!_.isEqual(prevProps.workspace.disabledParameters, this.props.workspace.disabledParameters)) {
             shouldReset = true
@@ -197,7 +198,7 @@ export default class MultipleSampleView extends Component {
             return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Waiting for FCS File to be uploaded</div></div></div>
         }
 
-        if (this.props.FCSFile.FCSParameters.length === 0) {
+        if (_.values(this.props.FCSFile.FCSParameters).length === 0) {
             return <div className='panel sample' ref={this.panelRef}><div className='loader-outer active'><div className='loader'></div><div className='text'>Loading FCS File Metadata</div></div></div>
         }
 
@@ -212,13 +213,13 @@ export default class MultipleSampleView extends Component {
         let plots = []
 
         for (let gate of this.props.gates) {
-            const key = `${gate.selectedXParameterIndex}_${gate.selectedYParameterIndex}`
+            const key = `${gate.selectedXParameter}_${gate.selectedYParameter}`
 
             if (!gateGroups[key]) {
                 gateGroups[key] = {
-                    label: this.props.FCSFile.FCSParameters[gate.selectedXParameterIndex].label + ' · ' + this.props.FCSFile.FCSParameters[gate.selectedYParameterIndex].label,
-                    selectedXParameterIndex: gate.selectedXParameterIndex,
-                    selectedYParameterIndex: gate.selectedYParameterIndex,
+                    label: this.props.FCSFile.FCSParameters[gate.selectedXParameter].label + ' · ' + this.props.FCSFile.FCSParameters[gate.selectedYParameter].label,
+                    selectedXParameter: gate.selectedXParameter,
+                    selectedYParameter: gate.selectedYParameter,
                     gates: []
                 }
             }
@@ -242,18 +243,16 @@ export default class MultipleSampleView extends Component {
             }
 
             const realIndex = index + minIndex
-
-            const x = Math.min(c[0], c[1])
-            const y = Math.max(c[0], c[1])
+            const inverted = this.props.workspace.invertedAxisPlots[c[0] + '_' + c[1]] || this.props.workspace.invertedAxisPlots[c[1] + '_' + c[0]]
 
             return (
-                <div className='gate-group' key={x + '_' + y} style={{ position: 'absolute', top: (Math.floor(realIndex / plotsPerRow)) * (this.props.plotDisplayHeight + 115), left: (realIndex % plotsPerRow) * (this.props.plotDisplayWidth + 130) }}>
+                <div className='gate-group' key={c[0] + '_' + c[1]} style={{ position: 'absolute', top: (Math.floor(realIndex / plotsPerRow)) * (this.props.plotDisplayHeight + 115), left: (realIndex % plotsPerRow) * (this.props.plotDisplayWidth + 130) }}>
                     <div className='upper'>
                         <div className='selected-parameters'>
                             {this.props.FCSFile.FCSParameters[c[0]].label + ' · ' + this.props.FCSFile.FCSParameters[c[1]].label}
-                            <div className={'icon' + (this.props.workspace.invertedAxisPlots[x + '_' + y] ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
+                            <div className={'icon' + (inverted ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
                         </div>
-                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, 'http://127.0.0.1:3145/plot_images/' + this.props.sample.id + '/' + getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: c[0], selectedYParameterIndex: c[1], selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale }) )}>
+                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, 'http://127.0.0.1:3145/plot_images/' + this.props.sample.id + '/' + getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: this.props.FCSFile.FCSParameters[c[0]].index, selectedYParameterIndex: this.props.FCSFile.FCSParameters[c[1]].index, selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale }) )}>
                             <i className='lnr lnr-picture' />
                         </div>
                         <Dropdown outerClasses='dark'>
@@ -269,7 +268,7 @@ export default class MultipleSampleView extends Component {
                         </Dropdown>
                     </div>
                     <div className='graph'>
-                        <BivariatePlot sampleId={this.props.sample.id} FCSFileId={this.props.FCSFile.id} selectedXParameterIndex={c[0]} selectedYParameterIndex={c[1]} selectedXScale={this.props.workspace.selectedXScale} selectedYScale={this.props.workspace.selectedYScale} />
+                        <BivariatePlot sampleId={this.props.sample.id} FCSFileId={this.props.FCSFile.id} selectedXParameter={c[0]} selectedYParameter={c[1]} selectedXScale={this.props.workspace.selectedXScale} selectedYScale={this.props.workspace.selectedYScale} />
                     </div>
                 </div>
             )

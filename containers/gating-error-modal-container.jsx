@@ -32,8 +32,8 @@ const mapStateToProps = (state, ownProps) => {
         modalOptions: {
             visible: state.gatingModal.gatingErrorId && state.gatingModal.visible,
             sampleId: state.gatingModal.sampleId,
-            selectedXParameterIndex: state.gatingModal.selectedXParameterIndex,
-            selectedYParameterIndex: state.gatingModal.selectedYParameterIndex,
+            selectedXParameter: state.gatingModal.selectedXParameter,
+            selectedYParameter: state.gatingModal.selectedYParameter,
             errorMessage: state.gatingModal.errorMessage,
             seedPeaks: state.gatingModal.seedPeaks || []
         }

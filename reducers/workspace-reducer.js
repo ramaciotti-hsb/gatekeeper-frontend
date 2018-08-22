@@ -73,13 +73,12 @@ const workspaces = (state = initialState, action = {}) => {
         if (workspaceIndex > -1) {
             const newWorkspace = _.clone(state[workspaceIndex])
             newWorkspace.invertedAxisPlots = _.clone(state[workspaceIndex].invertedAxisPlots)
-            const x = Math.min(action.payload.selectedXParameterIndex, action.payload.selectedYParameterIndex)
-            const y = Math.max(action.payload.selectedXParameterIndex, action.payload.selectedYParameterIndex)
+            const parameters = [action.payload.selectedXParameter, action.payload.selectedYParameter].sort()
 
-            if (!newWorkspace.invertedAxisPlots[`${x}_${y}`]) {
-                newWorkspace.invertedAxisPlots[`${x}_${y}`] = true
+            if (!newWorkspace.invertedAxisPlots[`${parameters[0]}_${parameters[1]}`]) {
+                newWorkspace.invertedAxisPlots[`${parameters[0]}_${parameters[1]}`] = true
             } else {
-                newWorkspace.invertedAxisPlots[`${x}_${y}`] = false
+                newWorkspace.invertedAxisPlots[`${parameters[0]}_${parameters[1]}`] = false
             }
             newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
         }

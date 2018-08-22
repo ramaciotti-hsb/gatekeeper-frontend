@@ -69,8 +69,8 @@ const mapDispatchToProps = dispatch => {
         updateGateTemplate: (gateTemplateId, parameters) => {
             dispatch(updateGateTemplate(gateTemplateId, parameters))
         },
-        showGatingModal: (sampleId, selectedXParameterIndex, selectedYParameterIndex) => {
-            dispatch(showGatingModal(sampleId, selectedXParameterIndex, selectedYParameterIndex))
+        showGatingModal: (sampleId, selectedXParameter, selectedYParameter) => {
+            dispatch(showGatingModal(sampleId, selectedXParameter, selectedYParameter))
         }
     }
 }

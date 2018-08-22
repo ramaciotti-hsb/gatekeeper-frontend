@@ -11,10 +11,10 @@ export const setAuthenticatedUser = (authenticatedUser) => {
     }
 }
 
-export const showGatingModal = (sampleId, selectedXParameterIndex, selectedYParameterIndex) => {
+export const showGatingModal = (sampleId, selectedXParameter, selectedYParameter) => {
     return {
         type: 'SHOW_GATING_MODAL',
-        payload: { sampleId, selectedXParameterIndex, selectedYParameterIndex }
+        payload: { sampleId, selectedXParameter, selectedYParameter }
     }
 }
 

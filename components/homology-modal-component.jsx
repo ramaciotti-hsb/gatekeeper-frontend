@@ -148,15 +148,15 @@ export default class HomologyModal extends Component {
         })
         
         this.props.api.createUnsavedGatesUsingHomology(this.props.selectedWorkspace.id, this.props.selectedFCSFile.id, this.props.selectedSample.id, {
-            selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
-            selectedYParameterIndex: this.props.modalOptions.selectedYParameterIndex,
+            selectedXParameter: this.props.modalOptions.selectedXParameter,
+            selectedYParameter: this.props.modalOptions.selectedYParameter,
             selectedXScale: this.props.selectedWorkspace.selectedXScale,
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
-            minXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].statistics.positiveMin,
-            maxXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].statistics.max,
-            minYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].statistics.positiveMin,
-            maxYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].statistics.max,
+            minXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].statistics.positiveMin,
+            maxXValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].statistics.max,
+            minYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].statistics.positiveMin,
+            maxYValue: this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].statistics.max,
             plotWidth: this.props.plotWidth,
             plotHeight: this.props.plotHeight,
             edgeDistance: this.state.edgeDistance,
@@ -168,8 +168,8 @@ export default class HomologyModal extends Component {
 
     applyGatesClicked () {
         this.props.api.applyUnsavedGatesToSample(this.props.selectedSample.id, {
-            selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
-            selectedYParameterIndex: this.props.modalOptions.selectedYParameterIndex,
+            selectedXParameter: this.props.modalOptions.selectedXParameter,
+            selectedYParameter: this.props.modalOptions.selectedYParameter,
             selectedXScale: this.props.selectedWorkspace.selectedXScale,
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
@@ -218,11 +218,11 @@ export default class HomologyModal extends Component {
                                 <div className='title'>Mass Cytometry Options</div>
                                 <div className={'parameter checkbox include-x-zeroes' + (gate.gateCreatorData.includeXChannelZeroes ? ' active' : '')} onClick={this.props.api.updateUnsavedGate.bind(null, gate.id, { gateCreatorData: { includeXChannelZeroes: !gate.gateCreatorData.includeXChannelZeroes } })}>
                                     <i className={'lnr ' + (gate.gateCreatorData.includeXChannelZeroes ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
-                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedXParameterIndex].label} is zero</div>
+                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedXParameter].label} is zero</div>
                                 </div>
                                 <div className={'parameter checkbox include-y-zeroes' + (gate.gateCreatorData.includeYChannelZeroes ? ' active' : '')} onClick={this.props.api.updateUnsavedGate.bind(null, gate.id, { gateCreatorData: { includeYChannelZeroes: !gate.gateCreatorData.includeYChannelZeroes } })}>
                                     <i className={'lnr ' + (gate.gateCreatorData.includeYChannelZeroes ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
-                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedYParameterIndex].label} is zero</div>
+                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedYParameter].label} is zero</div>
                                 </div>
                             </div>
                         )
@@ -463,11 +463,13 @@ export default class HomologyModal extends Component {
             )
         }
 
+        const titleParameters = `${this.props.modalOptions.selectedXParameter && this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].label} · ${this.props.modalOptions.selectedYParameter && this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].label}`
+
         return (
             <div className={'homology-modal-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)}>
                 <div className='homology-modal-inner' onClick={this.modalInnerClicked} style={{ height: 597 }}>
                     <div className='upper'>
-                        <div className='title'>{this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].label} · {this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].label} - Automated gating using Persistent Homology</div>
+                        <div className='title'>{} - Automated gating using Persistent Homology</div>
                     </div>
                     <div className='lower'>
                         <div className='graph'>
@@ -482,8 +484,8 @@ export default class HomologyModal extends Component {
                                 sampleId={this.props.selectedSample.id}
                                 FCSFileId={this.props.selectedFCSFile.id}
                                 showGateTemplatePositions={true}
-                                selectedXParameterIndex={this.props.modalOptions.selectedXParameterIndex}
-                                selectedYParameterIndex={this.props.modalOptions.selectedYParameterIndex}
+                                selectedXParameter={this.props.modalOptions.selectedXParameter}
+                                selectedYParameter={this.props.modalOptions.selectedYParameter}
                                 selectedXScale={this.props.selectedWorkspace.selectedXScale}
                                 selectedYScale={this.props.selectedWorkspace.selectedYScale}
                                 plotDisplayWidth={500}

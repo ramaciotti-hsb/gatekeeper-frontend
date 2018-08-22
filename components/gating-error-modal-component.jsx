@@ -96,8 +96,8 @@ export default class GatingErrorModal extends Component {
 
     applyGatesClicked () {
         this.props.api.applyUnsavedGatesToSample(this.props.selectedSample.id, {
-            selectedXParameterIndex: this.props.modalOptions.selectedXParameterIndex,
-            selectedYParameterIndex: this.props.modalOptions.selectedYParameterIndex,
+            selectedXParameter: this.props.modalOptions.selectedXParameter,
+            selectedYParameter: this.props.modalOptions.selectedYParameter,
             selectedXScale: this.props.selectedWorkspace.selectedXScale,
             selectedYScale: this.props.selectedWorkspace.selectedYScale,
             machineType: this.props.selectedFCSFile.machineType,
@@ -156,11 +156,11 @@ export default class GatingErrorModal extends Component {
                                 <div className='title'>Mass Cytometry Options</div>
                                 <div className={'parameter checkbox include-x-zeroes' + (gate.gateCreatorData.includeXChannelZeroes ? ' active' : '')} onClick={this.props.api.updateUnsavedGate.bind(null, gate.id, { gateCreatorData: { includeXChannelZeroes: !gate.gateCreatorData.includeXChannelZeroes } })}>
                                     <i className={'lnr ' + (gate.gateCreatorData.includeXChannelZeroes ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
-                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedXParameterIndex].label} is zero</div>
+                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedXParameter].label} is zero</div>
                                 </div>
                                 <div className={'parameter checkbox include-y-zeroes' + (gate.gateCreatorData.includeYChannelZeroes ? ' active' : '')} onClick={this.props.api.updateUnsavedGate.bind(null, gate.id, { gateCreatorData: { includeYChannelZeroes: !gate.gateCreatorData.includeYChannelZeroes } })}>
                                     <i className={'lnr ' + (gate.gateCreatorData.includeYChannelZeroes ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
-                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedYParameterIndex].label} is zero</div>
+                                    <div className='text'>Include events where {this.props.selectedFCSFile.FCSParameters[gate.selectedYParameter].label} is zero</div>
                                 </div>
                             </div>
                         )
@@ -404,7 +404,7 @@ export default class GatingErrorModal extends Component {
             <div className={'gating-error-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)}>
                 <div className='gating-error-inner' onClick={this.modalInnerClicked} style={{ height: 597 }}>
                     <div className='upper'>
-                        <div className='title'>{this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameterIndex].label} · {this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameterIndex].label} - Automated Gating Errors for {this.props.selectedSample.title}</div>
+                        <div className='title'>{this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].label} · {this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].label} - Automated Gating Errors for {this.props.selectedSample.title}</div>
                     </div>
                     <div className='lower'>
                         <div className='graph'>
@@ -418,8 +418,8 @@ export default class GatingErrorModal extends Component {
                                 seedPeaks={this.props.modalOptions.seedPeaks}
                                 setGateHighlight={this.setGateHighlight.bind(this)}
                                 showGateTemplatePositions={true}
-                                selectedXParameterIndex={this.props.selectedGateTemplateGroup.selectedXParameterIndex}
-                                selectedYParameterIndex={this.props.selectedGateTemplateGroup.selectedYParameterIndex}
+                                selectedXParameter={this.props.selectedGateTemplateGroup.selectedXParameter}
+                                selectedYParameter={this.props.selectedGateTemplateGroup.selectedYParameter}
                                 selectedXScale={this.props.selectedWorkspace.selectedXScale}
                                 selectedYScale={this.props.selectedWorkspace.selectedYScale}
                                 plotDisplayWidth={500}

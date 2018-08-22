@@ -122,12 +122,12 @@ const applicationReducer = (state = initialState, action) => {
     else if (action.type === 'SHOW_GATING_MODAL') {
         newState.gatingModal = {
             visible: true,
-            selectedXParameterIndex: action.payload.selectedXParameterIndex,
-            selectedYParameterIndex: action.payload.selectedYParameterIndex
+            selectedXParameter: action.payload.selectedXParameter,
+            selectedYParameter: action.payload.selectedYParameter
         }
 
         const sample = _.find(newState.samples, s => s.id === action.payload.sampleId)
-        const gateTemplateGroup = _.find(newState.gateTemplateGroups, g => g.parentGateTemplateId === sample.gateTemplateId && g.selectedXParameterIndex === action.payload.selectedXParameterIndex && g.selectedYParameterIndex === action.payload.selectedYParameterIndex)
+        const gateTemplateGroup = _.find(newState.gateTemplateGroups, g => g.parentGateTemplateId === sample.gateTemplateId && g.selectedXParameter === action.payload.selectedXParameter && g.selectedYParameter === action.payload.selectedYParameter)
 
         let gatingError = _.find(newState.gatingErrors, e => gateTemplateGroup && e.gateTemplateGroupId === gateTemplateGroup.id && e.sampleId === sample.id)
         if (gatingError) {
@@ -291,7 +291,7 @@ const applicationReducer = (state = initialState, action) => {
         
         if (currentSample) {
             if (newState.gatingModal.visible) {
-                newState = applicationReducer(newState, { type: 'SHOW_GATING_MODAL', payload: { selectedXParameterIndex: newState.gatingModal.selectedXParameterIndex, selectedYParameterIndex: newState.gatingModal.selectedYParameterIndex, sampleId: currentSample.id } })
+                newState = applicationReducer(newState, { type: 'SHOW_GATING_MODAL', payload: { selectedXParameter: newState.gatingModal.selectedXParameter, selectedYParameter: newState.gatingModal.selectedYParameter, sampleId: currentSample.id } })
             }
         }
 
@@ -304,7 +304,7 @@ const applicationReducer = (state = initialState, action) => {
         newState.gatingErrors = gatingErrorReducer(newState.gatingErrors, action)
         // Hide the gating error modal if it's visible and looking at the current gating error
         if (newState.gatingModal.visible && newState.gatingModal.gatingErrorId === action.payload.gatingErrorId) {
-            newState = applicationReducer(newState, { type: 'SHOW_GATING_MODAL', payload: { selectedXParameterIndex: newState.gatingModal.selectedXParameterIndex, selectedYParameterIndex: newState.gatingModal.selectedYParameterIndex, sampleId: gatingError.sampleId } })
+            newState = applicationReducer(newState, { type: 'SHOW_GATING_MODAL', payload: { selectedXParameter: newState.gatingModal.selectedXParameter, selectedYParameter: newState.gatingModal.selectedYParameter, sampleId: gatingError.sampleId } })
         }
     // --------------------------------------------------
     // Pass on any unmatched actions to workspaceReducer and

@@ -50,11 +50,11 @@ const mapStateToProps = (state, ownProps) => {
             // Find any gates on this plot
             const gates = []
             for (let gate of state.gates) {
-                let selectedXParameterIndex = ownProps.selectedXParameterIndex
-                let selectedYParameterIndex = ownProps.selectedYParameterIndex
+                let selectedXParameter = ownProps.selectedXParameter
+                let selectedYParameter = ownProps.selectedYParameter
                 if (gate.parentSampleId === ownProps.sampleId
-                    && gate.selectedXParameterIndex === selectedXParameterIndex
-                    && gate.selectedYParameterIndex === selectedYParameterIndex) {
+                    && gate.selectedXParameter === selectedXParameter
+                    && gate.selectedYParameter === selectedYParameter) {
                     gates.push(gate)
                 }
             }
@@ -62,7 +62,7 @@ const mapStateToProps = (state, ownProps) => {
             // Find gate templates that gates refer to
             const gateTemplates = gates.map(g => _.find(state.gateTemplates, gt => g.gateTemplateId === gt.id))
             const parentGateTemplate = _.find(state.gateTemplates, gt => gt.id === sample.gateTemplateId)
-            let gateTemplateGroup = _.find(state.gateTemplateGroups, g => g.parentGateTemplateId === parentGateTemplate.id && g.selectedXParameterIndex === ownProps.selectedXParameterIndex && g.selectedYParameterIndex === ownProps.selectedYParameterIndex)
+            let gateTemplateGroup = _.find(state.gateTemplateGroups, g => g.parentGateTemplateId === parentGateTemplate.id && g.selectedXParameter === ownProps.selectedXParameter && g.selectedYParameter === ownProps.selectedYParameter)
             let gatingError
             if (gateTemplateGroup) {
                 gatingError = _.find(state.gatingErrors, e => e.gateTemplateGroupId === gateTemplateGroup.id && e.sampleId === ownProps.sampleId)                

@@ -10,7 +10,7 @@ import polygonsIntersect from 'polygon-overlap'
 import pointInsidePolygon from 'point-in-polygon'
 import { distanceToPolygon, distanceBetweenPoints } from 'distance-to-polygon'
 import constants from '../../../gatekeeper-utilities/constants.js'
-import { heatMapHSLStringForValue, getPlotImageKey, getScales, getPolygonCenter } from '../../../gatekeeper-utilities/utilities'
+import { heatMapHSLStringForValue, getScales, getPolygonCenter } from '../../../gatekeeper-utilities/utilities'
 import '../../scss/bivariate-plot-component.scss'
 
 export default class BivariatePlot extends Component {
@@ -57,8 +57,8 @@ export default class BivariatePlot extends Component {
             const scales = getScales({
                 selectedXScale: this.props.selectedXScale,
                 selectedYScale: this.props.selectedYScale,
-                xRange: [ this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.min, this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.max ],
-                yRange: [ this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.min, this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.max ],
+                xRange: [ this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics.min, this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics.max ],
+                yRange: [ this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics.min, this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics.max ],
                 width: this.props.plotWidth - xOffset,
                 height: this.props.plotHeight - yOffset
             })
@@ -93,8 +93,9 @@ export default class BivariatePlot extends Component {
         const xOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayWidth / this.props.plotWidth) : 0
         const yOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayHeight / this.props.plotHeight) : 0
 
-        const xStats = this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics
-        const yStats = this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics
+        console.log(this.props.selectedXScale)
+        const xStats = this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics
+        const yStats = this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics
         const scales = getScales({
             selectedXScale: this.props.selectedXScale,
             selectedYScale: this.props.selectedYScale,
@@ -107,7 +108,7 @@ export default class BivariatePlot extends Component {
         // let xScale
         // let yScale
         // // If we should invert axis for this plot
-        // if (this.props.workspace.invertedAxisPlots[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex]) {
+        // if (this.props.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter]) {
         //     const 
         // }
 
@@ -193,8 +194,8 @@ export default class BivariatePlot extends Component {
             let gatesExist = false
             let filteredGates = _.filter(this.props.gates, g => g.type === constants.GATE_TYPE_POLYGON)
             for (let gate of filteredGates) {
-                if (gate.selectedXParameterIndex === this.props.selectedXParameterIndex && 
-                    gate.selectedYParameterIndex === this.props.selectedYParameterIndex) {
+                if (gate.selectedXParameter === this.props.selectedXParameter && 
+                    gate.selectedYParameter === this.props.selectedYParameter) {
                     gatesExist = true
                 }
             }
@@ -300,14 +301,14 @@ export default class BivariatePlot extends Component {
             FCSFileId: this.props.FCSFile.id,
             sampleId: this.props.sample.id,
             machineType: this.props.machineType,
-            selectedXParameterIndex: this.props.selectedXParameterIndex,
+            selectedXParameterIndex: this.props.FCSFile.FCSParameters[this.props.selectedXParameter].index,
             selectedXScale: this.props.selectedXScale,
-            selectedYParameterIndex: this.props.selectedYParameterIndex,
+            selectedYParameterIndex: this.props.FCSFile.FCSParameters[this.props.selectedYParameter].index,
             selectedYScale: this.props.selectedYScale,
-            minXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.positiveMin,
-            maxXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics.max,
-            minYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.positiveMin,
-            maxYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics.max,
+            minXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics.positiveMin,
+            maxXValue: this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics.max,
+            minYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics.positiveMin,
+            maxYValue: this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics.max,
             plotWidth: this.props.plotWidth,
             plotHeight: this.props.plotHeight
         }
@@ -325,13 +326,13 @@ export default class BivariatePlot extends Component {
         }
 
         this.cacheImage.onload = function (cacheImageKey) {
-            if (cacheImageKey === this.cacheImageKey) {
+            //if (cacheImageKey === this.cacheImageKey) {
                 this.setState({
                     imageLoading: false
                 })
                 redrawGraph(this.cacheImage)
-            }
-        }.bind(this, this.cacheImageKey)
+            //}
+        }.bind(this)//.bind(this, this.cacheImageKey)
     }
 
     updateTypeSpecificData (gateTemplate, data) {
@@ -343,7 +344,9 @@ export default class BivariatePlot extends Component {
     }
 
     componentDidMount() {
-        this.createGraphLayout()
+        if (this.props.selectedXParameter && this.props.selectedYParameter) {
+            this.createGraphLayout()            
+        }
         // this.initHomologyIteration()
     }
 
@@ -361,8 +364,8 @@ export default class BivariatePlot extends Component {
 
     componentDidUpdate(prevProps) {
         // Update the graph if visible gates have changed
-        const prevPropGates = _.filter(prevProps.gates, g => g.selectedXParameterIndex === prevProps.selectedXParameterIndex && g.selectedYParameterIndex === prevProps.selectedYParameterIndex)
-        const propGates = _.filter(this.props.gates, g => g.selectedXParameterIndex === this.props.selectedXParameterIndex && g.selectedYParameterIndex === this.props.selectedYParameterIndex)
+        const prevPropGates = _.filter(prevProps.gates, g => g.selectedXParameter === prevProps.selectedXParameter && g.selectedYParameter === prevProps.selectedYParameter)
+        const propGates = _.filter(this.props.gates, g => g.selectedXParameter === this.props.selectedXParameter && g.selectedYParameter === this.props.selectedYParameter)
 
         let shouldReset = false
         if (prevPropGates.length !== propGates.length) {
@@ -391,12 +394,12 @@ export default class BivariatePlot extends Component {
             shouldReset = true
         }
 
-        if (prevProps.selectedXParameterIndex !== this.props.selectedXParameterIndex || prevProps.selectedYParameterIndex !== this.props.selectedYParameterIndex) {
+        if (prevProps.selectedXParameter !== this.props.selectedXParameter || prevProps.selectedYParameter !== this.props.selectedYParameter) {
             shouldReset = true
         }
 
         // If the plot has been inverted
-        if (prevProps.workspace.invertedAxisPlots[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex] !== this.props.workspace.invertedAxisPlots[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex]) {
+        if (prevProps.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter] !== this.props.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter]) {
             shouldReset = true
         }
 
@@ -405,14 +408,14 @@ export default class BivariatePlot extends Component {
             shouldReset = true
         }
 
-        if (shouldReset) {
+        if (shouldReset && this.props.selectedXParameter && this.props.selectedYParameter) {
             this.createGraphLayout()
         }
     }
 
     render () {
         // FCS File not ready yet or no sample selected
-        if (this.props.FCSFile.FCSParameters.length === 0 || !this.props.sample) {
+        if (this.props.FCSFile.FCSParameters.length === 0 || !this.props.sample || !this.props.selectedXParameter || !this.props.selectedYParameter) {
             return (
                 <div className='svg-outer'><svg className='axis'></svg><canvas className="canvas"/></div>
             )
@@ -425,8 +428,8 @@ export default class BivariatePlot extends Component {
         // Need to offset the whole graph if we're including cytof 0 histograms
         const xOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayWidth / this.props.plotWidth) : 0
         const yOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayHeight / this.props.plotHeight) : 0
-        const xStats = this.props.FCSFile.FCSParameters[this.props.selectedXParameterIndex].statistics
-        const yStats = this.props.FCSFile.FCSParameters[this.props.selectedYParameterIndex].statistics
+        const xStats = this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics
+        const yStats = this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics
         const scales = getScales({
             selectedXScale: this.props.selectedXScale,
             selectedYScale: this.props.selectedYScale,
@@ -564,10 +567,10 @@ export default class BivariatePlot extends Component {
         // Show a loading indicator if the parameters are marked as loading or if there is no image for the requested parameter combination
         let isLoading
         let loadingMessage
-        if (this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex]
-            && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loading) {
+        if (this.props.sample.parametersLoading[this.props.selectedXParameter + '_' + this.props.selectedYParameter]
+            && this.props.sample.parametersLoading[this.props.selectedXParameter + '_' + this.props.selectedYParameter].loading) {
             isLoading = true
-            loadingMessage = this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex] && this.props.sample.parametersLoading[this.props.selectedXParameterIndex + '_' + this.props.selectedYParameterIndex].loadingMessage
+            loadingMessage = this.props.sample.parametersLoading[this.props.selectedXParameter + '_' + this.props.selectedYParameter] && this.props.sample.parametersLoading[this.props.selectedXParameter + '_' + this.props.selectedYParameter].loadingMessage
         } else if (this.state.imageLoading) {
             isLoading = true
             loadingMessage = 'Generating image for plot...'
@@ -577,7 +580,7 @@ export default class BivariatePlot extends Component {
         let gatingError
         if (this.props.gatingError) {
             gatingError = (
-                <div className='error-overlay' onClick={this.props.api.showGatingModal.bind(null, this.props.sample.id, this.props.selectedXParameterIndex, this.props.selectedYParameterIndex)}>
+                <div className='error-overlay' onClick={this.props.api.showGatingModal.bind(null, this.props.sample.id, this.props.selectedXParameter, this.props.selectedYParameter)}>
                     <div className='red-background' />
                     <i className='lnr lnr-cross-circle' />
                     <div className='text'>Error Applying Gating Template</div>

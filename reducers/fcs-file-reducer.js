@@ -17,7 +17,7 @@ const FCSFiles = (state = [], action = {}) => {
             description: action.payload.description,
             machineType: action.payload.machineType,
             filePath: action.payload.filePath,
-            FCSParameters: action.payload.FCSParameters || [],
+            FCSParameters: action.payload.FCSParameters || {},
             statistics: action.payload.statistics || {},
             uploadProgress: 0
         }
