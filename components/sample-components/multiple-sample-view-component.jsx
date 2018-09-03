@@ -6,6 +6,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Component } from 'react'
 import _ from 'lodash'
+import querystring from 'querystring'
 import constants from '../../../gatekeeper-utilities/constants'
 import pointInsidePolygon from 'point-in-polygon'
 import { heatMapHSLStringForValue, getScales, getPlotImageKey } from '../../../gatekeeper-utilities/utilities'
@@ -245,6 +246,23 @@ export default class MultipleSampleView extends Component {
             const realIndex = index + minIndex
             const inverted = this.props.workspace.invertedAxisPlots[c[0] + '_' + c[1]] || this.props.workspace.invertedAxisPlots[c[1] + '_' + c[0]]
 
+            const parameters = {
+                workspaceId: this.props.workspace.id,
+                FCSFileId: this.props.FCSFile.id,
+                sampleId: this.props.sample.id,
+                machineType: this.props.FCSFile.machineType,
+                selectedXParameterIndex: this.props.FCSFile.FCSParameters[c[0]].index,
+                selectedXScale: this.props.workspace.selectedXScale,
+                selectedYParameterIndex: this.props.FCSFile.FCSParameters[c[1]].index,
+                selectedYScale: this.props.workspace.selectedYScale,
+                minXValue: this.props.FCSFile.FCSParameters[c[0]].statistics.positiveMin,
+                maxXValue: this.props.FCSFile.FCSParameters[c[0]].statistics.max,
+                minYValue: this.props.FCSFile.FCSParameters[c[1]].statistics.positiveMin,
+                maxYValue: this.props.FCSFile.FCSParameters[c[1]].statistics.max,
+                plotWidth: this.props.plotWidth,
+                plotHeight: this.props.plotHeight
+            }
+
             return (
                 <div className='gate-group' key={c[0] + '_' + c[1]} style={{ position: 'absolute', top: (Math.floor(realIndex / plotsPerRow)) * (this.props.plotDisplayHeight + 115), left: (realIndex % plotsPerRow) * (this.props.plotDisplayWidth + 130) }}>
                     <div className='upper'>
@@ -252,8 +270,9 @@ export default class MultipleSampleView extends Component {
                             {this.props.FCSFile.FCSParameters[c[0]].label + ' · ' + this.props.FCSFile.FCSParameters[c[1]].label}
                             <div className={'icon' + (inverted ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
                         </div>
-                        <div className='download-image' draggable={true} onDragStart={this.props.api.dragImage.bind(null, 'http://127.0.0.1:3145/plot_images/' + this.props.sample.id + '/' + getPlotImageKey({ machineType: this.props.FCSFile.machineType, selectedXParameterIndex: this.props.FCSFile.FCSParameters[c[0]].index, selectedYParameterIndex: this.props.FCSFile.FCSParameters[c[1]].index, selectedXScale: this.props.workspace.selectedXScale, selectedYScale: this.props.workspace.selectedYScale }) )}>
-                            <i className='lnr lnr-picture' />
+                        <div className='download-image' draggable={true} onDragStart={() => {console.log('true')}}>
+                            <img src={this.props.api.getJobsApiUrl() + '/plot_images?' + querystring.stringify(parameters)} />                        
+                            <i className='lnr lnr-picture'></i>
                         </div>
                         <Dropdown outerClasses='dark'>
                             <div className='inner'>

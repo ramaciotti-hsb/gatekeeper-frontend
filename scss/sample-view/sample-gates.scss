@@ -52,11 +52,23 @@
             }
 
             .download-image {
-                padding: 0 10px;
                 align-items: center;
                 cursor: pointer;
+                position: relative;
                 @include backgroundHover(#ddd);
                 @include backgroundClick(#ddd);
+                overflow: hidden;
+
+                img {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    opacity: 0;
+                }
+
+                i {
+                    margin: 0 10px;
+                }
             }
 
             .dropdown {
