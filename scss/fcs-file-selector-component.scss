@@ -35,6 +35,7 @@
 
                 .item {
                     flex-direction: row;
+                    padding: 10px;
 
                     .text {
                         flex-grow: 1;
@@ -47,6 +48,7 @@
                         background: $highlight-colour;
                         margin-right: 5px;
                         display: none;
+                        flex-shrink: 0;
                     }
                 }
 

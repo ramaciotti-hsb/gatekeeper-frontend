@@ -144,5 +144,9 @@ $tab-width: 15px;
         overflow-y: scroll;
         flex-grow: 1;
         background: darken($menu-colour, 0%);
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 } // .parameter-selector-outer
