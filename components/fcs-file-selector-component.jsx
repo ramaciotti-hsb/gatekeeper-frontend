@@ -139,7 +139,7 @@ export default class FCSFileSelector extends Component {
                 )
             } else { // There is no selected FCS file
                     inner = (
-                    <div className='fcs-file-selector-inner'>
+                    <div className='fcs-file-selector-inner unselected'>
                         <div className='header'>
                             <div className='fcs-file-selector-dropdown'><Dropdown items={FCSFiles} textLabel={this.props.selectedFCSFile ? this.props.selectedFCSFile.title : 'Select FCSFile'} ref={this.fileSelectorRef} /></div>
                             <div className='divider' />

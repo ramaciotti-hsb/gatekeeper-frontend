@@ -16,6 +16,13 @@
             justify-content: center;
         }
 
+        &.unselected {
+
+            .center {
+                padding: 30px;
+            }
+        }
+
         & > .header {
             padding: 10px;
             font-size: 14px;
