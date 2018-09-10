@@ -142,19 +142,6 @@ export default class MultipleSampleView extends Component {
         return combinations
     }
 
-    showGate (gateId) {
-        const gate = _.find(this.props.gates, g => g.id === gateId)
-        if (this.state.selectedXParameter !== gate.selectedXParameter
-            || this.state.selectedYParameter !== gate.selectedYParameter) {
-            this.props.api.updateWorkspace(this.props.workspace.id, {
-                selectedXParameter: gate.selectedXParameter,
-                selectedYParameter: gate.selectedYParameter,
-                selectedXScale: gate.selectedXScale,
-                selectedYScale: gate.selectedYScale
-            })
-        }
-    }
-
     componentDidUpdate (prevProps) {
         if (!this.props.sample) {
             return
@@ -170,10 +157,6 @@ export default class MultipleSampleView extends Component {
         } else if (this.props.workspace.invertedAxisPlots !== prevProps.workspace.invertedAxisPlots) {
             shouldReset = true
         } else if (this.props.FCSFile.FCSParameters.length !== prevProps.FCSFile.FCSParameters.length) {
-            shouldReset = true
-        } else if (this.props.workspace.selectedXParameter != prevProps.workspace.selectedXParameter) {
-            shouldReset = true
-        } else if (this.props.workspace.selectedYParameter != prevProps.workspace.selectedYParameter) {
             shouldReset = true
         } else if (!_.isEqual(prevProps.workspace.disabledParameters, this.props.workspace.disabledParameters)) {
             shouldReset = true
