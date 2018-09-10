@@ -144,7 +144,8 @@ export default class HomologyModal extends Component {
         this.props.setGatingModalErrorMessage('')
 
         this.setState({
-            showSeedCreator: false
+            showSeedCreator: false,
+            applyGatesLoading: true
         })
         
         this.props.api.createUnsavedGatesUsingHomology(this.props.selectedWorkspace.id, this.props.selectedFCSFile.id, this.props.selectedSample.id, {
@@ -163,6 +164,10 @@ export default class HomologyModal extends Component {
             minPeakHeight: parseInt(this.state.minPeakHeight),
             minPeakSize: parseInt(this.state.minPeakSize),
             seedPeaks: this.props.modalOptions.seedPeaks
+        }).finally(() => {
+            this.setState({
+                applyGatesLoading: false
+            })
         })
     }
 
@@ -181,10 +186,11 @@ export default class HomologyModal extends Component {
             minPeakSize: parseInt(this.state.minPeakSize),
             recalculateGates: true
         }).then(() => {
+            this.modalOuterClicked()
+        }).finally(() => {
             this.setState({
                 applyGatesLoading: false
             })
-            this.modalOuterClicked()
         })
     }
 
@@ -408,7 +414,7 @@ export default class HomologyModal extends Component {
             } else {
                 actions = (
                     <div className='actions'>
-                        <div className='button apply-gates' onClick={this.applyGatesClicked.bind(this)}>
+                        <div className={'button apply-gates' + (this.state.applyGatesLoading ? ' disabled' : '')} onClick={this.applyGatesClicked.bind(this)}>
                             <div className={`loader-outer ${this.state.applyGatesLoading ? ' active' : ''}`}><div className='loader small'></div></div>
                             Apply Gates To Sample
                         </div>
@@ -468,7 +474,10 @@ export default class HomologyModal extends Component {
                     <div className={'warning-message' + (this.props.gateHasChildren ? ' active' : '')}>Warning: Current gates and any sub gates will be deleted upon recalculation.</div>
                     <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
                     <div className='actions'>
-                        <div className='button calculate-homology' onClick={this.createGatesClicked.bind(this)}>Create Gates</div>
+                        <div className={'button calculate-homology' + (this.state.applyGatesLoading ? ' disabled' : '')} onClick={this.createGatesClicked.bind(this)}>
+                            <div className={`loader-outer ${this.state.applyGatesLoading ? ' active' : ''}`}><div className='loader small'></div></div>
+                            Create Gates
+                        </div>
                     </div>
                 </div>
             )
@@ -480,7 +489,7 @@ export default class HomologyModal extends Component {
             <div className={'homology-modal-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)}>
                 <div className='homology-modal-inner' onClick={this.modalInnerClicked} style={{ height: 597 }}>
                     <div className='upper'>
-                        <div className='title'>{} - Automated gating using Persistent Homology</div>
+                        <div className='title'>{titleParameters} - Automated gating using Persistent Homology</div>
                     </div>
                     <div className='lower'>
                         <div className='graph'>

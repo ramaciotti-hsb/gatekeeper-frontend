@@ -133,3 +133,7 @@ $red-colour: #C02942;
         border-left-color: #eee;
     }
 }
+
+.disabled {
+    pointer-events: none;
+}
