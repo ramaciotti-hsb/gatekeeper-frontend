@@ -168,7 +168,7 @@ export default class HomologyModal extends Component {
 
     applyGatesClicked () {
         this.setState({
-            applyGatesClicked: true
+            applyGatesLoading: true
         })
         this.props.api.applyUnsavedGatesToSample(this.props.selectedSample.id, {
             selectedXParameter: this.props.modalOptions.selectedXParameter,
@@ -182,7 +182,7 @@ export default class HomologyModal extends Component {
             recalculateGates: true
         }).then(() => {
             this.setState({
-                applyGatesClicked: false
+                applyGatesLoading: false
             })
             this.modalOuterClicked()
         })
