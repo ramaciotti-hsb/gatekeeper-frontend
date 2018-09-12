@@ -110,12 +110,21 @@ export default class MultipleSampleView extends Component {
 
     filterPlots () {
         const combinations = []
-        for (let i = 0; i < _.keys(this.props.FCSFile.FCSParameters).length; i++) {
-            const parameter = _.values(this.props.FCSFile.FCSParameters)[i]
+        const sorted = _.keys(this.props.FCSFile.FCSParameters).sort((a, b) => {
+            if (!a.match(/\d+/)) {
+                return 1
+            } else if (!b.match(/\d+/)) {
+                return -1
+            } else {
+                return a.match(/\d+/)[0] - b.match(/\d+/)[0]
+            }
+        })
+        for (let i = 0; i < sorted.length; i++) {
+            const parameter = this.props.FCSFile.FCSParameters[sorted[i]]
             // Don't bother displaying the plot if the parameter is disabled
             if (this.props.workspace.disabledParameters[parameter.key]) { continue }
-            for (let j = i + 1; j < _.keys(this.props.FCSFile.FCSParameters).length; j++) {
-                const parameter2 = _.values(this.props.FCSFile.FCSParameters)[j]
+            for (let j = i + 1; j < sorted.length; j++) {
+                const parameter2 = this.props.FCSFile.FCSParameters[sorted[j]]
                 if (this.props.workspace.disabledParameters[parameter2.key]) { continue }
 
                 if (this.matchLabels(parameter.label, parameter2.label, this.state.filterPlotString)) {
