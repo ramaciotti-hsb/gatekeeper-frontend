@@ -259,7 +259,7 @@ export default class MultipleSampleView extends Component {
                         </div>
                         <Dropdown outerClasses='dark'>
                             <div className='inner'>
-                                <div className='icon'><i className='lnr lnr-cog'></i></div>
+                                <div className='icon'>Auto Gate</div>
                                 <div className='menu'>
                                     <div className='menu-header'>Auto Gating</div>
                                     <div className='menu-inner'>
