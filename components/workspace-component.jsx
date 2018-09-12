@@ -13,6 +13,33 @@ import FCSFileSelector from '../containers/fcs-file-selector-container.jsx'
 
 export default class WorkspaceView extends Component {
 
+    constructor (props) {
+        super(props)
+
+        this.state = {
+            sidebarWidth: 400,
+            draggingSidebar: false
+        }
+    }
+
+    componentDidMount () {
+        window.addEventListener('mousemove', (event) => {
+            if (this.state.draggingSidebar) {
+                this.setState({
+                    sidebarWidth: event.clientX
+                })
+            }
+        })
+
+        window.addEventListener('mouseup', () => {
+            if (this.state.draggingSidebar) {
+                this.setState({
+                    draggingSidebar: false
+                })
+            }
+        })
+    }
+
     removeGateTemplateGroup (gateTemplateId, event) {
         event.stopPropagation()
         this.props.api.removeGateTemplateGroup(gateTemplateId)
@@ -109,7 +136,8 @@ export default class WorkspaceView extends Component {
 
         return (
             <div className='workspace'>
-                <div className='sidebar'>
+                <div className='sidebar-handle' style={{ left: this.state.sidebarWidth - 5 }} onMouseDown={() => { this.setState({ draggingSidebar: true }) }}></div>
+                <div className='sidebar' style={{ width: this.state.sidebarWidth }}>
                     {workspacesGateTemplatesRendered}
                 </div>
                 {panel}
