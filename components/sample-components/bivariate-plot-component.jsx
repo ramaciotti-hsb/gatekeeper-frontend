@@ -93,7 +93,6 @@ export default class BivariatePlot extends Component {
         const xOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayWidth / this.props.plotWidth) : 0
         const yOffset = this.props.FCSFile.machineType === constants.MACHINE_CYTOF ? Math.round(Math.min(this.props.plotWidth, this.props.plotHeight) * 0.07) * (this.props.plotDisplayHeight / this.props.plotHeight) : 0
 
-        console.log(this.props.selectedXScale)
         const xStats = this.props.FCSFile.FCSParameters[this.props.selectedXParameter].statistics
         const yStats = this.props.FCSFile.FCSParameters[this.props.selectedYParameter].statistics
         const scales = getScales({
@@ -112,8 +111,8 @@ export default class BivariatePlot extends Component {
         //     const 
         // }
 
-        const xAxis = d3.axisBottom().scale(scales.xScale).tickFormat(d3.format(".2s"))
-        const yAxis = d3.axisLeft().scale(scales.yScale).tickFormat(d3.format(".2s"))
+        const xAxis = d3.axisBottom().scale(scales.xScale).tickFormat(d3.format(".2s")).ticks(Math.round(this.props.plotDisplayWidth / 40))
+        const yAxis = d3.axisLeft().scale(scales.yScale).tickFormat(d3.format(".2s")).ticks(Math.round(this.props.plotDisplayHeight / 40))
 
         const columnWidth = 1
         const rowWidth = 10
