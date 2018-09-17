@@ -49,7 +49,7 @@ const mapStateToProps = (state, ownProps) => {
             const relatedSample = _.find(state.samples, s => s.gateTemplateId === gateTemplateGroup.parentGateTemplateId && s.FCSFileId === newWorkspace.selectedFCSFileId)
             // If there are gating errors for this sample and gate template group, mark the group as "errored"
             if (relatedSample) {
-                const gatingError = _.find(state.gatingErrors, e => e.sampleId === relatedSample.id && e.gateTemplateGroupId === gateTemplateGroup.id)                        
+                const gatingError = _.find(state.gatingErrors, e => e.sampleId === relatedSample.id && e.gateTemplateGroupId === gateTemplateGroup.id)
                 gateTemplateGroup.gatingError = gatingError
             }
 

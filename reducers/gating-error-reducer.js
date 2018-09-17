@@ -30,7 +30,7 @@ const gatingErrors = (state = initialState, action = {}) => {
         const gatingErrorIndex = _.findIndex(state, g => g.id === action.payload.gatingErrorId)
         if (gatingErrorIndex > -1) {
             let newGatingError = _.merge(_.cloneDeep(newState[gatingErrorIndex]), action.payload.parameters)
-            newState = newState.slice(0, gatingErrorIndex).concat([ newGatingError ]).concat(newState.slice(gatingErrorIndex + 1))         
+            newState = newState.slice(0, gatingErrorIndex).concat([ newGatingError ]).concat(newState.slice(gatingErrorIndex + 1))
         } else {
             console.log('HIGHLIGHT_GATING_ERROR failed: no gatingError with id', action.payload.gatingErrorId, 'was found')
         }

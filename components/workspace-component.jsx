@@ -71,7 +71,7 @@ export default class WorkspaceView extends Component {
 
             const totalEvents = childGateTemplates.reduce((accumulator, current) => {
                 if (current.type === constants.GATE_TYPE_POLYGON || current.type === constants.GATE_TYPE_NEGATIVE) {
-                    return accumulator + current.populationCount                    
+                    return accumulator + current.populationCount
                 } else {
                     return accumulator
                 }
@@ -83,7 +83,7 @@ export default class WorkspaceView extends Component {
             }
 
             return (
-                <div className={'sidebar-gate-template-group' + (gatingError ? ' gating-error' : '')} key={childGateTemplateGroup.id} onClick={gatingError ? this.props.api.showGatingModal.bind(null, this.props.workspace.selectedSample && this.props.workspace.selectedSample.id, childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ) : () => {}}>
+                <div className={'sidebar-gate-template-group' + (gatingError ? ' gating-error' : '')} key={childGateTemplateGroup.id} onClick={gatingError ? this.props.api.showGatingModal.bind(null, childGateTemplateGroup.gatingError.sampleId, childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ) : () => {}}>
                     <div className='title'>
                         <div className='text'>{childGateTemplateGroup.title}</div>
                         <div className='remove-gate-template-group' onClick={this.removeGateTemplateGroup.bind(this, childGateTemplateGroup.id)}>

@@ -14,7 +14,7 @@ import { heatMapHSLStringForValue, getScales, getPolygonCenter } from '../../../
 import '../../scss/bivariate-plot-component.scss'
 
 export default class BivariatePlot extends Component {
-    
+
     constructor(props) {
         super(props)
         this.state = {
@@ -108,7 +108,7 @@ export default class BivariatePlot extends Component {
         // let yScale
         // // If we should invert axis for this plot
         // if (this.props.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter]) {
-        //     const 
+        //     const
         // }
 
         const xAxis = d3.axisBottom().scale(scales.xScale).tickFormat(d3.format(".2s")).ticks(Math.round(this.props.plotDisplayWidth / 40))
@@ -182,7 +182,7 @@ export default class BivariatePlot extends Component {
         var canvas = d3.select(this.canvasRef.current)
           .attr('width', this.props.plotDisplayWidth)
           .attr('height', this.props.plotDisplayHeight);
-        
+
         var context = canvas.node().getContext('2d')
 
         const widthDisplayRatio = this.props.plotDisplayWidth / this.props.plotWidth
@@ -193,7 +193,7 @@ export default class BivariatePlot extends Component {
             let gatesExist = false
             let filteredGates = _.filter(this.props.gates, g => g.type === constants.GATE_TYPE_POLYGON)
             for (let gate of filteredGates) {
-                if (gate.selectedXParameter === this.props.selectedXParameter && 
+                if (gate.selectedXParameter === this.props.selectedXParameter &&
                     gate.selectedYParameter === this.props.selectedYParameter) {
                     gatesExist = true
                 }
@@ -211,7 +211,7 @@ export default class BivariatePlot extends Component {
                 data[i + 1] = avg; // green
                 data[i + 2] = avg; // blue
             }
-            
+
             context.putImageData(imageData, 0, 0);
 
             if (gatesExist) {
@@ -273,7 +273,7 @@ export default class BivariatePlot extends Component {
                     data[i + 1] = avg; // green
                     data[i + 2] = avg; // blue
                 }
-                
+
                 context.putImageData(imageData, 0, 0);
 
                 // Render the gate outlines over the top
@@ -361,7 +361,7 @@ export default class BivariatePlot extends Component {
 
     componentDidMount() {
         if (this.props.selectedXParameter && this.props.selectedYParameter) {
-            this.createGraphLayout()            
+            this.createGraphLayout()
         }
         // this.initHomologyIteration()
     }
@@ -376,6 +376,13 @@ export default class BivariatePlot extends Component {
         this.setState({
             mousePosition: [event.nativeEvent.offsetX, event.nativeEvent.offsetY]
         })
+    }
+
+    componentWillUnmount () {
+        if (this.cacheImage) {
+            this.cacheImage.onload = null
+            this.cacheImage.onerror = null
+        }
     }
 
     componentDidUpdate(prevProps) {
