@@ -28,6 +28,8 @@ export default class WorkspaceView extends Component {
                 this.setState({
                     sidebarWidth: event.clientX
                 })
+
+                window.dispatchEvent(new Event('resize'))
             }
         })
 

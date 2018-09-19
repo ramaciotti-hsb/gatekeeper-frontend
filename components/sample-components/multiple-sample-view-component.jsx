@@ -97,7 +97,7 @@ export default class MultipleSampleView extends Component {
     }
 
     updateFilterPlotString (event) {
-        const filterString = event.target.value
+        const filterString = event.target.value.replace('\\', '')
 
         this.setState({
             filterPlotString: filterString
@@ -131,8 +131,14 @@ export default class MultipleSampleView extends Component {
 
                     let shouldAdd = true
                     if (this.props.workspace.hideUngatedPlots) {
-                        if (!_.find(this.props.gates, g => g.selectedXParameter === parameter.key && g.selectedYParameter === parameter2.key)) {
-                            shouldAdd = false 
+                        console.log(parameter.key, parameter2.key)
+                        if (!_.find(this.props.gates, g =>
+                            (g.selectedXParameter === parameter.key && g.selectedYParameter === parameter2.key) ||
+                            (g.selectedYParameter === parameter.key && g.selectedXParameter === parameter2.key)
+                        )) {
+                            shouldAdd = false
+                        } else {
+                            console.log(parameter, parameter2)
                         }
                     }
 
@@ -263,7 +269,7 @@ export default class MultipleSampleView extends Component {
                             <div className={'icon' + (inverted ? ' active' : '')} onClick={this.props.api.invertPlotAxis.bind(null, this.props.workspace.id, c[0], c[1])}><i className='lnr lnr-sync'></i></div>
                         </div>
                         <div className='download-image' draggable={true} onDragStart={() => {console.log('true')}}>
-                            <img src={this.props.api.getJobsApiUrl() + '/plot_images?' + querystring.stringify(parameters)} />                        
+                            <img src={this.props.api.getJobsApiUrl() + '/plot_images?' + querystring.stringify(parameters)} />
                             <i className='lnr lnr-picture'></i>
                         </div>
                         <Dropdown outerClasses='dark'>
