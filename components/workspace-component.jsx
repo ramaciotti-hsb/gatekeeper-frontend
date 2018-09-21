@@ -84,6 +84,11 @@ export default class WorkspaceView extends Component {
                 gatingError = <div className='error-overlay'><i className='lnr lnr-cross-circle' /><div className='text'>Error Applying Gating Template</div></div>
             }
 
+            let gateTemplateGroupLoading
+            if (gateTemplate.parametersLoading && gateTemplate.parametersLoading[childGateTemplateGroup.selectedXParameter + '_' + childGateTemplateGroup.selectedYParameter] && gateTemplate.parametersLoading[childGateTemplateGroup.selectedXParameter + '_' + childGateTemplateGroup.selectedYParameter].loading) {
+                gateTemplateGroupLoading = true
+            }
+
             return (
                 <div className={'sidebar-gate-template-group' + (gatingError ? ' gating-error' : '')} key={childGateTemplateGroup.id} onClick={gatingError ? this.props.api.showGatingModal.bind(null, childGateTemplateGroup.gatingError.sampleId, childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ) : () => {}}>
                     <div className='title'>
@@ -94,7 +99,7 @@ export default class WorkspaceView extends Component {
                         <div className='number' style={_.isNaN(totalEvents) ? { display: 'none'} : null}>{totalEvents} ({(totalEvents / gateTemplate.populationCount * 100).toFixed(1)}%)</div>
                     </div>
                     <div className='gate-templates'>
-                        <div className={`loader-outer${childGateTemplateGroup.loading && this.props.workspace.selectedFCSFile ? ' active' : ''}`}><div className='loader small'></div></div>
+                        <div className={`loader-outer${gateTemplateGroupLoading && this.props.workspace.selectedFCSFile ? ' active' : ''}`}><div className='loader small'></div></div>
                         {gatingError}
                         {childrenRendered}
                     </div>

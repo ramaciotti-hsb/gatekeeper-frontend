@@ -382,14 +382,6 @@ export default class GatingErrorModal extends Component {
                     <div className='title first'>Gating Errors</div>
                     {criteria}
                     <div className='title'>Resolve Errors</div>
-                    <div className='handler'>
-                        <div className='title'>Auto Anchoring</div>
-                        <div className='button' onClick={this.applyAutoAnchoring.bind(this)}>
-                            <div className={`loader-outer ${this.state.autoAnchoringLoading ? ' active' : ''}`}><div className='loader small'></div></div>
-                            Perform Auto Anchoring
-                        </div>
-                        <div className={'warning-message' + (this.props.modalOptions.errorMessage ? ' active' : '')}>Error calculating gates: {this.props.modalOptions.errorMessage}</div>
-                    </div>
                     {seedPeaks}
                     <div className='handler'>
                         <div className='button' onClick={this.resolveErrorUsingIgnore.bind(this)}>

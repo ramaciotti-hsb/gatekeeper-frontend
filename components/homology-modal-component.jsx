@@ -14,7 +14,7 @@ import uuidv4 from 'uuid/v4'
 import { registerKeyListener, deregisterKeyListener } from '../lib/global-keyboard-listener'
 
 export default class HomologyModal extends Component {
-    
+
     constructor (props) {
         super(props)
         this.state = {
@@ -147,7 +147,7 @@ export default class HomologyModal extends Component {
             showSeedCreator: false,
             applyGatesLoading: true
         })
-        
+
         this.props.api.createUnsavedGatesUsingHomology(this.props.selectedWorkspace.id, this.props.selectedFCSFile.id, this.props.selectedSample.id, {
             selectedXParameter: this.props.modalOptions.selectedXParameter,
             selectedYParameter: this.props.modalOptions.selectedYParameter,
@@ -203,13 +203,13 @@ export default class HomologyModal extends Component {
                     showSeedCreator: false
                 })
             } else {
-                this.modalOuterClicked.bind(this)                
+                this.modalOuterClicked.bind(this)
             }
         })
     }
 
     componentWillUnmount () {
-        deregisterKeyListener(this.keyboardListenerId)   
+        deregisterKeyListener(this.keyboardListenerId)
     }
 
     render () {
@@ -381,15 +381,15 @@ export default class HomologyModal extends Component {
                                     <div className='menu-header'>Gating Options</div>
                                     <div className='menu-inner'>
                                         <div className='item' onClick={this.toggleSelectingComboGate.bind(this)}>
-                                            <i className={'lnr lnr-link'} />                                        
+                                            <i className={'lnr lnr-link'} />
                                             <div>Create Combo Gate (Include Events From Multiple Gates)</div>
                                         </div>
                                         <div className={'item clickable' + (negativeGateExists ? ' active' : '')} onClick={this.toggleCreateNegativeGate.bind(this)}>
-                                            <i className={'lnr ' + (negativeGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />                                        
+                                            <i className={'lnr ' + (negativeGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
                                             <div>Create Negative Gate (Includes All Uncaptured Events)</div>
                                         </div>
                                         <div className={'item clickable' + (doubleZeroGateExists ? ' active' : '')} onClick={this.toggleCreateDoubleZeroGate.bind(this)}>
-                                            <i className={'lnr ' + (doubleZeroGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />                                        
+                                            <i className={'lnr ' + (doubleZeroGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
                                             <div>Create Double Zero Gate (Includes All Uncaptured Events)</div>
                                         </div>
                                     </div>
@@ -493,7 +493,7 @@ export default class HomologyModal extends Component {
                     </div>
                     <div className='lower'>
                         <div className='graph'>
-                            <BivariatePlot 
+                            <BivariatePlot
                                 gates={this.props.unsavedGates}
                                 setGateHighlight={this.setGateHighlight.bind(this)}
                                 showMinPeakSizeGuide={this.state.showMinPeakSizeGuide}

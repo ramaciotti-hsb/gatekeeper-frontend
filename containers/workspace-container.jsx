@@ -28,6 +28,7 @@ const mapStateToProps = (state, ownProps) => {
             const cloneTemplate = _.clone(gateTemplate)
             const sampleForGateTemplate = _.find(state.samples, s => s.FCSFileId === newWorkspace.selectedFCSFileId && s.gateTemplateId === gateTemplate.id)
             if (sampleForGateTemplate) {
+                cloneTemplate.parametersLoading = sampleForGateTemplate.parametersLoading
                 cloneTemplate.populationCount = sampleForGateTemplate.populationCount
             }
             return cloneTemplate

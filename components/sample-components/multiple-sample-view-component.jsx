@@ -131,7 +131,6 @@ export default class MultipleSampleView extends Component {
 
                     let shouldAdd = true
                     if (this.props.workspace.hideUngatedPlots) {
-                        console.log(parameter.key, parameter2.key)
                         if (!_.find(this.props.gates, g =>
                             (g.selectedXParameter === parameter.key && g.selectedYParameter === parameter2.key) ||
                             (g.selectedYParameter === parameter.key && g.selectedXParameter === parameter2.key)

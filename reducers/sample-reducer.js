@@ -54,7 +54,7 @@ const sampleReducer = (state = [], action = {}) => {
             const newSample = _.clone(state[sampleIndex])
             newState = state.slice(0, sampleIndex).concat([newSample]).concat(state.slice(sampleIndex + 1))
         } else {
-            console.log('SET_SAMPLE_PLOT_IMAGE failed: no sample with id', action.payload.sampleId, 'was found')   
+            console.log('SET_SAMPLE_PLOT_IMAGE failed: no sample with id', action.payload.sampleId, 'was found')
         }
     // --------------------------------------------------
     // Update an arbitrary parameters on a sample
@@ -70,12 +70,15 @@ const sampleReducer = (state = [], action = {}) => {
     // Mark a combination of parameters as loading
     // --------------------------------------------------
     } else if (action.type === 'SET_SAMPLE_PARAMETERS_LOADING') {
+        console.log(action.payload)
         const sampleIndex = _.findIndex(state, s => s.id === action.payload.sampleId)
 
         if (sampleIndex > -1) {
             const newSample = _.clone(state[sampleIndex])
             newSample.parametersLoading[action.payload.key] = action.payload.value
             newState = state.slice(0, sampleIndex).concat([newSample]).concat(state.slice(sampleIndex + 1))
+        } else {
+            console.log('SET_SAMPLE_PLOT_IMAGE failed: no sample with id', action.payload.sampleId, 'was found')
         }
     }
     return newState

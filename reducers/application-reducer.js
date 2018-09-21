@@ -77,7 +77,7 @@ const applicationReducer = (state = initialState, action) => {
     }
     // --------------------------------------------------
     // Override the whole local session with new data.
-    // Usually used when first bootstrapping from DB or 
+    // Usually used when first bootstrapping from DB or
     // filesystem.
     // --------------------------------------------------
     else if (action.type === 'SET_SESSION_STATE') {
@@ -233,7 +233,7 @@ const applicationReducer = (state = initialState, action) => {
         newState.gateTemplates = gateTemplateReducer(newState.gateTemplates, { type: 'REMOVE_GATE_TEMPLATE', payload: { gateTemplateId: rootGateTemplate.id } })
     // --------------------------------------------------
     // Remove an FCS File, and all the samples that depend on it
-    // --------------------------------------------------    
+    // --------------------------------------------------
     } else if (action.type === 'REMOVE_FCS_FILE') {
         newState.FCSFiles = FCSFileReducer(newState.FCSFiles, { type: 'REMOVE_FCS_FILE', payload: { FCSFileId: action.payload.FCSFileId } })
         // Delete any samples that no longer point to a valid FCSFile (i.e. their parent or child has been deleted)
@@ -276,6 +276,10 @@ const applicationReducer = (state = initialState, action) => {
         for (let gate of _.filter(newState.gates, g => !_.find(newState.samples, s => g.parentSampleId === s.id) || !_.find(newState.samples, s => g.childSampleId === s.id))) {
             newState.gates = gateReducer(newState.gates, { type: 'REMOVE_GATE', payload: { gateId: gate.id } })
         }
+        // Delete any gating errors that no longer point to a valid sample
+        for (let gatingError of _.filter(newState.gatingErrors, g => g.sampleId === action.payload.sampleId)) {
+            newState.gatingErrors = gatingErrorReducer(newState.gatingErrors, { type: 'REMOVE_GATING_ERROR', payload: { gatingErrorId: gatingError.id } })
+        }
         // Delete child samples
         for (let sample of _.filter(newState.samples, s => s.parentSampleId === action.payload.sampleId)) {
             newState = applicationReducer(newState, { type: 'REMOVE_SAMPLE', payload: { sampleId: sample.id } })
@@ -288,7 +292,7 @@ const applicationReducer = (state = initialState, action) => {
         newState.workspaces = workspaceReducer(newState.workspaces, { type: 'SELECT_FCS_FILE', payload: { workspaceId: action.payload.workspaceId, FCSFileId: action.payload.FCSFileId } })
         const workspace = _.find(newState.workspaces, w => w.id === action.payload.workspaceId)
         const currentSample = _.find(newState.samples, s => s.FCSFileId === action.payload.FCSFileId && s.gateTemplateId === workspace.selectedGateTemplateId)
-        
+
         if (currentSample) {
             if (newState.gatingModal.visible) {
                 newState = applicationReducer(newState, { type: 'SHOW_GATING_MODAL', payload: { selectedXParameter: newState.gatingModal.selectedXParameter, selectedYParameter: newState.gatingModal.selectedYParameter, sampleId: currentSample.id } })
