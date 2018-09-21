@@ -23,6 +23,7 @@
 
     .homology-modal-inner {
         width: 1000px;
+        position: absolute;
         background: #fff;
         flex-direction: column;
         align-items: stretch;
@@ -35,6 +36,11 @@
             background: #ccc;
             font-weight: 600;
             font-size: 12px;
+            cursor: -webkit-grab;
+
+            &:active {
+                cursor: -webkit-grabbing;
+            }
         }
 
         .lower {
@@ -60,7 +66,7 @@
                 .loader-outer.active {
                     pointer-events: none;
                 }
-                
+
                 &.disabled {
                     opacity: 0.7;
                     background: #bbb;
@@ -220,7 +226,7 @@
 
                             .icon {
                                 padding: 0 12px;
-                                cursor: pointer;                        
+                                cursor: pointer;
                                 align-items: center;
                                 border-right: 1px solid #eee;
                                 @include backgroundHover(#fafafa);
@@ -234,7 +240,7 @@
                                 .menu-inner {
                                     flex-direction: column;
                                     align-items: stretch;
-                                    
+
                                     .item {
                                         cursor: pointer;
                                         @include backgroundHover(#666);
@@ -265,7 +271,7 @@
                         padding: 0 10px;
                         @include foregroundHover(#888);
                         @include foregroundClick(#888);
-                        
+
                         .lnr-cross {
                             font-size: 26px;
                         }
@@ -310,7 +316,7 @@
                         }
 
                         .left {
-                            padding: 10px;                            
+                            padding: 10px;
                             flex-direction: column;
                             flex-grow: 1;
 
@@ -334,7 +340,7 @@
 
                             .population-count {
                                 margin-bottom: 10px;
-                              
+
                                 .highlight {
                                     margin-right: 3px;
                                 }

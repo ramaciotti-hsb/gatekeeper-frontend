@@ -27,8 +27,12 @@ export default class HomologyModal extends Component {
             selectedComboGateIds: [],
             highlightedGateIds: [],
             showMinPeakSizeGuide: false,
-            showSeedCreator: false
+            showSeedCreator: false,
+            initialMousePosition: null
         }
+
+        this.innerRef = React.createRef()
+        this.outerRef = React.createRef()
     }
 
     modalOuterClicked (event) {
@@ -206,6 +210,25 @@ export default class HomologyModal extends Component {
                 this.modalOuterClicked.bind(this)
             }
         })
+
+        window.addEventListener('mousemove', (event) => {
+            if (this.state.draggingModal) {
+                this.setState({
+                    modalLeft: Math.max(Math.min(event.clientX - this.state.mousePositionDifference[0], this.outerRef.current.clientWidth - 1000), 0),
+                    modalTop: Math.max(Math.min(event.clientY - this.state.mousePositionDifference[1], this.outerRef.current.clientHeight - 597), 0),
+                })
+
+                window.dispatchEvent(new Event('resize'))
+            }
+        })
+
+        window.addEventListener('mouseup', () => {
+            if (this.state.draggingModal) {
+                this.setState({
+                    draggingModal: false
+                })
+            }
+        })
     }
 
     componentWillUnmount () {
@@ -242,13 +265,18 @@ export default class HomologyModal extends Component {
                         )
                     }
 
+                    let dismissButton
+                    if (!this.state.selectingComboGate) {
+                        dismissButton = <i className='lnr lnr-cross-circle' onClick={this.props.api.removeUnsavedGate.bind(null, gate.id)}/>
+                    }
+
                     return (
                         <div className={'gate' + (this.state.selectingComboGate ? ' combo-selection' : '') + (this.state.highlightedGateIds.includes(gate.id) ? ' highlighted' : '') + (this.state.selectedComboGateIds.includes(gate.id) ? ' active' : '')} key={gate.id} onClick={this.state.selectingComboGate ? this.toggleSelectComboGateWithId.bind(this, gate.id) : () => {}}
                         onMouseOver={highlightGate} onMouseOut={unHighlightGate}>
                             <div className='left'>
                                 <div className='title'>
                                     <div className='text'>{gate.title}</div>
-                                    <i className='lnr lnr-cross-circle' onClick={this.props.api.removeUnsavedGate.bind(null, gate.id)}/>
+                                    {dismissButton}
                                 </div>
                                 <div className='population-count'>
                                     <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
@@ -486,8 +514,8 @@ export default class HomologyModal extends Component {
         const titleParameters = `${this.props.modalOptions.selectedXParameter && this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].label} · ${this.props.modalOptions.selectedYParameter && this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].label}`
 
         return (
-            <div className={'homology-modal-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)}>
-                <div className='homology-modal-inner' onClick={this.modalInnerClicked} style={{ height: 597 }}>
+            <div className={'homology-modal-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)} ref={this.outerRef}>
+                <div className='homology-modal-inner' onClick={this.modalInnerClicked} style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }} ref={this.innerRef}>
                     <div className='upper'>
                         <div className='title'>{titleParameters} - Automated gating using Persistent Homology</div>
                     </div>

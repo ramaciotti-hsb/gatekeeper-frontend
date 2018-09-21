@@ -14,13 +14,17 @@ import uuidv4 from 'uuid/v4'
 import { registerKeyListener, deregisterKeyListener } from '../lib/global-keyboard-listener'
 
 export default class GatingErrorModal extends Component {
-    
+
     constructor (props) {
         super(props)
         this.state = {
             highlightedGateIds: [],
-            selectedComboGateIds: []
+            selectedComboGateIds: [],
+            initialMousePosition: null
         }
+
+        this.innerRef = React.createRef()
+        this.outerRef = React.createRef()
     }
 
     modalOuterClicked (event) {
@@ -130,10 +134,29 @@ export default class GatingErrorModal extends Component {
         this.keyboardListenerId = uuidv4()
         // Dismiss the modal when the escape key is pressed
         registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, this.modalOuterClicked.bind(this))
+
+        window.addEventListener('mousemove', (event) => {
+            if (this.state.draggingModal) {
+                this.setState({
+                    modalLeft: Math.max(Math.min(event.clientX - this.state.mousePositionDifference[0], this.outerRef.current.clientWidth - 1000), 0),
+                    modalTop: Math.max(Math.min(event.clientY - this.state.mousePositionDifference[1], this.outerRef.current.clientHeight - 597), 0),
+                })
+
+                window.dispatchEvent(new Event('resize'))
+            }
+        })
+
+        window.addEventListener('mouseup', () => {
+            if (this.state.draggingModal) {
+                this.setState({
+                    draggingModal: false
+                })
+            }
+        })
     }
 
     componentWillUnmount () {
-        deregisterKeyListener(this.keyboardListenerId)   
+        deregisterKeyListener(this.keyboardListenerId)
     }
 
     render () {
@@ -298,11 +321,11 @@ export default class GatingErrorModal extends Component {
                                     <div className='menu-header'>Gating Options</div>
                                     <div className='menu-inner'>
                                         <div className='item' onClick={this.toggleSelectingComboGate.bind(this)}>
-                                            <i className={'lnr lnr-link'} />                                        
+                                            <i className={'lnr lnr-link'} />
                                             <div>Create Combo Gate (Include Events From Multiple Gates)</div>
                                         </div>
                                         <div className={'item clickable' + (negativeGateExists ? ' active' : '')} onClick={this.toggleCreateNegativeGate.bind(this)}>
-                                            <i className={'lnr ' + (negativeGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />                                        
+                                            <i className={'lnr ' + (negativeGateExists ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />
                                             <div>Create Negative Gate (Includes All Uncaptured Events)</div>
                                         </div>
                                     </div>
@@ -393,8 +416,8 @@ export default class GatingErrorModal extends Component {
         }
 
         return (
-            <div className={'gating-error-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)}>
-                <div className='gating-error-inner' onClick={this.modalInnerClicked} style={{ height: 597 }}>
+            <div className={'gating-error-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)} ref={this.outerRef}>
+                <div className='gating-error-inner' onClick={this.modalInnerClicked}  style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }} ref={this.innerRef}>
                     <div className='upper'>
                         <div className='title'>{this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].label} · {this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].label} - Automated Gating Errors for {this.props.selectedSample.title}</div>
                     </div>

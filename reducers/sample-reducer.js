@@ -70,7 +70,6 @@ const sampleReducer = (state = [], action = {}) => {
     // Mark a combination of parameters as loading
     // --------------------------------------------------
     } else if (action.type === 'SET_SAMPLE_PARAMETERS_LOADING') {
-        console.log(action.payload)
         const sampleIndex = _.findIndex(state, s => s.id === action.payload.sampleId)
 
         if (sampleIndex > -1) {
