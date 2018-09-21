@@ -175,6 +175,8 @@ export default class MultipleSampleView extends Component {
             shouldReset = true
         } else if (!_.isEqual(prevProps.workspace.disabledParameters, this.props.workspace.disabledParameters)) {
             shouldReset = true
+        } else if (prevProps.workspace.id !== this.props.workspace.id) {
+            shouldReset = true
         }
 
         if (shouldReset) {
@@ -237,7 +239,7 @@ export default class MultipleSampleView extends Component {
         const maxIndex = Math.min(this.state.combinations.length, (Math.floor(this.state.scrollTop / (this.props.plotDisplayHeight + 115)) + 4) * plotsPerRow)
 
         const gates = this.state.combinations.slice(minIndex, maxIndex).map((c, index) => {
-            if (!this.props.FCSFile.FCSParameters || this.props.FCSFile.FCSParameters.length === 0 || index >= this.state.combinations.length || c[0] >= this.props.FCSFile.FCSParameters.length || c[1] >= this.props.FCSFile.FCSParameters.length) {
+            if (!this.props.FCSFile.FCSParameters || this.props.FCSFile.FCSParameters.length === 0 || index >= this.state.combinations.length || !this.props.FCSFile.FCSParameters[c[0]] || !this.props.FCSFile.FCSParameters[c[1]]) {
                 return null
             }
 
