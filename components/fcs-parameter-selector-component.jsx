@@ -29,12 +29,12 @@ export default class FCSParameterSelector extends Component {
     }
 
     componentWillUnmount () {
-        deregisterKeyListener(this.keyboardListenerId)   
+        deregisterKeyListener(this.keyboardListenerId)
     }
 
     onFilter (event) {
         this.setState({
-            filterValue: event.target.value
+            filterValue: event.target.value.replace('\\', '')
         })
     }
 
@@ -45,10 +45,10 @@ export default class FCSParameterSelector extends Component {
             } else if (!b.key.match(/\d+/)) {
                 return -1
             } else {
-                return a.key.match(/\d+/)[0] - b.key.match(/\d+/)[0]                
+                return a.key.match(/\d+/)[0] - b.key.match(/\d+/)[0]
             }
         }).map((parameter) => {
-            
+
             const disabled = this.props.selectedWorkspace.disabledParameters && this.props.selectedWorkspace.disabledParameters[parameter.key]
             let parameterKey
             if (parameter.key !== parameter.label) {

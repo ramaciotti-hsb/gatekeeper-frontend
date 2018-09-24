@@ -417,8 +417,8 @@ export default class GatingErrorModal extends Component {
 
         return (
             <div className={'gating-error-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)} ref={this.outerRef}>
-                <div className='gating-error-inner' onClick={this.modalInnerClicked}  style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }} ref={this.innerRef}>
-                    <div className='upper'>
+                <div className='gating-error-inner' ref={this.innerRef} style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onClick={this.modalInnerClicked}>
+                    <div className='upper' onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }}>
                         <div className='title'>{this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedXParameter].label} · {this.props.selectedFCSFile.FCSParameters[this.props.modalOptions.selectedYParameter].label} - Automated Gating Errors for {this.props.selectedSample.title}</div>
                     </div>
                     <div className='lower'>

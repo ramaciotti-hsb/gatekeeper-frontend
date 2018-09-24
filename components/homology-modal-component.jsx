@@ -515,8 +515,8 @@ export default class HomologyModal extends Component {
 
         return (
             <div className={'homology-modal-outer' + (this.props.modalOptions.visible === true ? ' active' : '')} onClick={this.modalOuterClicked.bind(this)} ref={this.outerRef}>
-                <div className='homology-modal-inner' onClick={this.modalInnerClicked} style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }} ref={this.innerRef}>
-                    <div className='upper'>
+                <div className='homology-modal-inner' ref={this.innerRef} style={{ height: 597, left: this.state.modalLeft, top: this.state.modalTop }} onClick={this.modalInnerClicked} >
+                    <div className='upper' onMouseDown={(event) => { this.setState({ draggingModal: true, mousePositionDifference: [event.clientX - this.innerRef.current.offsetLeft, event.clientY - this.innerRef.current.offsetTop] }) }}>
                         <div className='title'>{titleParameters} - Automated gating using Persistent Homology</div>
                     </div>
                     <div className='lower'>
