@@ -422,6 +422,11 @@ export default class BivariatePlot extends Component {
         }
 
         // If the plot has been inverted
+        if (prevProps.workspace.selectedXScale !== this.props.workspace.selectedXScale || prevProps.workspace.selectedYScale !== this.props.workspace.selectedYScale) {
+            shouldReset = true
+        }
+
+        // If the plot has been inverted
         if (prevProps.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter] !== this.props.workspace.invertedAxisPlots[this.props.selectedXParameter + '_' + this.props.selectedYParameter]) {
             shouldReset = true
         }

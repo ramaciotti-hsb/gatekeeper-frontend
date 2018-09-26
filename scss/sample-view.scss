@@ -121,11 +121,11 @@
             padding: 10px;
             align-items: center;
             flex-shrink: 0;
-            font-size: 14px;
+            font-size: 13px;
 
             input {
-                font-size: 14px;
-                padding: 10px 15px;
+                font-size: 13px;
+                padding: 8px 15px;
                 border: 1px solid #eee;
                 width: 200px;
                 margin-right: 15px;
@@ -152,6 +152,7 @@
             .dimensions {
                 align-items: center;
                 margin-left: 15px;
+                font-size: 13px;
 
                 .text {
                     margin-right: 15px;

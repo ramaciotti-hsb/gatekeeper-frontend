@@ -18,6 +18,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedFCSFile: ownProps.selectedFCSFile,
         selectedSample,
         workspaceId: ownProps.workspaceId,
+        selectedWorkspace: workspace,
         unsavedGates: state.unsavedGates
     }
 }

@@ -115,25 +115,35 @@ export default class FCSFileSelector extends Component {
                     }
                 })
 
-                const xScales = [
-                    { key: constants.SCALE_LOG, label: 'Log' },
-                    { key: constants.SCALE_LINEAR, label: 'Linear' },
-                    { key: constants.SCALE_BIEXP, label: 'Biexponential' }
-                ]
-                const xScalesRendered = xScales.map((scale) => {
-                    return {
-                        value: scale.label,
-                        component: <div className='item' key={scale.key}>{scale.label}</div>
-                    }
-                })
-                let xScaleMessage
-
                 let machineTypeMessage
                 if (this.props.selectedFCSFile && this.props.selectedFCSFile.machineType) {
                     machineTypeMessage = 'Machine Type: ' + _.find(machineTypes, m => m.key === this.props.selectedFCSFile.machineType).label
                 } else {
                     machineTypeMessage = 'Loading...'
                 }
+
+                const scales = [
+                    { key: constants.SCALE_LOG, label: 'Log' },
+                    { key: constants.SCALE_LINEAR, label: 'Linear' },
+                    { key: constants.SCALE_BIEXP, label: 'Biexponential' }
+                ]
+
+                const xScalesRendered = scales.map((scale) => {
+                    return {
+                        value: scale.label,
+                        component: <div className='item' onClick={() => { this.props.api.updateWorkspace(this.props.workspaceId, { selectedXScale: scale.key }); this.xScaleRef.current.getInstance().hideDropdown() }} key={scale.key}>{scale.label}</div>
+                    }
+                })
+
+                const yScalesRendered = scales.map((scale) => {
+                    return {
+                        value: scale.label,
+                        component: <div className='item' onClick={() => { this.props.api.updateWorkspace(this.props.workspaceId, { selectedYScale: scale.key }); this.yScaleRef.current.getInstance().hideDropdown() }} key={scale.key}>{scale.label}</div>
+                    }
+                })
+
+                let xScaleMessage = <div>{scales.find(s => s.key === this.props.selectedWorkspace.selectedXScale).label}</div>
+                let yScaleMessage = <div>{scales.find(s => s.key === this.props.selectedWorkspace.selectedYScale).label}</div>
 
                 inner = (
                     <div className='fcs-file-selector-inner'>
@@ -144,10 +154,10 @@ export default class FCSFileSelector extends Component {
                                 <div className='text'>Remove File From Workspace</div>
                             </div>
                             <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
-                            {/*<div className='scale-label x'>X</div>*/}
-                            {/*<div className='scale-selector x-scale'><Dropdown items={xScalesRendered} textLabel={'scale'} ref={this.yScaleRef} /></div>*/}
-                            {/*<div className='scale-label y'>Y</div>*/}
-                            {/*<div className='scale-selector y-scale'><Dropdown items={xScalesRendered} textLabel={'scale'} ref={this.yScaleRef} /></div>*/}
+                            <div className='scale-label x'>X</div>
+                            <div className='scale-selector x-scale'><Dropdown items={xScalesRendered} textLabel={xScaleMessage} ref={this.xScaleRef} /></div>
+                            <div className='scale-label y'>Y</div>
+                            <div className='scale-selector y-scale'><Dropdown items={yScalesRendered} textLabel={yScaleMessage} ref={this.yScaleRef} /></div>
                             <div className='divider' />
                         </div>
                         <div className='container-horizontal'>
