@@ -9,7 +9,7 @@ import MultipleSampleView from '../containers/multiple-sample-view-container.jsx
 import { registerKeyListener, deregisterKeyListener } from '../lib/global-keyboard-listener'
 
 export default class FCSFileSelector extends Component {
-    
+
     constructor(props) {
         super(props)
         this.state = {
@@ -18,6 +18,8 @@ export default class FCSFileSelector extends Component {
         this.containerRef = React.createRef()
         this.fileSelectorRef = React.createRef()
         this.machineTypeRef = React.createRef()
+        this.xScaleRef = React.createRef()
+        this.yScaleRef = React.createRef()
     }
 
     updateContainerSize () {
@@ -59,12 +61,12 @@ export default class FCSFileSelector extends Component {
     }
 
     componentWillUnmount () {
-        window.removeEventListener('resize', this.resizeFunction)   
+        window.removeEventListener('resize', this.resizeFunction)
     }
 
     selectFCSFile (FCSFileId) {
         this.fileSelectorRef.current.getInstance().hideDropdown()
-        this.props.api.selectFCSFile(FCSFileId, this.props.workspaceId)   
+        this.props.api.selectFCSFile(FCSFileId, this.props.workspaceId)
     }
 
     selectMachineType (FCSFileId, machineType) {
@@ -113,6 +115,19 @@ export default class FCSFileSelector extends Component {
                     }
                 })
 
+                const xScales = [
+                    { key: constants.SCALE_LOG, label: 'Log' },
+                    { key: constants.SCALE_LINEAR, label: 'Linear' },
+                    { key: constants.SCALE_BIEXP, label: 'Biexponential' }
+                ]
+                const xScalesRendered = xScales.map((scale) => {
+                    return {
+                        value: scale.label,
+                        component: <div className='item' key={scale.key}>{scale.label}</div>
+                    }
+                })
+                let xScaleMessage
+
                 let machineTypeMessage
                 if (this.props.selectedFCSFile && this.props.selectedFCSFile.machineType) {
                     machineTypeMessage = 'Machine Type: ' + _.find(machineTypes, m => m.key === this.props.selectedFCSFile.machineType).label
@@ -129,6 +144,10 @@ export default class FCSFileSelector extends Component {
                                 <div className='text'>Remove File From Workspace</div>
                             </div>
                             <div className='machine-type-selector-dropdown'><Dropdown items={machineTypesRendered} textLabel={machineTypeMessage} ref={this.machineTypeRef} /></div>
+                            {/*<div className='scale-label x'>X</div>*/}
+                            {/*<div className='scale-selector x-scale'><Dropdown items={xScalesRendered} textLabel={'scale'} ref={this.yScaleRef} /></div>*/}
+                            {/*<div className='scale-label y'>Y</div>*/}
+                            {/*<div className='scale-selector y-scale'><Dropdown items={xScalesRendered} textLabel={'scale'} ref={this.yScaleRef} /></div>*/}
                             <div className='divider' />
                         </div>
                         <div className='container-horizontal'>

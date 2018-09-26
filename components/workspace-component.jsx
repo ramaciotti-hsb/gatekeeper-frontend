@@ -17,7 +17,7 @@ export default class WorkspaceView extends Component {
         super(props)
 
         this.state = {
-            sidebarWidth: 400,
+            sidebarWidth: 200,
             draggingSidebar: false
         }
     }

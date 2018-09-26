@@ -15,7 +15,7 @@
         width: 10px;
         cursor: col-resize;
         z-index: 5;
-        @include unselectable();        
+        @include unselectable();
     }
 
     .sidebar {
@@ -108,11 +108,11 @@
                 padding: 0 15px;
 
                 &:hover {
-                    background: rgba(192, 41, 66, 0.225);                    
+                    background: rgba(192, 41, 66, 0.225);
                 }
 
                 &:active {
-                    background: rgba(192, 41, 66, 0.25);                    
+                    background: rgba(192, 41, 66, 0.25);
                 }
 
                 i {
@@ -142,7 +142,7 @@
 
             &.highlighted > .body {
                 @include backgroundHover(lighten(#A7DBD8, 20%));
-                @include backgroundClick(lighten(#A7DBD8, 20%));    
+                @include backgroundClick(lighten(#A7DBD8, 20%));
             }
 
             &.selected > .body {
@@ -160,7 +160,7 @@
                 flex-grow: 1;
                 align-items: center;
                 box-sizing: border-box;
-    
+
                 & > .title {
                     font-size: 12px;
                     font-weight: 600;

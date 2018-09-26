@@ -10,7 +10,7 @@
     .fcs-file-selector-inner {
         flex-grow: 1;
         flex-direction: column;
-        
+
         &.empty {
             align-items: center;
             justify-content: center;
@@ -33,8 +33,35 @@
                 margin-right: 15px;
             }
 
+            .machine-type-selector-dropdown {
+                margin-right: 15px;
+
+                .dropdown-inline {
+                    width: 250px;
+                }
+            } // .machine-type-selector-dropdown
+
+            .scale-label {
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                background: #eee;
+                font-size: 20px;
+            }
+
+            .scale-selector {
+
+                &.x-scale {
+                    margin-right: 15px;
+                }
+
+                .dropdown-inline {
+                    width: 120px;
+                }
+            }
+
             .dropdown-inline {
-                width: 300px;
+                width: 280px;
 
                 .inner .menu {
                     z-index: 22;

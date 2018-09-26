@@ -10,7 +10,7 @@
     position: relative;
     overflow-y: auto;
     flex-shrink: 1;
-    padding: 10px;
+    padding: 5px;
 
     .gate-group {
         flex-direction: column;
@@ -26,7 +26,7 @@
             border-bottom: 1px solid #eee;
 
             .selected-parameters {
-                padding: 10px;                
+                padding: 10px;
                 font-size: 14px;
                 color: #555;
                 flex-shrink: 0;
@@ -37,7 +37,7 @@
                 .icon {
                     @include foregroundHover(#666, 10%);
                     @include foregroundClick(#666, 20%);
-                    
+
                     &.active {
                         @include foregroundHover(darken($highlight-colour, 10), 10%);
                         @include foregroundClick(darken($highlight-colour, 10), 20%);
@@ -95,7 +95,7 @@
                     .icon {
                         font: 200 14px 'Open Sans';
                         padding: 0 10px;
-                        cursor: pointer;                        
+                        cursor: pointer;
                         align-items: center;
                         @include backgroundHover(#ddd);
                         @include backgroundClick(#ddd);
@@ -108,7 +108,7 @@
                         .menu-inner {
                             flex-direction: column;
                             align-items: stretch;
-                            
+
                             .item {
                                 cursor: pointer;
                                 @include backgroundHover(#666);
