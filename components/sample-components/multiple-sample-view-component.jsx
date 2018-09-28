@@ -300,7 +300,7 @@ export default class MultipleSampleView extends Component {
                             <MultiSelectDropdown items={possibleCombinations} selectedItems={selectedCombinations} searchPlaceholder={'Type To Filter...'} removeSelectedItem={this.removeSelectedCombination.bind(this)} ref={this.multiSelectRef} />
                             {/*<input type='text' placeholder='Filter Plots...' value={this.state.filterPlotString} onChange={this.updateFilterPlotString.bind(this)} />*/}
                         </div>
-                        <div className={'hide-ungated' + (this.props.workspace.hideUngatedPlots ? ' active' : '')} onClick={this.props.api.updateWorkspace.bind(null, this.props.workspace.id, { hideUngatedPlots: !this.props.workspace.hideUngatedPlots })}><i className={'lnr ' + (this.props.workspace.hideUngatedPlots ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />Hide Ungated Plots</div>
+                        <div className={'hide-ungated' + (this.props.workspace.hideUngatedPlots ? ' active' : '')} onClick={this.props.api.updateWorkspace.bind(null, this.props.workspace.id, { hideUngatedPlots: !this.props.workspace.hideUngatedPlots })}><i className={'lnr ' + (this.props.workspace.hideUngatedPlots ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />Only Show Plots With Gates</div>
                         <div className='dimensions plot-width'>
                             <div className='text'>Plot Dimensions: </div>
                             <input type='text' value={this.state.plotWidthString || this.props.plotDisplayWidth} onChange={this.updatePlotDisplayWidth.bind(this)} onBlur={this.setPlotDimensions.bind(this)} onKeyPress={(event) => { event.key === 'Enter' && event.target.blur() }} />
