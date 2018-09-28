@@ -5,6 +5,7 @@
 import { connect } from 'react-redux'
 import { updateGate } from '../actions/gate-actions'
 import { updateGateTemplate } from '../actions/gate-template-actions'
+import { setFCSFilteredParameters } from '../actions/workspace-actions'
 import constants from '../../gatekeeper-utilities/constants'
 import MultipleSampleView from '../components/sample-components/multiple-sample-view-component.jsx'
 import _ from 'lodash'
@@ -16,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
 
     // Find the workspace that this FCS File is inside
     let workspace = _.find(state.workspaces, w => w.id === newFCSFile.workspaceId)
-    
+
     if (ownProps.sampleId) {
         const sample = _.find(state.samples, w => w.id === ownProps.sampleId) || {}
         const newSample = _.cloneDeep(sample)
@@ -75,7 +76,8 @@ const mapStateToProps = (state, ownProps) => {
             plotHeight: state.plotHeight,
             plotDisplayWidth: state.plotDisplayWidth,
             plotDisplayHeight: state.plotDisplayHeight,
-            showDisabledParameters: state.showDisabledParameters
+            showDisabledParameters: state.showDisabledParameters,
+            filteredParameters: workspace.filteredParameters || []
         }
     } else {
         return { api: state.api, gates: [], FCSFile: newFCSFile, gateTemplate: {}, workspace }
@@ -86,6 +88,9 @@ const mapDispatchToProps = dispatch => {
     return {
         updateGateTemplate: (gateTemplateId, parameters) => {
             dispatch(updateGateTemplate(gateTemplateId, parameters))
+        },
+        setFilteredParameters: (workspaceId, parameters) => {
+            dispatch(setFCSFilteredParameters(workspaceId, parameters))
         }
     }
 }

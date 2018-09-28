@@ -271,7 +271,7 @@ export const api = {
         reduxStore.dispatch(selectAction)
     },
 
-    setFCSParametersDisabled: async function () {
+    setFCSDisabledParameters: async function () {
         // TODO
     }
 }

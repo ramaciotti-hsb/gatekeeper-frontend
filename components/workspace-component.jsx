@@ -91,7 +91,7 @@ export default class WorkspaceView extends Component {
 
             return (
                 <div className={'sidebar-gate-template-group' + (gatingError ? ' gating-error' : '')} key={childGateTemplateGroup.id} onClick={gatingError ? this.props.api.showGatingModal.bind(null, childGateTemplateGroup.gatingError.sampleId, childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ) : () => {}}>
-                    <div className='title' onClick={this.props.api.selectGateTemplate.bind(null, childGateTemplateGroup.parentGateTemplateId, this.props.workspace.id)}>
+                    <div className='title' onClick={() => { this.props.api.selectGateTemplate(childGateTemplateGroup.parentGateTemplateId, this.props.workspace.id); this.props.setFCSFilteredParameters(this.props.workspace.id, [[ childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ]]) }}>
                         <div className='text'>{childGateTemplateGroup.title}</div>
                         <div className='remove-gate-template-group' onClick={this.removeGateTemplateGroup.bind(this, childGateTemplateGroup.id)}>
                             <i className='lnr lnr-cross'></i>

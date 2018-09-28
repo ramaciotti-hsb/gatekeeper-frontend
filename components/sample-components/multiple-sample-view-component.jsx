@@ -24,7 +24,6 @@ export default class MultipleSampleView extends Component {
             plotWidthString: props.plotDisplayWidth,
             plotHeightString: props.plotDisplayHeight,
             combinations: [],
-            selectedCombinations: [],
             flippedCombinations: [],
             scrollTop: 0,
             containerWidth: 1000
@@ -78,20 +77,12 @@ export default class MultipleSampleView extends Component {
     }
 
     selectCombination (combination, event) {
-        this.state.selectedCombinations.push(combination)
-        this.setState({
-            selectedCombinations: this.state.selectedCombinations
-        })
-
+        this.props.setFilteredParameters(this.props.workspace.id, this.props.filteredParameters.concat([combination]))
         this.multiSelectRef.current.getInstance().focusInput()
     }
 
     removeSelectedCombination (combinationIndex, event) {
-        console.log(combinationIndex)
-        this.state.selectedCombinations = this.state.selectedCombinations.slice(0, combinationIndex).concat(this.state.selectedCombinations.slice(combinationIndex + 1))
-        this.setState({
-            selectedCombinations: this.state.selectedCombinations
-        })
+        this.props.setFilteredParameters(this.props.workspace.id, this.props.filteredParameters.slice(0, combinationIndex).concat(this.props.filteredParameters.slice(combinationIndex + 1)))
     }
 
     componentDidUpdate (prevProps) {
@@ -182,7 +173,7 @@ export default class MultipleSampleView extends Component {
                 continue
             }
 
-            if (this.state.selectedCombinations.length === 0 || this.state.selectedCombinations.find(c => c.length === 1 ? c[0] === combination[0] || c[0] === combination[1] : c[0] === combination[0] && c[1] === combination[1])) {
+            if (this.props.filteredParameters.length === 0 || this.props.filteredParameters.find(c => c.length === 1 ? c[0] === combination[0] || c[0] === combination[1] : c[0] === combination[0] && c[1] === combination[1])) {
                 if (!this.props.workspace.hideUngatedPlots || !_.find(this.props.gates, g =>
                     (g.selectedXParameter === combination[0] && g.selectedYParameter === combination[1]) ||
                     (g.selectedYParameter === combination[0] && g.selectedXParameter === combination[1])
@@ -196,9 +187,9 @@ export default class MultipleSampleView extends Component {
             const value = c.length === 1 ? this.props.FCSFile.FCSParameters[c[0]].label : this.props.FCSFile.FCSParameters[c[0]].label + '_' + this.props.FCSFile.FCSParameters[c[1]].label
             let selectedIndex
             if (c.length === 1) {
-                selectedIndex = this.state.selectedCombinations.findIndex(comb => comb[0] === c[0])
+                selectedIndex = this.props.filteredParameters.findIndex(comb => comb[0] === c[0])
             } else {
-                selectedIndex = this.state.selectedCombinations.findIndex(comb => comb[0] === c[0] && comb[1] === c[1])
+                selectedIndex = this.props.filteredParameters.findIndex(comb => comb[0] === c[0] && comb[1] === c[1])
             }
 
             return {
@@ -212,7 +203,7 @@ export default class MultipleSampleView extends Component {
             }
         })
 
-        const selectedCombinations = this.state.selectedCombinations.map((c, index) => {
+        const selectedCombinations = this.props.filteredParameters.map((c, index) => {
             if (c.length === 1) {
                 return <div className='selected-item' key={c[0]}>{this.props.FCSFile.FCSParameters[c[0]].label}<i className='lnr lnr-cross-circle' onClick={this.removeSelectedCombination.bind(this, index)}/></div>
             } else {

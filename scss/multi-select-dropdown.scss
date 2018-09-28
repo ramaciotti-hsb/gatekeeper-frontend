@@ -123,8 +123,8 @@
                 }
 
                 &.active {
-                    @include backgroundHover(lighten($highlight-colour, 20%));
-                    @include backgroundClick(lighten($highlight-colour, 20%));
+                    @include backgroundHover(lighten($highlight-colour, 30%));
+                    @include backgroundClick(lighten($highlight-colour, 30%));
 
                     .dot {
                         display: block;

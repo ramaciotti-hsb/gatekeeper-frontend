@@ -55,7 +55,7 @@ export default class FCSParameterSelector extends Component {
                 parameterKey = <div className='parameter-key'><div className='middot'>·</div>{parameter.key}</div>
             }
             return (
-                <div className={'parameter-row ' + (disabled ? 'disabled' : 'enabled')} key={parameter.key} onClick={this.props.api.setFCSParametersDisabled.bind(null, this.props.selectedWorkspace.id, { [parameter.key]: !disabled })}>
+                <div className={'parameter-row ' + (disabled ? 'disabled' : 'enabled')} key={parameter.key} onClick={this.props.api.setFCSDisabledParameters.bind(null, this.props.selectedWorkspace.id, { [parameter.key]: !disabled })}>
                     <i className={'lnr ' + (disabled ? 'lnr-circle-minus' : 'lnr-checkmark-circle')} />
                     <div className='text'>{parameter.label}{parameterKey}</div>
                 </div>
@@ -72,8 +72,8 @@ export default class FCSParameterSelector extends Component {
             <div className='parameter-selector-outer' style={{ width: this.props.showDisabledParameters ? 'auto' : 0, minWidth: this.props.showDisabledParameters ? 200 : 0 }}>
                 <div className='header'>Toggle Parameters</div>
                 <div className='parameter-row toggle-all' onClick={someDisabled ?
-                    this.props.api.setFCSParametersDisabled.bind(null, this.props.selectedWorkspace.id, _.zipObject(_.keys(this.props.selectedFCSFile.FCSParameters), _.keys(this.props.selectedFCSFile.FCSParameters).map(p => false))) :
-                    this.props.api.setFCSParametersDisabled.bind(null, this.props.selectedWorkspace.id, _.zipObject(_.keys(this.props.selectedFCSFile.FCSParameters), _.keys(this.props.selectedFCSFile.FCSParameters).map(p => true))) }>
+                    this.props.api.setFCSDisabledParameters.bind(null, this.props.selectedWorkspace.id, _.zipObject(_.keys(this.props.selectedFCSFile.FCSParameters), _.keys(this.props.selectedFCSFile.FCSParameters).map(p => false))) :
+                    this.props.api.setFCSDisabledParameters.bind(null, this.props.selectedWorkspace.id, _.zipObject(_.keys(this.props.selectedFCSFile.FCSParameters), _.keys(this.props.selectedFCSFile.FCSParameters).map(p => true))) }>
                     <i className={'lnr lnr-menu-circle'} />
                     <div className='text'>{someDisabled ? 'Enable All' : 'Disable All'}</div>
                 </div>
