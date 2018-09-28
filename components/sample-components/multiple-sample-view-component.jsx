@@ -12,6 +12,7 @@ import pointInsidePolygon from 'point-in-polygon'
 import { heatMapHSLStringForValue, getScales, getPlotImageKey } from '../../../gatekeeper-utilities/utilities'
 import BivariatePlot from '../../containers/bivariate-plot-container.jsx'
 import Dropdown from '../../lib/dropdown.jsx'
+import MultiSelectDropdown from '../../lib/multi-select-dropdown.jsx'
 import '../../scss/sample-view/sample-gates.scss'
 
 export default class MultipleSampleView extends Component {
@@ -22,16 +23,15 @@ export default class MultipleSampleView extends Component {
         this.state = {
             plotWidthString: props.plotDisplayWidth,
             plotHeightString: props.plotDisplayHeight,
-            filterPlotString: '',
             combinations: [],
+            selectedCombinations: [],
             flippedCombinations: [],
             scrollTop: 0,
             containerWidth: 1000
         };
 
-        this.state.combinations = this.filterPlots()
-
         this.panelRef = React.createRef()
+        this.multiSelectRef = React.createRef()
     }
 
     updateContainerSize () {
@@ -77,112 +77,25 @@ export default class MultipleSampleView extends Component {
         this.props.api.showGatingModal(this.props.sample.id, selectedXParameter, selectedYParameter)
     }
 
-    matchLabels(xLabel, yLabel, matchString) {
-        let matched = true
-
-        // If the match string has no spaces, match both labels
-        if (!matchString.match(' ')) {
-            matched = xLabel.toLowerCase().match(matchString.toLowerCase()) || yLabel.toLowerCase().match(matchString.toLowerCase())
-        } else {
-            // Otherwise match all tokens against the combined string
-            for (let token of matchString.split(' ')) {
-                const combined = xLabel.toLowerCase() + yLabel.toLowerCase()
-                if (!combined.match(token.toLowerCase())) {
-                    matched = false
-                }
-            }
-        }
-
-        return matched
-    }
-
-    updateFilterPlotString (event) {
-        const filterString = event.target.value.replace('\\', '')
-
+    selectCombination (combination, event) {
+        this.state.selectedCombinations.push(combination)
         this.setState({
-            filterPlotString: filterString
-        }, () => {
-            this.setState({
-                combinations: this.filterPlots()
-            })
+            selectedCombinations: this.state.selectedCombinations
         })
+
+        this.multiSelectRef.current.getInstance().focusInput()
     }
 
-    filterPlots () {
-        const combinations = []
-        const sorted = _.keys(this.props.FCSFile.FCSParameters).sort((a, b) => {
-            if (!a.match(/\d+/)) {
-                return 1
-            } else if (!b.match(/\d+/)) {
-                return -1
-            } else {
-                return a.match(/\d+/)[0] - b.match(/\d+/)[0]
-            }
+    removeSelectedCombination (combinationIndex, event) {
+        console.log(combinationIndex)
+        this.state.selectedCombinations = this.state.selectedCombinations.slice(0, combinationIndex).concat(this.state.selectedCombinations.slice(combinationIndex + 1))
+        this.setState({
+            selectedCombinations: this.state.selectedCombinations
         })
-        for (let i = 0; i < sorted.length; i++) {
-            const parameter = this.props.FCSFile.FCSParameters[sorted[i]]
-            // Don't bother displaying the plot if the parameter is disabled
-            if (this.props.workspace.disabledParameters[parameter.key]) { continue }
-            for (let j = i + 1; j < sorted.length; j++) {
-                const parameter2 = this.props.FCSFile.FCSParameters[sorted[j]]
-                if (this.props.workspace.disabledParameters[parameter2.key]) { continue }
-
-                if (this.matchLabels(parameter.label, parameter2.label, this.state.filterPlotString)) {
-
-                    let shouldAdd = true
-                    if (this.props.workspace.hideUngatedPlots) {
-                        if (!_.find(this.props.gates, g =>
-                            (g.selectedXParameter === parameter.key && g.selectedYParameter === parameter2.key) ||
-                            (g.selectedYParameter === parameter.key && g.selectedXParameter === parameter2.key)
-                        )) {
-                            shouldAdd = false
-                        } else {
-                            console.log(parameter, parameter2)
-                        }
-                    }
-
-                    if (shouldAdd) {
-                        const keys = [parameter.key, parameter2.key].sort()
-                        if (this.props.workspace.invertedAxisPlots[keys[0] + '_' + keys[1]]) {
-                            combinations.push([keys[1], keys[0]])
-                        } else {
-                            combinations.push([keys[0], keys[1]])
-                        }
-                    }
-                }
-            }
-        }
-
-        return combinations
     }
 
     componentDidUpdate (prevProps) {
-        if (!this.props.sample) {
-            return
-        }
-
-        let shouldReset = false
-        if (!prevProps.sample) {
-            shouldReset = true
-        } else if (this.props.sample.id !== prevProps.sample.id) {
-            shouldReset = true
-        } else if (this.props.workspace.hideUngatedPlots !== prevProps.workspace.hideUngatedPlots) {
-            shouldReset = true
-        } else if (this.props.workspace.invertedAxisPlots !== prevProps.workspace.invertedAxisPlots) {
-            shouldReset = true
-        } else if (this.props.FCSFile.FCSParameters.length !== prevProps.FCSFile.FCSParameters.length) {
-            shouldReset = true
-        } else if (!_.isEqual(prevProps.workspace.disabledParameters, this.props.workspace.disabledParameters)) {
-            shouldReset = true
-        } else if (prevProps.workspace.id !== this.props.workspace.id) {
-            shouldReset = true
-        }
-
-        if (shouldReset) {
-            this.setState({
-                combinations: this.filterPlots()
-            })
-        }
+        if (!this.props.sample) { return }
 
         if (prevProps.showDisabledParameters !== this.props.showDisabledParameters) {
             this.updateContainerSize()
@@ -234,11 +147,86 @@ export default class MultipleSampleView extends Component {
             upperTitle = <div className='upper'>Root Gate</div>
         }
 
-        const minIndex = Math.max(0, (Math.floor(this.state.scrollTop / (this.props.plotDisplayHeight + 115)) - 3) * plotsPerRow)
-        const maxIndex = Math.min(this.state.combinations.length, (Math.floor(this.state.scrollTop / (this.props.plotDisplayHeight + 115)) + 4) * plotsPerRow)
+        const combinations = []
+        const combinationsToRender = []
+        const sorted = _.keys(this.props.FCSFile.FCSParameters).filter(p => !this.props.workspace.disabledParameters[p]).sort((a, b) => {
+            if (!a.match(/\d+/)) {
+                return 1
+            } else if (!b.match(/\d+/)) {
+                return -1
+            } else {
+                return a.match(/\d+/)[0] - b.match(/\d+/)[0]
+            }
+        })
 
-        const gates = this.state.combinations.slice(minIndex, maxIndex).map((c, index) => {
-            if (!this.props.FCSFile.FCSParameters || this.props.FCSFile.FCSParameters.length === 0 || index >= this.state.combinations.length || !this.props.FCSFile.FCSParameters[c[0]] || !this.props.FCSFile.FCSParameters[c[1]]) {
+        for (let i = 0; i < sorted.length; i++) {
+            if (!combinations.find(c => c.length === 1 && c[0] === sorted[i])) {
+                combinations.push([sorted[i]])
+            }
+        }
+
+        for (let i = 0; i < sorted.length; i++) {
+            for (let j = i + 1; j < sorted.length; j++) {
+                const keys = [sorted[i], sorted[j]].sort()
+                if (this.props.workspace.invertedAxisPlots[sorted[i] + '_' + sorted[j]]) {
+                    combinations.push([sorted[j], sorted[i]])
+                } else {
+                    combinations.push([sorted[i], sorted[j]])
+                }
+            }
+        }
+
+        for (let i = 0; i < combinations.length; i++) {
+            const combination = combinations[i]
+            if (combination.length === 1) {
+                continue
+            }
+
+            if (this.state.selectedCombinations.length === 0 || this.state.selectedCombinations.find(c => c.length === 1 ? c[0] === combination[0] || c[0] === combination[1] : c[0] === combination[0] && c[1] === combination[1])) {
+                if (!this.props.workspace.hideUngatedPlots || !_.find(this.props.gates, g =>
+                    (g.selectedXParameter === combination[0] && g.selectedYParameter === combination[1]) ||
+                    (g.selectedYParameter === combination[0] && g.selectedXParameter === combination[1])
+                )) {
+                    combinationsToRender.push(combination)
+                }
+            }
+        }
+
+        const possibleCombinations = combinations.map((c) => {
+            const value = c.length === 1 ? this.props.FCSFile.FCSParameters[c[0]].label : this.props.FCSFile.FCSParameters[c[0]].label + '_' + this.props.FCSFile.FCSParameters[c[1]].label
+            let selectedIndex
+            if (c.length === 1) {
+                selectedIndex = this.state.selectedCombinations.findIndex(comb => comb[0] === c[0])
+            } else {
+                selectedIndex = this.state.selectedCombinations.findIndex(comb => comb[0] === c[0] && comb[1] === c[1])
+            }
+
+            return {
+                value,
+                component: (
+                    <div className={'item' + (selectedIndex > -1 ? ' active' : '')} key={value} onClick={selectedIndex > -1 ? this.removeSelectedCombination.bind(this, selectedIndex) : this.selectCombination.bind(this, c)}>
+                        <div className='text'>{c.length === 1 ? this.props.FCSFile.FCSParameters[c[0]].label : `${this.props.FCSFile.FCSParameters[c[0]].label} · ${this.props.FCSFile.FCSParameters[c[1]].label}`}</div>
+                        <div className='dot' />
+                    </div>
+                )
+            }
+        })
+
+        const selectedCombinations = this.state.selectedCombinations.map((c, index) => {
+            if (c.length === 1) {
+                return <div className='selected-item' key={c[0]}>{this.props.FCSFile.FCSParameters[c[0]].label}<i className='lnr lnr-cross-circle' onClick={this.removeSelectedCombination.bind(this, index)}/></div>
+            } else {
+                return (
+                    <div className='selected-item' key={c[0] + '_' + c[1]}>{this.props.FCSFile.FCSParameters[c[0]].label} · {this.props.FCSFile.FCSParameters[c[1]].label}<i className='lnr lnr-cross-circle' onClick={this.removeSelectedCombination.bind(this, index)}/></div>
+                )
+            }
+        })
+
+        const minIndex = Math.max(0, (Math.floor(this.state.scrollTop / (this.props.plotDisplayHeight + 115)) - 3) * plotsPerRow)
+        const maxIndex = Math.min(combinationsToRender.length, (Math.floor(this.state.scrollTop / (this.props.plotDisplayHeight + 115)) + 4) * plotsPerRow)
+
+        const gates = combinationsToRender.filter(c => c.length > 1).slice(minIndex, maxIndex).map((c, index) => {
+            if (!this.props.FCSFile.FCSParameters || this.props.FCSFile.FCSParameters.length === 0 || index >= combinationsToRender.length || !this.props.FCSFile.FCSParameters[c[0]] || !this.props.FCSFile.FCSParameters[c[1]]) {
                 return null
             }
 
@@ -309,7 +297,10 @@ export default class MultipleSampleView extends Component {
                         </div>
                     </div>
                     <div className='filters'>
-                        <input type='text' placeholder='Filter Plots...' value={this.state.filterPlotString} onChange={this.updateFilterPlotString.bind(this)} />
+                        <div className='filter-text-outer'>
+                            <MultiSelectDropdown items={possibleCombinations} selectedItems={selectedCombinations} searchPlaceholder={'Type To Filter...'} removeSelectedItem={this.removeSelectedCombination.bind(this)} ref={this.multiSelectRef} />
+                            {/*<input type='text' placeholder='Filter Plots...' value={this.state.filterPlotString} onChange={this.updateFilterPlotString.bind(this)} />*/}
+                        </div>
                         <div className={'hide-ungated' + (this.props.workspace.hideUngatedPlots ? ' active' : '')} onClick={this.props.api.updateWorkspace.bind(null, this.props.workspace.id, { hideUngatedPlots: !this.props.workspace.hideUngatedPlots })}><i className={'lnr ' + (this.props.workspace.hideUngatedPlots ? 'lnr-checkmark-circle' : 'lnr-circle-minus')} />Hide Ungated Plots</div>
                         <div className='dimensions plot-width'>
                             <div className='text'>Plot Dimensions: </div>
@@ -318,7 +309,7 @@ export default class MultipleSampleView extends Component {
                         </div>
                     </div>
                     <div className='gates' onScroll={(e) => { if (Math.abs(e.target.scrollTop - this.state.scrollTop) > (this.props.plotDisplayHeight + 115) * 2) { this.setState({ scrollTop: e.target.scrollTop }) } } }>
-                        <div className='gates-inner' style={{ position: 'relative', height: Math.floor((this.state.combinations.length / plotsPerRow) * (this.props.plotDisplayHeight + 115)) }}>
+                        <div className='gates-inner' style={{ position: 'relative', height: Math.floor((combinationsToRender.length / plotsPerRow) * (this.props.plotDisplayHeight + 115)) }}>
                             {gates}
                         </div>
                     </div>

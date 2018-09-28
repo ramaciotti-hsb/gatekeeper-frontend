@@ -123,12 +123,30 @@
             flex-shrink: 0;
             font-size: 13px;
 
-            input {
-                font-size: 13px;
-                padding: 8px 15px;
-                border: 1px solid #eee;
-                width: 200px;
+            .filter-text-outer {
                 margin-right: 15px;
+
+                .multi-select-dropdown {
+                    width: 450px;
+
+                    .selected-item {
+                        padding: 5px;
+                        background: #eee;
+                        margin-right: 8px;
+                        text-wrap: nowrap;
+                        flex-shrink: 0;
+                        align-items: center;
+                        cursor: default;
+
+                        i {
+                            margin-left: 7px;
+                            font-size: 15px;
+                            cursor: pointer;
+                            @include foregroundHover($red-colour);
+                            @include foregroundClick($red-colour);
+                        }
+                    }
+                }
             }
 
             .hide-ungated {
@@ -153,6 +171,14 @@
                 align-items: center;
                 margin-left: 15px;
                 font-size: 13px;
+
+                input {
+                    font-size: 13px;
+                    padding: 8px 15px;
+                    border: 1px solid #eee;
+                    width: 200px;
+                    margin-right: 15px;
+                }
 
                 .text {
                     margin-right: 15px;

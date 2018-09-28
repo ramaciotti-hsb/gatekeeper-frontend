@@ -12,11 +12,11 @@ import _                    from 'lodash'
 import OnClickOutside       from 'react-onclickoutside'
 import constants            from '../../gatekeeper-utilities/constants'
 import uuidv4               from 'uuid/v4'
-import                           '../scss/dropdown-inline.scss'
+import                           '../scss/multi-select-dropdown.scss'
 import { registerKeyListener, deregisterKeyListener } from './global-keyboard-listener'
 
 // The outer menu react element
-class DropdownInline extends Component {
+class MultiSelectDropdown extends Component {
     constructor (props) {
         super(props)
         this.state = {
@@ -34,7 +34,6 @@ class DropdownInline extends Component {
                 ReactDOM.findDOMNode(this.searchRef.current).focus()
             })
         }
-        event.stopPropagation()
     }
 
     hideDropdown () {
@@ -51,6 +50,21 @@ class DropdownInline extends Component {
         })
     }
 
+    onKeyDown (event) {
+        if (event.key === 'Backspace' && this.state.searchText.length === 0) {
+            if (this.props.selectedItems.length > 0) {
+                this.props.removeSelectedItem(this.props.selectedItems.length - 1)
+            }
+        }
+    }
+
+    focusInput () {
+        this.setState({
+            searchText: ''
+        })
+        this.searchRef.current.focus()
+    }
+
     componentDidMount () {
         this.keyboardListenerId = uuidv4()
         registerKeyListener(this.keyboardListenerId, constants.CHARACTER_CODE_ESCAPE, this.hideDropdown.bind(this))
@@ -62,10 +76,8 @@ class DropdownInline extends Component {
 
     render () {
         var textLabel
-        if (this.state.dropdownVisible === true) {
-            textLabel = <input type='text' placeholder={this.props.searchPlaceholder || 'Type to search...'} value={this.state.searchText} onChange={this.updateSearchText.bind(this)} ref={this.searchRef} />
-        } else {
-            textLabel = <div className='text'>{this.props.textLabel}</div>
+        if (this.state.dropdownVisible === true || this.props.selectedItems.length === 0) {
+            textLabel = <input type='text' placeholder={this.props.searchPlaceholder || 'Type to search...'} value={this.state.searchText} onChange={this.updateSearchText.bind(this)} onKeyDown={this.onKeyDown.bind(this)} ref={this.searchRef} />
         }
 
         var filteredItems = this.props.items
@@ -73,16 +85,23 @@ class DropdownInline extends Component {
         if (this.state.searchText.length !== 0) {
             // Search the index for the input value
             filteredItems = _.filter(filteredItems, (item) => {
-                return item.value.toLowerCase().includes(this.state.searchText.toLowerCase())
+                let matched = true
+                for (let term of this.state.searchText.toLowerCase().split(' ')) {
+                    matched = matched && item.value.toLowerCase().includes(term)
+                }
+                return matched
             })
         }
 
         var itemsToRender = filteredItems.map((item) => { return item.component })
 
         return (
-            <div className={'dropdown-inline ' + (this.props.outerClasses || '') + (this.state.dropdownVisible ? ' active' : '')} onClick={this.showDropdown.bind(this)}>
+            <div className={'multi-select-dropdown ' + (this.props.outerClasses || '') + (this.state.dropdownVisible ? ' active' : '')} onClick={this.showDropdown.bind(this)}>
                 <div className='inner'>
-                    {textLabel}
+                    <div className='input-outer'>
+                        {this.props.selectedItems}
+                        {textLabel}
+                    </div>
                     <i className="icon fa fa-caret-down"></i>
                     <div className="menu">
                         {itemsToRender}
@@ -93,4 +112,4 @@ class DropdownInline extends Component {
     }
 }
 
-export default OnClickOutside(DropdownInline)
+export default OnClickOutside(MultiSelectDropdown)
