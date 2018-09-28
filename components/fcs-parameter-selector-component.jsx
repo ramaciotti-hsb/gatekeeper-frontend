@@ -68,6 +68,11 @@ export default class FCSParameterSelector extends Component {
             someDisabled = this.props.selectedWorkspace.disabledParameters[k] || someDisabled
         })
 
+        let clearInput
+        if (this.state.filterValue.length > 0) {
+            clearInput = <i className='lnr lnr-cross-circle' onClick={() => { this.setState({ filterValue: '' })} } />
+        }
+
         return (
             <div className='parameter-selector-outer' style={{ width: this.props.showDisabledParameters ? 'auto' : 0, minWidth: this.props.showDisabledParameters ? 200 : 0 }}>
                 <div className='header'>Toggle Parameters</div>
@@ -80,6 +85,7 @@ export default class FCSParameterSelector extends Component {
                 <div className='parameter-row filter'>
                     <i className={'lnr lnr-magnifier'} />
                     <input type='text' placeholder='Filter' value={this.state.filterValue} onChange={this.onFilter.bind(this)} ref={this.filterInputRef} />
+                    {clearInput}
                 </div>
                 <div className='parameter-selector-inner'>
                     {parameters}
