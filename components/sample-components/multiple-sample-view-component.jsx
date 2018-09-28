@@ -173,13 +173,21 @@ export default class MultipleSampleView extends Component {
                 continue
             }
 
-            if (this.props.filteredParameters.length === 0 || this.props.filteredParameters.find(c => c.length === 1 ? c[0] === combination[0] || c[0] === combination[1] : c[0] === combination[0] && c[1] === combination[1])) {
-                if (!this.props.workspace.hideUngatedPlots || !_.find(this.props.gates, g =>
-                    (g.selectedXParameter === combination[0] && g.selectedYParameter === combination[1]) ||
-                    (g.selectedYParameter === combination[0] && g.selectedXParameter === combination[1])
-                )) {
-                    combinationsToRender.push(combination)
-                }
+            let shouldAdd = true
+
+            if (this.props.filteredParameters.length > 0 && !this.props.filteredParameters.find(c => c.length === 1 ? c[0] === combination[0] || c[0] === combination[1] : c[0] === combination[0] && c[1] === combination[1])) {
+                shouldAdd = false
+            }
+
+            if (this.props.workspace.hideUngatedPlots && !_.find(this.props.gates, g =>
+                (g.selectedXParameter === combination[0] && g.selectedYParameter === combination[1]) ||
+                (g.selectedYParameter === combination[0] && g.selectedXParameter === combination[1])
+            )) {
+                shouldAdd = false
+            }
+
+            if (shouldAdd) {
+                combinationsToRender.push(combination)
             }
         }
 
