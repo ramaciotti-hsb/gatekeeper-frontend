@@ -129,10 +129,24 @@
                 .multi-select-dropdown {
                     width: 450px;
 
+                    .inner {
+                        height: auto;
+                        align-items: stretch;
+                    }
+
+                    .input-outer {
+                        margin: 1px;
+                        align-items: stretch;
+
+                        & > input {
+                            height: 35px;
+                        }
+                    }
+
                     .selected-item {
                         padding: 5px;
                         background: #eee;
-                        margin-right: 8px;
+                        margin: 5px 8px 5px 0;
                         text-wrap: nowrap;
                         flex-shrink: 0;
                         align-items: center;
