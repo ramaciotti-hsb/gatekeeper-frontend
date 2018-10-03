@@ -73,7 +73,7 @@ export default class WorkspaceView extends Component {
 
             const totalEvents = childGateTemplates.reduce((accumulator, current) => {
                 if (current.type === constants.GATE_TYPE_POLYGON || current.type === constants.GATE_TYPE_NEGATIVE) {
-                    return accumulator + current.populationCount
+                    return accumulator + (current.populationCount || 0)
                 } else {
                     return accumulator
                 }
