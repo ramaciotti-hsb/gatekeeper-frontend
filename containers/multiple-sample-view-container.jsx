@@ -57,7 +57,9 @@ const mapStateToProps = (state, ownProps) => {
             }
         }
 
-        let gatingErrors = _.filter(state.gatingErrors, e => e.sampleId === ownProps.sampleId && _.find(_.filter(state.gateTemplateGroups, g => g.parentGateTemplateId === gateTemplate.id), g2 => g2.id === e.gateTemplateGroupId))
+        let gatingErrors = _.filter(state.gatingErrors, e => e.sampleId === ownProps.sampleId && _.find(state.gateTemplateGroups, g2 => g2.id === e.gateTemplateGroupId)).map((gatingError) => {
+            return Object.assign({}, gatingError, { gateTemplateGroup: state.gateTemplateGroups.find(gt => gt.id === gatingError.gateTemplateGroupId) })
+        })
 
         newSample.machineType = newSample.machineType || constants.MACHINE_FLORESCENT
 

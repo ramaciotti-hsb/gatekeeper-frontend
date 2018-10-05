@@ -19,7 +19,7 @@ const gates = (state = [], action = {}) => {
     else if (action.type === 'REMOVE_GATE') {
         const gateIndex = _.findIndex(state, g => g.id === action.payload.gateId)
         if (gateIndex > -1) {
-            newState = newState.slice(0, gateIndex).concat(newState.slice(gateIndex + 1))            
+            newState = newState.slice(0, gateIndex).concat(newState.slice(gateIndex + 1))
         } else {
             console.log('REMOVE_GATE failed: no gate with id', action.payload.gateId, 'was found')
         }
@@ -31,7 +31,7 @@ const gates = (state = [], action = {}) => {
         const gateIndex = _.findIndex(state, g => g.id === action.payload.gateId)
         if (gateIndex > -1) {
             let newGate = _.merge(_.cloneDeep(newState[gateIndex]), action.payload.parameters)
-            newState = newState.slice(0, gateIndex).concat([ newGate ]).concat(newState.slice(gateIndex + 1))         
+            newState = newState.slice(0, gateIndex).concat([ newGate ]).concat(newState.slice(gateIndex + 1))
         } else {
             console.log('HIGHLIGHT_GATE failed: no gate with id', action.payload.gateId, 'was found')
         }

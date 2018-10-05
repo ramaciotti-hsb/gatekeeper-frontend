@@ -138,6 +138,7 @@
             min-width: 100%;
 
             &.disabled {
+                cursor: default;
                 pointer-events: none;
             }
 
