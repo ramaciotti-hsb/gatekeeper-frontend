@@ -279,6 +279,22 @@ export default class MultipleSampleView extends Component {
             )
         })
 
+        let gateTemplateTitle
+        if (this.state.editingGateTemplateTitle) {
+            const updateTitle = () => {
+                this.setState({ editingGateTemplateTitle: false })
+                this.props.api.updateGateTemplate(this.props.gateTemplate.id, { title: this.state.editedGateTemplateTitle })
+            }
+
+            gateTemplateTitle = <input autoFocus={true} className='gate-template-title-input' type='text' value={this.state.editedGateTemplateTitle}
+                onChange={(event) => { this.setState({ editedGateTemplateTitle: event.target.value }) }}
+                onKeyPress={(event) => { if (event.key === 'Enter') { updateTitle() }}}
+                onBlur={updateTitle}
+            />
+        } else {
+            gateTemplateTitle = <div className='text' onClick={() => { this.setState({ editingGateTemplateTitle: true, editedGateTemplateTitle: this.props.gateTemplate.title }) }}>{this.props.gateTemplate.title}</div>
+        }
+
         return (
             <div className='panel sample' ref={this.panelRef}>
                 <div className={`loader-outer${this.props.sample.loading ? ' active' : ''}`}><div className='loader'></div><div className='text'>{this.props.sample.loadingMessage}</div></div>
@@ -287,7 +303,7 @@ export default class MultipleSampleView extends Component {
                         {upperTitle}
                         <div className='lower'>
                             <div className='title'>
-                                <div className='text'>{this.props.gateTemplate.title}</div>
+                                {gateTemplateTitle}
                                 <div className='file-actions'>
                                     <div className='download csv' onClick={this.props.api.saveSampleAsCSV.bind(null, this.props.sample.id)}><i className='lnr lnr-download' />Save as CSV</div>
                                 </div>
