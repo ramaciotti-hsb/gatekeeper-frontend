@@ -89,6 +89,11 @@ export default class WorkspaceView extends Component {
                 gateTemplateGroupLoading = true
             }
 
+            let totalEventsRendered
+            if (totalEvents > 0) {
+                totalEventsRendered = <div className='number'>{totalEvents} ({(totalEvents / gateTemplate.populationCount * 100).toFixed(1)}%)</div>
+            }
+
             return (
                 <div className={'sidebar-gate-template-group' + (gatingError ? ' gating-error' : '')} key={childGateTemplateGroup.id} onClick={gatingError ? this.props.api.showGatingModal.bind(null, childGateTemplateGroup.gatingError.sampleId, childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ) : () => {}}>
                     <div className='title' onClick={() => { this.props.api.selectGateTemplate(childGateTemplateGroup.parentGateTemplateId, this.props.workspace.id); this.props.setFCSFilteredParameters(this.props.workspace.id, [[ childGateTemplateGroup.selectedXParameter, childGateTemplateGroup.selectedYParameter ]]) }}>
@@ -96,7 +101,7 @@ export default class WorkspaceView extends Component {
                         <div className='remove-gate-template-group' onClick={this.removeGateTemplateGroup.bind(this, childGateTemplateGroup.id)}>
                             <i className='lnr lnr-cross'></i>
                         </div>
-                        <div className='number' style={_.isNaN(totalEvents) ? { display: 'none'} : null}>{totalEvents} ({(totalEvents / gateTemplate.populationCount * 100).toFixed(1)}%)</div>
+                        {totalEventsRendered}
                     </div>
                     <div className='gate-templates'>
                         <div className={`loader-outer${gateTemplateGroupLoading && this.props.workspace.selectedFCSFile ? ' active' : ''}`}><div className='loader small'></div></div>
