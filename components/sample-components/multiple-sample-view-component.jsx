@@ -31,6 +31,8 @@ export default class MultipleSampleView extends Component {
 
         this.panelRef = React.createRef()
         this.multiSelectRef = React.createRef()
+        this.gateTemplateTitleRef = React.createRef()
+        this.gateTemplateTitleInputRef = React.createRef()
     }
 
     updateContainerSize () {
@@ -287,12 +289,15 @@ export default class MultipleSampleView extends Component {
             }
 
             gateTemplateTitle = <input autoFocus={true} className='gate-template-title-input' type='text' value={this.state.editedGateTemplateTitle}
+                style={{ width: this.state.gateTemplateTitleWidth }}
                 onChange={(event) => { this.setState({ editedGateTemplateTitle: event.target.value }) }}
                 onKeyPress={(event) => { if (event.key === 'Enter') { updateTitle() }}}
                 onBlur={updateTitle}
+                onFocus={() => { setTimeout(() => { this.gateTemplateTitleInputRef.current.select() }, 1) }}
+                ref={this.gateTemplateTitleInputRef}
             />
         } else {
-            gateTemplateTitle = <div className='text' onClick={() => { this.setState({ editingGateTemplateTitle: true, editedGateTemplateTitle: this.props.gateTemplate.title }) }}>{this.props.gateTemplate.title}</div>
+            gateTemplateTitle = <div className='text' onClick={() => { this.setState({ editingGateTemplateTitle: true, editedGateTemplateTitle: this.props.gateTemplate.title, gateTemplateTitleWidth: this.gateTemplateTitleRef.current.offsetWidth }) }} ref={this.gateTemplateTitleRef}>{this.props.gateTemplate.title}</div>
         }
 
         return (
