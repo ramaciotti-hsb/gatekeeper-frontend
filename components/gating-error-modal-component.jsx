@@ -99,6 +99,10 @@ export default class GatingErrorModal extends Component {
     }
 
     applyGatesClicked () {
+        this.setState({
+            applyGatesLoading: true
+        })
+
         this.props.api.applyUnsavedGatesToSample(this.props.selectedSample.id, {
             selectedXParameter: this.props.modalOptions.selectedXParameter,
             selectedYParameter: this.props.modalOptions.selectedYParameter,
@@ -107,7 +111,13 @@ export default class GatingErrorModal extends Component {
             machineType: this.props.selectedFCSFile.machineType,
             edgeDistance: this.state.edgeDistance,
             minPeakHeight: this.state.minPeakHeight
-        }).then(this.modalOuterClicked.bind(this))
+        }).then(() => {
+            this.modalOuterClicked()
+
+            this.setState({
+                applyGatesLoading: false
+            })
+        })
     }
 
     recalculateUsingSeedPeaks () {
@@ -350,7 +360,10 @@ export default class GatingErrorModal extends Component {
             } else {
                 actions = (
                     <div className='actions'>
-                        <div className='button apply-gates' onClick={this.applyGatesClicked.bind(this)}>Apply Gates To Sample</div>
+                        <div className='button apply-gates' onClick={this.applyGatesClicked.bind(this)}>
+                            <div className={`loader-outer ${this.state.applyGatesLoading ? ' active' : ''}`}><div className='loader small'></div></div>
+                            Apply Gates To Sample
+                        </div>
                     </div>
                 )
             }
@@ -407,8 +420,12 @@ export default class GatingErrorModal extends Component {
                     <div className='title'>Resolve Errors</div>
                     {seedPeaks}
                     <div className='handler'>
+                        <div className='title'>Other Methods</div>
                         <div className='button' onClick={this.resolveErrorUsingIgnore.bind(this)}>
                             Ignore Or Mark Gates Optional
+                        </div>
+                        <div className='button' style={{ marginTop: 15 }} onClick={this.resolveErrorUsingIgnore.bind(this)}>
+                            Manually Match Peaks To Template
                         </div>
                     </div>
                 </div>
