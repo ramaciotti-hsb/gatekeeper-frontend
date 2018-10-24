@@ -7,7 +7,7 @@ import { createSample, removeSample } from '../actions/sample-actions.js'
 import { updateGateTemplate } from '../actions/gate-template-actions'
 import WorkspaceView from '../components/workspace-component.jsx'
 import { showGatingModal } from '../actions/application-actions'
-import { setFCSFilteredParameters } from '../actions/workspace-actions'
+import { setFCSFilteredParameters, setGatingHash } from '../actions/workspace-actions'
 import _ from 'lodash'
 
 const mapStateToProps = (state, ownProps) => {
@@ -76,6 +76,9 @@ const mapDispatchToProps = dispatch => {
         },
         setFCSFilteredParameters: (workspaceId, parameters) => {
             dispatch(setFCSFilteredParameters(workspaceId, parameters))
+        },
+        setGatingHash: (workspaceId, hash) => {
+            dispatch(setGatingHash(workspaceId, hash))
         }
     }
 }

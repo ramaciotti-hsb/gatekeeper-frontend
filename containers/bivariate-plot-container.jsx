@@ -16,14 +16,27 @@ const mapStateToProps = (state, ownProps) => {
 
     // Find the workspace that this FCS File is inside
     let workspace = _.find(state.workspaces, w => w.id === newFCSFile.workspaceId)
-    
-    if (ownProps.sampleId) {
+
+    if (workspace.gatingHash) {
+        return {
+            api: state.api,
+            workspace,
+            FCSFile,
+            gates: [],
+            gatingHash: workspace.gatingHash,
+            plotWidth: state.plotWidth,
+            plotHeight: state.plotHeight,
+            plotDisplayWidth: ownProps.plotDisplayWidth || state.plotDisplayWidth,
+            plotDisplayHeight: ownProps.plotDisplayHeight || state.plotDisplayHeight,
+            machineType: FCSFile.machineType,
+        }
+    } else if (ownProps.sampleId) {
         // Find the selected sample
         const sample = _.find(state.samples, w => w.id === ownProps.sampleId) || {}
         const newSample = _.clone(sample)
         // If the workspace contains samples, find them and add them as complete objects
         sample.subSamples = _.filter(state.samples, s => s.parentSampleId === newSample.id)
-        
+
         // Find the parent sample if there is one
         if (newSample.parentSampleId) {
             const parent = _.find(state.samples, s => s.id === newSample.parentSampleId)
@@ -65,7 +78,7 @@ const mapStateToProps = (state, ownProps) => {
             let gateTemplateGroup = _.find(state.gateTemplateGroups, g => g.parentGateTemplateId === parentGateTemplate.id && g.selectedXParameter === ownProps.selectedXParameter && g.selectedYParameter === ownProps.selectedYParameter)
             let gatingError
             if (gateTemplateGroup) {
-                gatingError = _.find(state.gatingErrors, e => e.gateTemplateGroupId === gateTemplateGroup.id && e.sampleId === ownProps.sampleId)                
+                gatingError = _.find(state.gatingErrors, e => e.gateTemplateGroupId === gateTemplateGroup.id && e.sampleId === ownProps.sampleId)
             }
 
             return {

@@ -108,6 +108,17 @@ const workspaces = (state = initialState, action = {}) => {
             newWorkspace.filteredParameters = action.payload.parameters.slice(0)
             newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
         }
+    // --------------------------------------------------
+    // Set the current "filtered" parameter keys used to decide which parameters will be displayed
+    // --------------------------------------------------
+    } else if (action.type === 'SET_GATING_HASH') {
+        const workspaceIndex = _.findIndex(state, s => s.id === action.payload.workspaceId)
+
+        if (workspaceIndex > -1) {
+            const newWorkspace = _.clone(state[workspaceIndex])
+            newWorkspace.gatingHash = action.payload.gatingHash
+            newState = newState.slice(0, workspaceIndex).concat([ newWorkspace ]).concat(newState.slice(workspaceIndex + 1))
+        }
     }
 
     return newState

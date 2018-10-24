@@ -113,6 +113,55 @@ export default class WorkspaceView extends Component {
         })
     }
 
+    isParentOfGate (toFindId, current) {
+        if (toFindId === current.id) {
+            return true
+        } else {
+            if (current.gateTemplateGroupId) {
+                return this.isParentOfGate(toFindId, this.props.workspace.gateTemplates.find(gt => gt.id === this.props.workspace.gateTemplateGroups.find(g => g.id === current.gateTemplateGroupId).parentGateTemplateId))
+            } else {
+                return false
+            }
+        }
+    }
+
+    toggleActiveGate (gateId) {
+        const gateIndex = this.state.activeGateTemplateIds.findIndex(g => g === gateId)
+
+        if (gateIndex > -1) {
+            this.state.activeGateTemplateIds = this.state.activeGateTemplateIds.slice(0, gateIndex).concat(this.state.activeGateTemplateIds.slice(gateIndex + 1))
+        } else {
+            this.state.activeGateTemplateIds.push(gateId)
+        }
+
+        this.setState({
+            activeGateTemplateIds: this.state.activeGateTemplateIds
+        })
+
+        this.props.api.createPopulationFromGates(this.props.workspace.id, this.props.workspace.selectedFCSFile, this.state.activeGateTemplateIds.map(id => this.props.workspace.gateTemplates.find(gt => gt.id === id)))
+    }
+
+    renderFlatGateTemplates () {
+        const gateList = this.props.workspace.gateTemplates.filter(gt => gt.gateTemplateGroupId).map((gateTemplate) => {
+            const active = this.state.activeGateTemplateIds.includes(gateTemplate.id)
+            return (
+                <div className={'gate-template' + (active ? ' active' : '')} onClick={this.toggleActiveGate.bind(this, gateTemplate.id)} key={gateTemplate.id}>
+                    <i className={'lnr ' + (active ? 'lnr-checkmark-circle' : 'lnr-circle-minus')}></i>
+                    {gateTemplate.title}
+                </div>
+            )
+        })
+        return <div className='flat-gate-templates'>{gateList}</div>
+    }
+
+    calculateFlatGatePopulation () {
+        const activeGateList = this.props.workspace.gateTemplates.filter(gt => gt.gateTemplateGroupId).filter(gateTemplate => this.props.workspace.selectedGateTemplateId && this.isParentOfGate(gateTemplate.id, this.props.workspace.selectedGateTemplate))
+        this.setState({
+            activeGateTemplateIds: activeGateList.map(g => g.id)
+        })
+        this.props.api.createPopulationFromGates(this.props.workspace.id, this.props.workspace.selectedFCSFile, activeGateList)
+    }
+
     render () {
         if (!this.props.workspace) {
             return (
@@ -127,21 +176,31 @@ export default class WorkspaceView extends Component {
                 </div>
             )
         }
-        const workspacesGateTemplatesRendered = []
 
-        for (let gateTemplate of this.props.workspace.gateTemplates) {
-            // Start with the root sample (i.e. doesn't have a group)
-            if (!gateTemplate.gateTemplateGroupId) {
-                workspacesGateTemplatesRendered.push((
-                    <div className={'sidebar-gate-template' + (gateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (gateTemplate.id === this.props.highlightedGate.childGateTemplateId ? ' highlighted' : '')} key={gateTemplate.id}>
-                        <div className='body' onClick={this.props.api.selectGateTemplate.bind(null, gateTemplate.id, this.props.workspace.id)}>
-                            <div className='title'>{gateTemplate.title}</div>
-                            <div className='number'>{gateTemplate.populationCount} (100%)</div>
+
+        let sidebarContents = []
+
+        if (this.state.showFlatView) {
+            sidebarContents = this.renderFlatGateTemplates()
+        } else {
+            let renderedHeirarchy = []
+            for (let gateTemplate of this.props.workspace.gateTemplates) {
+                // Start with the root sample (i.e. doesn't have a group)
+                if (!gateTemplate.gateTemplateGroupId) {
+                    renderedHeirarchy.push((
+                        <div className={'sidebar-gate-template' + (gateTemplate.id === this.props.workspace.selectedGateTemplateId ? ' selected' : '') + (gateTemplate.id === this.props.highlightedGate.childGateTemplateId ? ' highlighted' : '')} key={gateTemplate.id}>
+                            <div className='body' onClick={this.props.api.selectGateTemplate.bind(null, gateTemplate.id, this.props.workspace.id)}>
+                                <div className='title'>{gateTemplate.title}</div>
+                                <div className='number'>{gateTemplate.populationCount} (100%)</div>
+                            </div>
+                            <div className='child-gate-templates'>{this.renderSubGateTemplates(gateTemplate)}</div>
                         </div>
-                        <div className='child-gate-templates'>{this.renderSubGateTemplates(gateTemplate)}</div>
-                    </div>
-                ))
+                    ))
+                }
             }
+            sidebarContents = (
+                <div className='heirarchy-gate-templates'>{renderedHeirarchy}</div>
+            )
         }
 
         const panel = <FCSFileSelector selectedFCSFile={this.props.workspace.selectedFCSFile} workspaceId={this.props.workspace.id} selectedGateTemplate={this.props.selectedGateTemplate} />
@@ -150,7 +209,11 @@ export default class WorkspaceView extends Component {
             <div className='workspace'>
                 <div className='sidebar-handle' style={{ left: this.state.sidebarWidth - 5 }} onMouseDown={() => { this.setState({ draggingSidebar: true }) }}></div>
                 <div className='sidebar' style={{ width: this.state.sidebarWidth }}>
-                    {workspacesGateTemplatesRendered}
+                    <div className='view-type'>
+                        <div className={'type heirarchy' + (this.state.showFlatView ? '' : ' active')} onClick={() => { this.setState({ showFlatView: false }); this.props.setGatingHash(this.props.workspace.id, null) }} >Heirarchy</div>
+                        <div className={'type flat' + (this.state.showFlatView ? ' active' : '')} onClick={() => { this.setState({ showFlatView: true }); this.calculateFlatGatePopulation() }}>Flat</div>
+                    </div>
+                    {sidebarContents}
                 </div>
                 {panel}
             </div>

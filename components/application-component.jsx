@@ -4,6 +4,7 @@ import _ from 'lodash'
 import Workspace from '../containers/workspace-container.jsx'
 import HomologyModal from '../containers/homology-modal-container.jsx'
 import GatingErrorModal from '../containers/gating-error-modal-container.jsx'
+import PopulationMatchingModal from '../containers/population-matching-modal-container.jsx'
 import MenuBar from './menu-bar-component.jsx'
 import Login from './login-component.jsx'
 
@@ -11,7 +12,7 @@ export default class Application extends Component {
 
     constructor (props) {
         super(props)
-        
+
         this.state = {
             editingWorkspaceTitleId: null,
             editingWorkspaceTitleText: null
@@ -43,7 +44,7 @@ export default class Application extends Component {
         //         this.addNewFCSFilesToWorkspace([file.path])
         //     }
         // }
-        
+
         // return false;
     }
 
@@ -194,6 +195,7 @@ export default class Application extends Component {
                 </div>
                 <HomologyModal />
                 <GatingErrorModal />
+                {/*<PopulationMatchingModal />*/}
             </div>
         )
     }

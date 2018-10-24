@@ -19,8 +19,7 @@ export default class GatingErrorModal extends Component {
         super(props)
         this.state = {
             highlightedGateIds: [],
-            selectedComboGateIds: [],
-            initialMousePosition: null
+            selectedComboGateIds: []
         }
 
         this.innerRef = React.createRef()
@@ -208,7 +207,7 @@ export default class GatingErrorModal extends Component {
                                     <i className='lnr lnr-cross-circle' onClick={this.props.api.removeUnsavedGate.bind(null, gate.id)}/>
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                                 <div className='additional-options'>
                                     <div className='title'>Gate Options</div>
@@ -239,7 +238,7 @@ export default class GatingErrorModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                             </div>
                             <div className='right'>
@@ -256,7 +255,7 @@ export default class GatingErrorModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                             </div>
                             <div className='dismiss'>
@@ -294,7 +293,7 @@ export default class GatingErrorModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                                 <div className='combo-list'>
                                     {comboList}
@@ -424,9 +423,9 @@ export default class GatingErrorModal extends Component {
                         <div className='button' onClick={this.resolveErrorUsingIgnore.bind(this)}>
                             Ignore Or Mark Gates Optional
                         </div>
-                        <div className='button' style={{ marginTop: 15 }} onClick={this.resolveErrorUsingIgnore.bind(this)}>
+{/*                        <div className='button' style={{ marginTop: 15 }} onClick={this.resolveErrorUsingIgnore.bind(this)}>
                             Manually Match Peaks To Template
-                        </div>
+                        </div>*/}
                     </div>
                 </div>
             )

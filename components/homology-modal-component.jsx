@@ -27,8 +27,7 @@ export default class HomologyModal extends Component {
             selectedComboGateIds: [],
             highlightedGateIds: [],
             showMinPeakSizeGuide: false,
-            showSeedCreator: false,
-            initialMousePosition: null
+            showSeedCreator: false
         }
 
         this.innerRef = React.createRef()
@@ -279,7 +278,7 @@ export default class HomologyModal extends Component {
                                     {dismissButton}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                                 <div className='additional-options'>
                                     <div className='title'>Gate Options</div>
@@ -310,7 +309,7 @@ export default class HomologyModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                             </div>
                             <div className='dismiss'>
@@ -330,7 +329,7 @@ export default class HomologyModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                             </div>
                             <div className='dismiss'>
@@ -368,7 +367,7 @@ export default class HomologyModal extends Component {
                                     {gate.title}
                                 </div>
                                 <div className='population-count'>
-                                    <div className='highlight'>{gate.includeEventIds.length}</div> events (<div className='highlight'>{(gate.includeEventIds.length / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
+                                    <div className='highlight'>{gate.populationCount}</div> events (<div className='highlight'>{(gate.populationCount / this.props.selectedSample.populationCount * 100).toFixed(1)}%</div> of parent)
                                 </div>
                                 <div className='combo-list'>
                                     {comboList}

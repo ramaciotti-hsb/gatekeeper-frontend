@@ -80,3 +80,10 @@ export const setFCSFilteredParameters = (workspaceId, parameters) => {
         payload: { workspaceId, parameters }
     }
 }
+
+export const setGatingHash = (workspaceId, gatingHash) => {
+    return {
+        type: 'SET_GATING_HASH',
+        payload: { workspaceId, gatingHash }
+    }
+}
